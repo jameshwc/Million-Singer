@@ -26,6 +26,6 @@ var Conf = &Config{}
 
 func Setup(configPath string) {
 	if _, err := toml.DecodeFile(configPath, Conf); err != nil {
-		log.Fatalf("read config")
+		log.Fatalf("Error: read config %s", configPath)
 	}
 }

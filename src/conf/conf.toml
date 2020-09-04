@@ -1,0 +1,9 @@
+[database]
+User = "database"
+Password = "database"
+Host = "127.0.0.1"
+
+[server]
+RunMode = "debug"
+HttpPort = 8000
+

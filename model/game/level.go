@@ -1,4 +1,4 @@
-package game
+package model
 
 type Level struct {
 	Title       string

@@ -1,4 +1,4 @@
-package game
+package model
 
 type Lyric struct {
 	Line   []string
@@ -6,4 +6,8 @@ type Lyric struct {
 	Start  string
 	End    string
 	SongID string
+}
+
+func GetLyric(id int) {
+
 }

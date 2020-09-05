@@ -1,4 +1,4 @@
-package game
+package model
 
 type Game struct {
 	Levels []Level

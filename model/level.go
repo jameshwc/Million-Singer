@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Level struct {
 	gorm.Model
-	Title   string `json: "title"`
-	SongsID []int  `json: "songs_id"`
-	LevelID int    `json: "level_id"`
+	Title   string     `json:"title"`
+	Songs   []GameSong `gorm:"many2many:level_gamesongs" json:"songs"`
+	LevelID int        `json:"level_id"`
 }

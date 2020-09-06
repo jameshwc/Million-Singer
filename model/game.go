@@ -6,8 +6,9 @@ import (
 
 type Game struct {
 	gorm.Model
-	LevelsID []int `json: "levels_id"`
-	GameID   int   `json: "game_id`
+	LevelID  []Level `gorm:"many2many:game_levels;" json:"levels"`
+	LevelsID string
+	GameID   int `gorm:"primaryKey" json:"game_id"`
 }
 
 func GetGame(id int) (*Game, error) {

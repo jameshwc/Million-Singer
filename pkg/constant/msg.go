@@ -1,10 +1,10 @@
 package constant
 
 var MsgFlags = map[int]string{
-	SUCCESS:        "ok",
-	SERVER_ERROR:   "fail",
-	INVALID_PARAMS: "error parameters",
-	ERROR_GET_GAME_FAIL: "fail to get the game"
+	SUCCESS:             "ok",
+	SERVER_ERROR:        "fail",
+	INVALID_PARAMS:      "error parameters",
+	ERROR_GET_GAME_FAIL: "fail to get the game",
 }
 
 func GetMsg(code int) string {

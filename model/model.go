@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/jameshwc/Million-Singer/conf"
-	model "github.com/jameshwc/Million-Singer/model/game"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -22,6 +21,7 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
 	}
-	db.AutoMigrate(&model.Game{}, &model.Level{}, &model.GameSong{}, &model.Song{}, &model.Lyric{})
-	db.Create(&model.Game{LevelsID: []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, GameID: 0})
+	db.AutoMigrate(&Game{})
+	fmt.Println("DB AutoMigrate...")
+	db.Create(&Game{LevelsID: "0,1,2,3,4,5,6", GameID: 0})
 }

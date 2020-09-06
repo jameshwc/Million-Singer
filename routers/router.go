@@ -10,6 +10,6 @@ func InitRouters() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	gamesAPI := r.Group("/api/game")
-	gamesAPI.GET("/games/", game.GetGame)
+	gamesAPI.GET("/games/:id", game.GetGame)
 	return r
 }

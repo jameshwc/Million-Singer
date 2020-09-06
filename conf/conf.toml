@@ -1,7 +1,10 @@
 [database]
+Type = "mysql"
 User = "database"
 Password = "database"
 Host = "127.0.0.1"
+Name = "million_singer"
+TablePrefix = "ms_"
 
 [server]
 RunMode = "debug"

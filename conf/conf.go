@@ -7,9 +7,12 @@ import (
 )
 
 type Database struct {
-	User     string
-	Password string
-	Host     string
+	User        string
+	Password    string
+	Host        string
+	Type        string
+	Name        string
+	TablePrefix string
 }
 
 type Server struct {

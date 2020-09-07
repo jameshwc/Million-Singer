@@ -22,6 +22,5 @@ func Setup() {
 		log.Fatalf("models.Setup err: %v", err)
 	}
 	db.AutoMigrate(&Game{})
-	fmt.Println("DB AutoMigrate...")
-	db.Create(&Game{LevelsID: "0,1,2,3,4,5,6", GameID: 0})
+	db.Create(&Game{GameID: 0})
 }

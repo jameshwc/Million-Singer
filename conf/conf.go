@@ -2,8 +2,8 @@ package conf
 
 import (
 	"log"
-
-	"github.com/BurntSushi/toml"
+	"os"
+	"strconv"
 )
 
 type Database struct {
@@ -20,15 +20,24 @@ type Server struct {
 	HttpPort int
 }
 
-type Config struct {
-	DB     Database `toml:"database"`
-	Server Server
-}
+var DBconfig = &Database{}
+var ServerConfig = &Server{}
 
-var Conf = &Config{}
-
-func Setup(configPath string) {
-	if _, err := toml.DecodeFile(configPath, Conf); err != nil {
-		log.Fatalf("Error: read config %s", configPath)
+func Setup() {
+	DBconfig = &Database{
+		User:        os.Getenv("db_user"),
+		Password:    os.Getenv("db_passwd"),
+		Host:        os.Getenv("db_host"),
+		Type:        os.Getenv("db_type"),
+		Name:        os.Getenv("db_name"),
+		TablePrefix: os.Getenv("db_table_prefix"),
+	}
+	port, err := strconv.Atoi(os.Getenv("server_port"))
+	if err != nil {
+		log.Fatal("read config: server_port is not a number")
+	}
+	ServerConfig = &Server{
+		RunMode:  os.Getenv("server_runmode"),
+		HttpPort: port,
 	}
 }

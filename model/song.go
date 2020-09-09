@@ -49,7 +49,7 @@ func GetSong(SongID int) (*Song, error) {
 	if err == gorm.ErrRecordNotFound {
 		return nil, err
 	}
-	db.Where("song_id <> ?", SongID).Find(&song.Lyrics)
+	db.Where("song_id = ?", SongID).Find(&song.Lyrics)
 	// db.Joins("JOIN lyrics ON lyrics.song_id = songs.id AND lyrics.song_id = ?", SongID).Find(&song.Lyrics)
 	return &song, nil
 }

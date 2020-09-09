@@ -1,12 +1,12 @@
+# An example of conf.toml
 [database]
 Type = "mysql"
-User = "database"
-Password = "database"
-Host = "127.0.0.1"
+User = "database_user"
+Password = "database_passwd"
+Host = "mysql"
 Name = "million_singer"
 TablePrefix = "ms_"
 
 [server]
 RunMode = "debug"
 HttpPort = 8000
-

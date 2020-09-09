@@ -14,10 +14,10 @@ var db *gorm.DB
 func Setup() {
 	var err error
 	db, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		conf.Conf.DB.User,
-		conf.Conf.DB.Password,
-		conf.Conf.DB.Host,
-		conf.Conf.DB.Name)), &gorm.Config{})
+		conf.DBconfig.User,
+		conf.DBconfig.Password,
+		conf.DBconfig.Host,
+		conf.DBconfig.Name)), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
 	}

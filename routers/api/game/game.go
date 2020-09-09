@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,7 +12,6 @@ import (
 
 func GetGame(c *gin.Context) {
 	appG := app.Gin{C: c}
-	fmt.Println(c.Param("id"))
 	gameID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		appG.Response(http.StatusBadRequest, constant.INVALID_PARAMS, nil)

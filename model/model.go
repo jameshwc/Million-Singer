@@ -13,7 +13,7 @@ var db *gorm.DB
 
 func Setup() {
 	var err error
-	db, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	db, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		conf.Conf.DB.User,
 		conf.Conf.DB.Password,
 		conf.Conf.DB.Host,
@@ -21,6 +21,5 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
 	}
-	db.AutoMigrate(&Game{})
-	db.Create(&Game{GameID: 0})
+	db.AutoMigrate(&Game{}, &Song{}, &Lyric{})
 }

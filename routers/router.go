@@ -11,5 +11,7 @@ func InitRouters() *gin.Engine {
 	r.Use(gin.Recovery())
 	gamesAPI := r.Group("/api/game")
 	gamesAPI.GET("/games/:id", game.GetGame)
+	gamesAPI.POST("/songs/new", game.AddSong)
+	gamesAPI.GET("/songs/:id", game.GetSongInstance)
 	return r
 }

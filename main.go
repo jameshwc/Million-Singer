@@ -31,5 +31,15 @@ func main() {
 
 	log.Printf("[info] start http server listening %s", endPoint)
 
+	// test function code
+	// if f, err := os.Open("/home/james/下載/[Toolbxs]Eminem - Beautiful (Edited) (Explicit)-English.srt"); err != nil {
+	// log.Fatalf("open srt file")
+	// } else {
+	// subtitle.ReadSrtFromFile(f)
+	// defer f.Close()
+	// }
+
+	// end test function
+
 	server.ListenAndServe()
 }

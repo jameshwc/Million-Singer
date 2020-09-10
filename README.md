@@ -6,7 +6,7 @@ This repo is a Web version of "The Million Singer" TV show.
 ### Prerequisite
 
 - Docker & Docker-compose
-- .env (or environment variables required in docker-compose.yml)
+- .env (you can just use this repo's .env)
 
 ```bash
 $ docker-compose up -d --build

@@ -21,5 +21,6 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
 	}
-	db.AutoMigrate(&Game{}, &Song{}, &Lyric{})
+
+	db.AutoMigrate(&Game{}, &Lyric{}, &Song{})
 }

@@ -19,7 +19,9 @@ RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 RUN mkdir -p /api
 WORKDIR /api
 COPY --from=builder /api/app .
-
+COPY wait-for-it.sh .
+RUN apk add --no-cache bash
+RUN chmod +x wait-for-it.sh
 EXPOSE 8000
 
-ENTRYPOINT ["./app"]
+ENTRYPOINT ["./wait-for-it.sh", "db:3306", "--", "./app"]

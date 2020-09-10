@@ -46,7 +46,7 @@ func AddSong(c *gin.Context) {
 		appG.Response(constant.SERVER_ERROR, constant.ERROR_ADD_SONG_FAIL, nil)
 		return
 	}
-	appG.Response(http.StatusOK, constant.SUCCESS, song)
+	appG.Response(http.StatusOK, constant.SUCCESS, song.ID)
 }
 
 func GetSongInstance(c *gin.Context) {

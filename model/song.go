@@ -10,7 +10,8 @@ import (
 )
 
 type Song struct {
-	gorm.Model
+	gorm.Model `json:"-"`
+	FrontendID uint    `json:"id"`
 	Lyrics     []Lyric `json:"lyrics"`
 	URL        string  `json:"url"`
 	StartTime  string  `json:"start_time"`
@@ -19,11 +20,10 @@ type Song struct {
 	Name       string  `json:"name"`
 	Singer     string  `json:"singer"`
 	Genre      string  `json:"genre"`
-	MissLyrics string  // IDs (integers) with comma seperated
+	MissLyrics string  `json:"-"` // IDs (integers) with comma seperated
 }
 
 func (s *Song) Commit() error {
-	fmt.Println(s.Lyrics)
 	if err := db.Create(s).Error; err != nil {
 		fmt.Println(err)
 		return err
@@ -50,6 +50,6 @@ func GetSong(SongID int) (*Song, error) {
 		return nil, err
 	}
 	db.Where("song_id = ?", SongID).Find(&song.Lyrics)
-	// db.Joins("JOIN lyrics ON lyrics.song_id = songs.id AND lyrics.song_id = ?", SongID).Find(&song.Lyrics)
+	song.FrontendID = song.ID // workaround; TODO: find a pretty solution
 	return &song, nil
 }

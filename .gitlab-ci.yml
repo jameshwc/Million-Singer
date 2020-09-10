@@ -1,0 +1,18 @@
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  script:
+    - go test ./
+
+deploy:
+  stage: deploy
+  before_script:
+    - mkdir -p .ssh
+    - chmod 700 .ssh
+    - echo "$SSH_PRIVATE_KEY" >> .ssh/rsa
+    - chmod 700 .ssh/rsa
+  script:
+    - 

@@ -25,7 +25,6 @@ func ReadSrtFromFile(i io.Reader) ([]model.Lyric, error) {
 	var prev string
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		fmt.Println(scanner.Text())
 		if len(line) == 0 {
 			continue
 		}
@@ -50,6 +49,5 @@ func ReadSrtFromFile(i io.Reader) ([]model.Lyric, error) {
 			prev = line
 		}
 	}
-	fmt.Println(lyrics)
 	return lyrics, nil
 }

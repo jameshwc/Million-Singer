@@ -20,13 +20,14 @@ type SongInstance struct {
 func AddSong(c *gin.Context) {
 	appG := app.Gin{C: c}
 	var song model.Song
+	// TODO: should seperate the model from the routers?
 	song.URL = c.PostForm("url")
 	song.Genre = c.PostForm("genre")
 	song.Language = c.PostForm("language")
 	song.MissLyrics = c.PostForm("miss_lyrics")
 	song.Singer = c.PostForm("singer")
 	song.Name = c.PostForm("name")
-	f, _, err := c.Request.FormFile("file")
+	srtFile, _, err := c.Request.FormFile("file")
 	if err != nil {
 		log.Println(err)
 		appG.Response(constant.INVALID_PARAMS, constant.ERROR_UPLOAD_SRT_FILE, nil)
@@ -36,12 +37,11 @@ func AddSong(c *gin.Context) {
 		appG.Response(constant.SERVER_ERROR, constant.ERROR_UPLOAD_SRT_FILE, nil)
 		return
 	}
-	lyrics, err := subtitle.ReadSrtFromFile(f)
+	song.Lyrics, err = subtitle.ReadSrtFromFile(srtFile)
 	if err != nil {
 		appG.Response(constant.INVALID_PARAMS, constant.ERROR_SRT_FILE_FORMAT, nil)
 		return
 	}
-	song.Lyrics = lyrics
 	if err := song.Commit(); err != nil {
 		appG.Response(constant.SERVER_ERROR, constant.ERROR_ADD_SONG_FAIL, nil)
 		return
@@ -56,7 +56,11 @@ func GetSongInstance(c *gin.Context) {
 		appG.Response(http.StatusBadRequest, constant.INVALID_PARAMS, nil)
 		return
 	}
-	if s, err := model.GetSong(songID); err != nil {
+	var hasLyrics bool
+	if queryLyrics := c.DefaultQuery("lyrics", "y"); queryLyrics == "y" {
+		hasLyrics = true
+	}
+	if s, err := model.GetSong(songID, hasLyrics); err != nil {
 		appG.Response(http.StatusInternalServerError, constant.ERROR_GET_SONG_FAIL, nil)
 	} else {
 		var songInstance SongInstance

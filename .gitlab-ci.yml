@@ -15,4 +15,7 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" >> .ssh/rsa
     - chmod 700 .ssh/rsa
   script:
-    - 
+    - | 
+      ssh -o StrictHostKeyChecking=no $user@$host -tt "
+      
+      "

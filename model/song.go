@@ -27,6 +27,9 @@ func (s *Song) Commit() error {
 	if err := db.Create(s).Error; err != nil {
 		return err
 	}
+	if err := db.Model(s).UpdateColumn("FrontendID", s.ID).Error; err != nil {
+		return err
+	}
 	return nil
 }
 

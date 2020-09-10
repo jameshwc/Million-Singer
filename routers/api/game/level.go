@@ -27,14 +27,14 @@ func AddLevel(c *gin.Context) {
 		}
 		songsID = append(songsID, songID)
 	}
-	level.SongsID = songsID
+	// level.SongsID = songsID
 	level.Title, check = c.GetPostForm("title")
 	if !check {
 		appG.Response(http.StatusBadRequest, constant.ERROR_ADD_LEVEL_NO_TITLE, nil)
 		return
 	}
 	var err error
-	if level.Songs, err = model.GetSongs(level.SongsID); err != nil {
+	if level.Songs, err = model.GetSongs(songsID); err != nil {
 		appG.Response(http.StatusBadRequest, constant.ERROR_ADD_LEVEL_NO_SONGID_RECORD, nil)
 		return
 	}

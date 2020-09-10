@@ -8,7 +8,7 @@ type Level struct {
 	gorm.Model `json:"-"`
 	Title      string  `json:"title"`
 	Songs      []*Song `gorm:"many2many:level_song;" json:"songs"`
-	SongsID    []int   `gorm:"-" json:"songs_id"`
+	// SongsID    []int   `gorm:"-" json:"songs_id"`
 }
 
 func (l *Level) Commit() error {

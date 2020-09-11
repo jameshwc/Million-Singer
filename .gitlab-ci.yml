@@ -17,7 +17,7 @@ deploy:
     - chmod 700 .ssh/rsa
   script:
     - | 
-      ssh -o StrictHostKeyChecking=no $user@$host -tt "
+      ssh -o StrictHostKeyChecking=no $HOST -tt "
       cd million-singer
       docker-compose build
       docker-compose restart web

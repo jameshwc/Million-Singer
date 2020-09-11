@@ -4,6 +4,7 @@ stages:
 
 test:
   stage: test
+  image: golang:1.14.8-alpine3.11
   script:
     - go test ./
 

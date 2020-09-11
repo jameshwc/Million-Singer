@@ -19,6 +19,5 @@ deploy:
     - | 
       ssh -o StrictHostKeyChecking=no -i .ssh/rsa $HOST -tt "
       cd million-singer
-      docker-compose build
-      docker-compose restart web
+      docker-compose build && docker-compose restart web
       "

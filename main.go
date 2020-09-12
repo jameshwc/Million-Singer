@@ -20,7 +20,7 @@ func init() {
 	model.Setup(nil)
 }
 
-// @title Add a level API
+// @title Million Singer API
 // @version 1.0
 // @description To add a level into database
 // @contact.name jameshwc

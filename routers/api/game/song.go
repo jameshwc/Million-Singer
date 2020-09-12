@@ -16,13 +16,17 @@ type SongInstance struct {
 	MissLyricID int `json:"miss_lyric_id"`
 }
 
-// @Summary 說Hello
-// @Id 1
-// @Tags Hello
-// @version 1.0
-// @produce text/plain
-// @Success 200 string string 成功後返回的值
-// @Router /hello [get]
+// AddSong godoc
+// @Summary Add a song
+// @Description Add a song to database
+// @Tags game
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "pong"
+// @Failure 400 {string} string "ok"
+// @Failure 404 {string} string "ok"
+// @Failure 500 {string} string "ok"
+// @Router /examples/ping [get]
 func AddSong(c *gin.Context) {
 	appG := app.Gin{C: c}
 	var song model.Song

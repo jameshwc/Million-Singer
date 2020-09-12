@@ -20,17 +20,17 @@ func init() {
 	model.Setup(nil)
 }
 
-// @title Gin swagger
+// @title Add a level API
 // @version 1.0
-// @description Gin swagger
-
-// @contact.name nathan.lu
-// @contact.url https://tedmax100.github.io/
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// schemes http
+// @description To add a level into database
+// @contact.name jameshwc
+// @contact.url https://jameshsu.csie.org
+// @contact.email jameshwc@gmail.com
+// @license.name GPL v3.0
+// @license.url https://www.gnu.org/licenses/gpl-3.0.html
+// @host http://ms.csie.org
+// @BasePath /api
+// @schemes http
 func main() {
 	gin.SetMode(conf.ServerConfig.RunMode)
 	routers := routers.InitRouters()

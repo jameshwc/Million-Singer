@@ -1,6 +1,7 @@
 FROM golang:1.14.8-alpine3.11 AS builder
 
 RUN apk update && apk add alpine-sdk git && rm -rf /var/cache/apk/*
+RUN go get -u github.com/swaggo/swag/cmd/swag
 
 RUN mkdir -p /api
 WORKDIR /api
@@ -10,7 +11,7 @@ COPY go.sum .
 RUN go mod download
 
 COPY . .
-RUN go build -o ./app main.go
+RUN swag init && go build -o ./app main.go
 
 FROM alpine:latest
 

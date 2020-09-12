@@ -20,13 +20,20 @@ type SongInstance struct {
 // @Summary Add a song
 // @Description Add a song to database
 // @Tags game
-// @Accept json
+// @Accept multipart/form-data
 // @Produce json
-// @Success 200 {string} string "pong"
-// @Failure 400 {string} string "ok"
-// @Failure 404 {string} string "ok"
-// @Failure 500 {string} string "ok"
-// @Router /examples/ping [get]
+// @Param file formData file true "subtitle file"
+// @Param url formData string true "youtube url"
+// @Param name formData string true "name of the song"
+// @Param singer formData string true "singer of the song"
+// @Param miss_lyrics formData string true "miss lyrics index, seperated by commas"
+// @Param genre formData string false "genre of the song"
+// @Param language formData string false "language of the song, needs to be short, and seperated by commas if multiple languages"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/songs/new [post]
 func AddSong(c *gin.Context) {
 	appG := app.Gin{C: c}
 	var song model.Song
@@ -58,6 +65,18 @@ func AddSong(c *gin.Context) {
 	appG.Response(http.StatusOK, constant.SUCCESS, song.ID)
 }
 
+// GetSong godoc
+// @Summary Get a song Instance
+// @Description Get a song instance, with a miss lyrics id randomly generated
+// @Tags game
+// @Accept plain
+// @Produce json
+// @Param id path int true "id of the song"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/songs/{id} [get]
 func GetSongInstance(c *gin.Context) {
 	appG := app.Gin{C: c}
 	songID, err := strconv.Atoi(c.Param("id"))

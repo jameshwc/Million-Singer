@@ -10,6 +10,18 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/constant"
 )
 
+// GetTour godoc
+// @Summary Add a new level
+// @Description Add a new level
+// @Tags game
+// @Accept plain
+// @Produce json
+// @Param id path int true "id of the game"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/tours/{id} [get]
 func GetTour(c *gin.Context) {
 	appG := app.Gin{C: c}
 	tourID, err := strconv.Atoi(c.Param("id"))

@@ -10,6 +10,18 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/constant"
 )
 
+// GetLyricsWithSongID godoc
+// @Summary Get lyrics with a song's ID
+// @Description Get lyrics with a song's ID; normally it is only for internal use.
+// @Tags game
+// @Accept plain
+// @Produce json
+// @Param song_id path int true "id of the song"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/lyrics/{song_id} [post]
 func GetLyricsWithSongID(c *gin.Context) {
 	appG := app.Gin{C: c}
 	songID, err := strconv.Atoi(c.Query("song_id"))

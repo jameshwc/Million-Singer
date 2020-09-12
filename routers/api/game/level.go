@@ -10,6 +10,19 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/constant"
 )
 
+// AddLevel godoc
+// @Summary Add a new level
+// @Description Add a new level
+// @Tags game
+// @Accept multipart/form-data
+// @Produce json
+// @Param songs formData string true "id of the song, should have many"
+// @Param title formData string true "title of the level"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/levels/new [post]
 func AddLevel(c *gin.Context) {
 	appG := app.Gin{C: c}
 	var level model.Level
@@ -45,6 +58,18 @@ func AddLevel(c *gin.Context) {
 	appG.Response(http.StatusOK, constant.SUCCESS, level)
 }
 
+// GetLevel godoc
+// @Summary Get a level
+// @Description Get a level
+// @Tags game
+// @Accept plain
+// @Produce json
+// @Param id path int true "id of the level"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/levels/{id} [post]
 func GetLevel(c *gin.Context) {
 	appG := app.Gin{C: c}
 	levelID, err := strconv.Atoi(c.Param("id"))

@@ -28,7 +28,7 @@ func init() {
 // @contact.email jameshwc@gmail.com
 // @license.name GPL v3.0
 // @license.url https://www.gnu.org/licenses/gpl-3.0.html
-// @host http://ms.csie.org
+// @host ms.csie.org
 // @BasePath /api
 // @schemes http
 func main() {

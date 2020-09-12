@@ -13,7 +13,7 @@ import (
 // AddLevel godoc
 // @Summary Add a new level
 // @Description Add a new level
-// @Tags game
+// @Tags game,level
 // @Accept multipart/form-data
 // @Produce json
 // @Param songs formData string true "id of the song, should have many"
@@ -61,7 +61,7 @@ func AddLevel(c *gin.Context) {
 // GetLevel godoc
 // @Summary Get a level
 // @Description Get a level
-// @Tags game
+// @Tags game,level
 // @Accept plain
 // @Produce json
 // @Param id path int true "id of the level"

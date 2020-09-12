@@ -11,12 +11,12 @@ import (
 )
 
 // GetTour godoc
-// @Summary Add a new level
-// @Description Add a new level
-// @Tags game
+// @Summary Add a new tour
+// @Description Add a new tour
+// @Tags game,tour
 // @Accept plain
 // @Produce json
-// @Param id path int true "id of the game"
+// @Param id path int true "id of the tour"
 // @Success 200 {object} app.Response
 // @Failure 400 {object} app.Response
 // @Failure 404 {object} app.Response

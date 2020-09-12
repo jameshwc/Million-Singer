@@ -19,7 +19,7 @@ type SongInstance struct {
 // AddSong godoc
 // @Summary Add a song
 // @Description Add a song to database
-// @Tags game
+// @Tags game,song
 // @Accept multipart/form-data
 // @Produce json
 // @Param file formData file true "subtitle file"
@@ -68,7 +68,7 @@ func AddSong(c *gin.Context) {
 // GetSong godoc
 // @Summary Get a song Instance
 // @Description Get a song instance, with a miss lyrics id randomly generated
-// @Tags game
+// @Tags game,song
 // @Accept plain
 // @Produce json
 // @Param id path int true "id of the song"

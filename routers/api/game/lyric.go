@@ -13,7 +13,7 @@ import (
 // GetLyricsWithSongID godoc
 // @Summary Get lyrics with a song's ID
 // @Description Get lyrics with a song's ID; normally it is only for internal use.
-// @Tags game
+// @Tags game,lyric
 // @Accept plain
 // @Produce json
 // @Param song_id path int true "id of the song"

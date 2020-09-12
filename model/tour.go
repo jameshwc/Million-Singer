@@ -6,14 +6,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type Game struct {
+type Tour struct {
 	gorm.Model `json:"-"`
 	LevelID    []Level `gorm:"many2many:game_levels;" json:"levels"`
 }
 
-func GetGame(id int) (*Game, error) {
-	var game Game
-	err := db.Where("id = ?", id).First(&game).Error
+func GetTour(id int) (*Tour, error) {
+	var tour Tour
+	err := db.Where("id = ?", id).First(&tour).Error
 	fmt.Println(err)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
@@ -21,5 +21,5 @@ func GetGame(id int) (*Game, error) {
 	if err == gorm.ErrRecordNotFound {
 		return nil, err
 	}
-	return &game, nil
+	return &tour, nil
 }

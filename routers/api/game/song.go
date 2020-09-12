@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -17,6 +16,13 @@ type SongInstance struct {
 	MissLyricID int `json:"miss_lyric_id"`
 }
 
+// @Summary 說Hello
+// @Id 1
+// @Tags Hello
+// @version 1.0
+// @produce text/plain
+// @Success 200 string string 成功後返回的值
+// @Router /hello [get]
 func AddSong(c *gin.Context) {
 	appG := app.Gin{C: c}
 	var song model.Song
@@ -29,7 +35,6 @@ func AddSong(c *gin.Context) {
 	song.Name = c.PostForm("name")
 	srtFile, _, err := c.Request.FormFile("file")
 	if err != nil {
-		log.Println(err)
 		appG.Response(constant.INVALID_PARAMS, constant.ERROR_UPLOAD_SRT_FILE, nil)
 		return
 	}

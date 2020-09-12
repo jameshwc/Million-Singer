@@ -10,7 +10,7 @@ func InitRouters() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	gamesAPI := r.Group("/api/game")
-	gamesAPI.GET("/games/:id", game.GetGame)
+	gamesAPI.GET("/tours/:id", game.GetTour)
 	gamesAPI.POST("/levels/new", game.AddLevel)
 	gamesAPI.GET("/levels/:id", game.GetLevel)
 	gamesAPI.POST("/songs/new", game.AddSong)

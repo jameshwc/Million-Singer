@@ -10,15 +10,15 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/constant"
 )
 
-func GetGame(c *gin.Context) {
+func GetTour(c *gin.Context) {
 	appG := app.Gin{C: c}
-	gameID, err := strconv.Atoi(c.Param("id"))
+	tourID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		appG.Response(http.StatusBadRequest, constant.INVALID_PARAMS, nil)
 		return
 	}
-	if g, err := model.GetGame(gameID); err != nil {
-		appG.Response(http.StatusInternalServerError, constant.ERROR_GET_GAME_FAIL, nil)
+	if g, err := model.GetTour(tourID); err != nil {
+		appG.Response(http.StatusInternalServerError, constant.ERROR_GET_TOUR_FAIL, nil)
 	} else {
 		appG.Response(http.StatusOK, constant.SUCCESS, g)
 	}

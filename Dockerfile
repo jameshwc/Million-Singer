@@ -10,6 +10,7 @@ COPY go.sum .
 RUN go mod download
 
 COPY . .
+RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN swag init && go build -o ./app main.go
 
 FROM alpine:latest

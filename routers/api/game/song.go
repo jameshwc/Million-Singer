@@ -22,6 +22,7 @@ type SongInstance struct {
 // @Tags game,song
 // @Accept multipart/form-data
 // @Produce json
+// @Param token header string true "auth token, must register & login to get the token"
 // @Param file formData file true "subtitle file"
 // @Param url formData string true "youtube url"
 // @Param name formData string true "name of the song"

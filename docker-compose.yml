@@ -9,13 +9,17 @@ services:
       db_table_prefix: ${db_table_prefix}
       server_runmode: ${server_runmode}
       server_port: ${server_port}
+      server_jwt_secret: ${server_jwt_secret}
+    
     image: registry.gitlab.com/jameshwc/million-singer
     ports:
       - 80:8000
     links:
       - db
+      - redis
     depends_on:
       - db
+      - redis
   
   db:
     image: mysql:8.0
@@ -35,6 +39,10 @@ services:
     volumes:
       - ./sql/init.sql:/init.sql
       - data:/var/lib/mysql
+
+  redis:
+    image: redis:6.0.8-alpine
+    restart: always
 
 volumes:
   data: {}

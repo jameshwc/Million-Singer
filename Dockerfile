@@ -25,4 +25,4 @@ RUN apk add --no-cache bash
 RUN chmod +x wait-for-it.sh
 EXPOSE 8000
 
-ENTRYPOINT ["./wait-for-it.sh", "db:3306", "--", "./app"]
+ENTRYPOINT ["./wait-for-it.sh", "db:3306", "redis:6379", "--", "./app"]

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 type Database struct {
@@ -21,8 +22,16 @@ type Server struct {
 	JwtSecret string
 }
 
+type Redis struct {
+	Host        string
+	Password    string
+	MinIdleConn int
+	IdleTimeout time.Duration
+}
+
 var DBconfig = &Database{}
 var ServerConfig = &Server{}
+var RedisConfig = &Redis{}
 
 func Setup() {
 	DBconfig = &Database{
@@ -40,6 +49,20 @@ func Setup() {
 	ServerConfig = &Server{
 		RunMode:   os.Getenv("server_runmode"),
 		HttpPort:  port,
-		JwtSecret: os.Getenv("jwt_secret"),
+		JwtSecret: os.Getenv("server_jwt_secret"),
+	}
+	minIdleConn, err := strconv.Atoi(os.Getenv("redis_min_idle_conn"))
+	if err != nil {
+		log.Fatal("read config: redis_max_idle is not a number")
+	}
+	idleTimeout, err := strconv.Atoi(os.Getenv("redis_idle_timeout"))
+	if err != nil {
+		log.Fatal("read config: redis_idle_timeout is not a number")
+	}
+	RedisConfig = &Redis{
+		Host:        os.Getenv("redis_host"),
+		Password:    os.Getenv("redis_password"),
+		MinIdleConn: minIdleConn,
+		IdleTimeout: time.Duration(idleTimeout) * time.Second,
 	}
 }

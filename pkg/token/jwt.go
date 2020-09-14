@@ -1,4 +1,4 @@
-package jwt
+package token
 
 import (
 	"crypto/md5"
@@ -23,7 +23,7 @@ func init() {
 	jwtSecret = []byte(conf.ServerConfig.JwtSecret)
 }
 
-func GenerateToken(username, password string) (string, error) {
+func Generate(username, password string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(expire)
 
@@ -42,6 +42,19 @@ func GenerateToken(username, password string) (string, error) {
 	return token, err
 }
 
+func Parse(token string) (*Claims, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
+			return claims, nil
+		}
+	}
+
+	return nil, err
+}
 func encodeMD5(s string) string {
 	m := md5.New()
 	m.Write([]byte(s))

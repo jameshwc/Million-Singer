@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	"github.com/jameshwc/Million-Singer/pkg/jwt"
+	"github.com/jameshwc/Million-Singer/pkg/token"
 )
 
 type user struct {
@@ -37,14 +37,14 @@ func AuthUser(username, password string) (string, error) {
 	if err != nil {
 		return "", C.ErrUserLoginAuthentication
 	}
-	token, err := jwt.GenerateToken(username, password)
+	userToken, err := token.Generate(username, password)
 	if err != nil {
 		return "", C.ErrUserLoginJwtTokenGeneration
 	}
 	if err := u.UpdateLoginStatus(); err != nil {
 		return "", C.ErrUserLoginUpdateUserStatus
 	}
-	return token, nil
+	return userToken, nil
 }
 
 func ValidateUser(username string, email string) error {

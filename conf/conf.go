@@ -16,8 +16,9 @@ type Database struct {
 }
 
 type Server struct {
-	RunMode  string
-	HttpPort int
+	RunMode   string
+	HttpPort  int
+	JwtSecret string
 }
 
 var DBconfig = &Database{}
@@ -37,7 +38,8 @@ func Setup() {
 		log.Fatal("read config: server_port is not a number")
 	}
 	ServerConfig = &Server{
-		RunMode:  os.Getenv("server_runmode"),
-		HttpPort: port,
+		RunMode:   os.Getenv("server_runmode"),
+		HttpPort:  port,
+		JwtSecret: os.Getenv("jwt_secret"),
 	}
 }

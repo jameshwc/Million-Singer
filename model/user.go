@@ -19,23 +19,24 @@ type User struct {
 }
 
 func (u *User) Commit() error {
+	u.Password = encrypt(u.Password)
 	if err := db.Create(u).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func CheckDuplicateUserWithName(name string) bool {
+func IsUserNameDuplicate(name string) bool {
 	var u User
-	if db.Where("name = ?", name).First(&u).Error != nil {
+	if db.Where("name = ?", name).First(&u).Error != gorm.ErrRecordNotFound {
 		return true
 	}
 	return false
 }
 
-func CheckDuplicateUserWithEmail(email string) bool {
+func IsUserEmailDuplicate(email string) bool {
 	var u User
-	if db.Where("email = ?", email).First(&u).Error != nil {
+	if db.Where("email = ?", email).First(&u).Error != gorm.ErrRecordNotFound {
 		return true
 	}
 	return false
@@ -51,4 +52,9 @@ func AuthUser(username string, password string) (*User, error) {
 		return nil, err
 	}
 	return &u, nil
+}
+
+func (u *User) UpdateLoginStatus() error {
+	// TODO
+	return nil
 }

@@ -51,5 +51,5 @@ func Setup(externalDB *gorm.DB) {
 			log.Fatalf("models.Setup err: %v", err)
 		}
 	}
-	db.AutoMigrate(&Tour{}, &Level{}, &Lyric{}, &Song{})
+	db.AutoMigrate(&Tour{}, &Level{}, &Lyric{}, &Song{}, &User{})
 }

@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
+	"github.com/jameshwc/Million-Singer/routers/api/user"
 )
 
 func InitRouters() *gin.Engine {
@@ -16,5 +17,8 @@ func InitRouters() *gin.Engine {
 	gamesAPI.POST("/songs/new", game.AddSong)
 	gamesAPI.GET("/songs/:id", game.GetSongInstance)
 	gamesAPI.GET("/lyrics", game.GetLyricsWithSongID)
+
+	userAPI := r.Group("/api/users")
+	userAPI.GET("/check", user.ValidateUser)
 	return r
 }

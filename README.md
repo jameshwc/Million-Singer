@@ -11,3 +11,9 @@ This repo is a Web version of "The Million Singer" TV show.
 ```bash
 $ docker-compose up -d --build
 ```
+
+## TODO
+
+- Custom Error
+- Frontend Error Code
+- Redis

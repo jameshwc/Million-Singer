@@ -20,4 +20,11 @@ var (
 	ErrUserRegisterEmailConflict   = errors.New("email conflict")
 
 	ErrRedisSetKeyJsonMarshal = errors.New("fail to marshal struct to json")
+
+	ErrDatabase        = errors.New("database error")
+	ErrTourIDNotNumber = errors.New("param id is not a number")
+	ErrTourNotFound    = errors.New("tour record not found")
+
+	ErrLevelIDNotNumber = errors.New("param id is not a number")
+	ErrLevelNotFound    = errors.New("level record not found")
 )

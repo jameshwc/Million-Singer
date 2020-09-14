@@ -34,14 +34,19 @@ func Login(c *gin.Context) {
 	c.BindJSON(&u)
 	token, err := userService.AuthUser(u.Username, u.Password)
 	switch err {
+
 	case C.ErrUserLoginFormat:
 		appG.Response(http.StatusBadRequest, C.ERROR_LOGIN_FAIL_FORMAT_INCORRECT, nil)
+
 	case C.ErrUserLoginAuthentication:
 		appG.Response(http.StatusBadRequest, C.ERROR_LOGIN_FAIL_AUTHENTICATION, nil)
+
 	case C.ErrUserLoginJwtTokenGeneration:
 		appG.Response(http.StatusInternalServerError, C.ERROR_LOGIN_FAIL_JWT_TOKEN_GENERATION, nil)
+
 	case C.ErrUserLoginUpdateUserStatus:
 		appG.Response(http.StatusInternalServerError, C.ERROR_LOGIN_FAIL_UPDATE_LOGIN_STATUS, nil)
+
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, token)
 	}

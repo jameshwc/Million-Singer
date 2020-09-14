@@ -2,12 +2,11 @@ package game
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/app"
-	"github.com/jameshwc/Million-Singer/pkg/constant"
+	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	gameService "github.com/jameshwc/Million-Singer/service/game"
 )
 
 // GetTour godoc
@@ -24,14 +23,14 @@ import (
 // @Router /game/tours/{id} [get]
 func GetTour(c *gin.Context) {
 	appG := app.Gin{C: c}
-	tourID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		appG.Response(http.StatusBadRequest, constant.INVALID_PARAMS, nil)
-		return
-	}
-	if g, err := model.GetTour(tourID); err != nil {
-		appG.Response(http.StatusInternalServerError, constant.ERROR_GET_TOUR_FAIL, nil)
-	} else {
-		appG.Response(http.StatusOK, constant.SUCCESS, g)
+	switch tour, err := gameService.GetTour(c.Param("id")); err {
+	case C.ErrTourIDNotNumber:
+		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, nil)
+	case C.ErrTourNotFound:
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_TOUR_NO_RECORD, nil)
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.ERROR_GET_TOUR_FAIL, nil)
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, tour)
 	}
 }

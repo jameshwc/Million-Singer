@@ -16,8 +16,8 @@ services:
       redis_min_idle_conn: ${redis_min_idle_conn}
       redis_idle_timeout: ${redis_idle_timeout}
     
-    image: registry.gitlab.com/jameshwc/million-singer:latest
-    # build: .
+    # image: registry.gitlab.com/jameshwc/million-singer:latest
+    build: .
     ports:
       - 80:8000
     links:

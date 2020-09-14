@@ -7,7 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/app"
-	"github.com/jameshwc/Million-Singer/pkg/constant"
+	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	gameService "github.com/jameshwc/Million-Singer/service/game"
 )
 
 // AddLevel godoc
@@ -30,13 +31,13 @@ func AddLevel(c *gin.Context) {
 	var songsID []int
 	songsIDstr, check := c.GetPostFormArray("songs")
 	if !check {
-		appG.Response(http.StatusBadRequest, constant.ERROR_ADD_LEVEL_NO_SONGID_PARAM, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_LEVEL_NO_SONGID_PARAM, nil)
 		return
 	}
 	for i := range songsIDstr {
 		songID, err := strconv.Atoi(songsIDstr[i])
 		if err != nil {
-			appG.Response(http.StatusBadRequest, constant.ERROR_ADD_LEVEL_SONG_NAN, nil)
+			appG.Response(http.StatusBadRequest, C.ERROR_ADD_LEVEL_SONG_NAN, nil)
 			return
 		}
 		songsID = append(songsID, songID)
@@ -44,19 +45,19 @@ func AddLevel(c *gin.Context) {
 	// level.SongsID = songsID
 	level.Title, check = c.GetPostForm("title")
 	if !check {
-		appG.Response(http.StatusBadRequest, constant.ERROR_ADD_LEVEL_NO_TITLE, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_LEVEL_NO_TITLE, nil)
 		return
 	}
 	var err error
 	if level.Songs, err = model.GetSongs(songsID); err != nil {
-		appG.Response(http.StatusBadRequest, constant.ERROR_ADD_LEVEL_NO_SONGID_RECORD, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_LEVEL_NO_SONGID_RECORD, nil)
 		return
 	}
 	if err = level.Commit(); err != nil {
-		appG.Response(http.StatusInternalServerError, constant.ERROR_ADD_LEVEL_SERVER_ERROR, nil)
+		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_LEVEL_SERVER_ERROR, nil)
 		return
 	}
-	appG.Response(http.StatusOK, constant.SUCCESS, level)
+	appG.Response(http.StatusOK, C.SUCCESS, level)
 }
 
 // GetLevel godoc
@@ -73,15 +74,12 @@ func AddLevel(c *gin.Context) {
 // @Router /game/levels/{id} [get]
 func GetLevel(c *gin.Context) {
 	appG := app.Gin{C: c}
-	levelID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		appG.Response(http.StatusBadRequest, constant.ERROR_GET_LEVEL_FAIL, nil)
-		return
+	switch level, err := gameService.GetLevel(c.Param("id")); err {
+	case C.ErrLevelIDNotNumber:
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_LEVEL_ID_NAN, nil)
+	case C.ErrLevelNotFound:
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_LEVEL_NO_RECORD, nil)
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, level)
 	}
-	level, err := model.GetLevel(levelID)
-	if err != nil {
-		appG.Response(http.StatusBadRequest, constant.ERROR_GET_LEVEL_NO_RECORD, nil)
-		return
-	}
-	appG.Response(http.StatusOK, constant.SUCCESS, level)
 }

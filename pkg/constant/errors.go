@@ -18,4 +18,6 @@ var (
 	ErrUserRegisterFormat          = errors.New("incorrect format of username or email or password")
 	ErrUserRegisterNameConflict    = errors.New("username conflict")
 	ErrUserRegisterEmailConflict   = errors.New("email conflict")
+
+	ErrRedisSetKeyJsonMarshal = errors.New("fail to marshal struct to json")
 )

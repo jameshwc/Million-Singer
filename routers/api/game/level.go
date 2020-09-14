@@ -70,7 +70,7 @@ func AddLevel(c *gin.Context) {
 // @Failure 400 {object} app.Response
 // @Failure 404 {object} app.Response
 // @Failure 500 {object} app.Response
-// @Router /game/levels/{id} [post]
+// @Router /game/levels/{id} [get]
 func GetLevel(c *gin.Context) {
 	appG := app.Gin{C: c}
 	levelID, err := strconv.Atoi(c.Param("id"))

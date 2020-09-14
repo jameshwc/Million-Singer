@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} app.Response
 // @Failure 404 {object} app.Response
 // @Failure 500 {object} app.Response
-// @Router /game/lyrics/{song_id} [post]
+// @Router /game/lyrics/{song_id} [get]
 func GetLyricsWithSongID(c *gin.Context) {
 	appG := app.Gin{C: c}
 	songID, err := strconv.Atoi(c.Query("song_id"))

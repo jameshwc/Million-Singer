@@ -9,7 +9,7 @@ services:
       db_table_prefix: ${db_table_prefix}
       server_runmode: ${server_runmode}
       server_port: ${server_port}
-    build: registry.gitlab.com/jameshwc/million-singer
+    image: registry.gitlab.com/jameshwc/million-singer
     ports:
       - 80:8000
     links:

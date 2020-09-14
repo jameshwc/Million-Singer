@@ -9,6 +9,7 @@ import (
 	"github.com/jameshwc/Million-Singer/conf"
 	_ "github.com/jameshwc/Million-Singer/docs"
 	"github.com/jameshwc/Million-Singer/model"
+	"github.com/jameshwc/Million-Singer/pkg/redis"
 	"github.com/jameshwc/Million-Singer/routers"
 	_ "github.com/joho/godotenv/autoload"
 	swaggerFile "github.com/swaggo/files"
@@ -18,6 +19,7 @@ import (
 func init() {
 	conf.Setup()
 	model.Setup(nil)
+	redis.Setup()
 }
 
 // @title Million Singer API

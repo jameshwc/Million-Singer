@@ -10,8 +10,14 @@ services:
       server_runmode: ${server_runmode}
       server_port: ${server_port}
       server_jwt_secret: ${server_jwt_secret}
+      redis_host: ${redis_host}
+      redis_port: ${redis_port}
+      redis_password: ${redis_password}
+      redis_min_idle_conn: ${redis_min_idle_conn}
+      redis_idle_timeout: ${redis_idle_timeout}
     
-    image: registry.gitlab.com/jameshwc/million-singer
+    image: registry.gitlab.com/jameshwc/million-singer:latest
+    # build: .
     ports:
       - 80:8000
     links:

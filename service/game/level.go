@@ -21,3 +21,24 @@ func GetLevel(param string) (*model.Level, error) {
 	}
 	return level, nil
 }
+
+func AddLevel(songs []int, title string) error {
+	if len(songs) == 0 || title == "" {
+		return C.ErrLevelAddFormatIncorrect
+	}
+
+	var l model.Level
+	var err error
+
+	l.Songs, err = model.GetSongs(songs)
+	if err != nil {
+		return C.ErrLevelAddSongsRecordNotFound
+	}
+
+	l.Title = title
+	if err = l.Commit(); err != nil {
+		return C.ErrDatabase
+	}
+
+	return nil
+}

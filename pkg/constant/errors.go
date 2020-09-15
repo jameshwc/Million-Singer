@@ -25,6 +25,8 @@ var (
 	ErrTourIDNotNumber = errors.New("param id is not a number")
 	ErrTourNotFound    = errors.New("tour record not found")
 
-	ErrLevelIDNotNumber = errors.New("param id is not a number")
-	ErrLevelNotFound    = errors.New("level record not found")
+	ErrLevelIDNotNumber            = errors.New("param id is not a number")
+	ErrLevelNotFound               = errors.New("level record not found")
+	ErrLevelAddFormatIncorrect     = errors.New("songs not provided or title is empty string")
+	ErrLevelAddSongsRecordNotFound = errors.New("songs record not found")
 )

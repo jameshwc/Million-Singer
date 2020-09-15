@@ -14,7 +14,6 @@ type User struct {
 	Email     string
 	Password  string
 	Active    bool
-	Token     string
 	LastLogin *time.Time
 }
 

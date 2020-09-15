@@ -20,7 +20,7 @@ type SongInstance struct {
 // @Summary Add a song
 // @Description Add a song to database
 // @Tags game,song
-// @Accept multipart/form-data
+// @Accept json
 // @Produce json
 // @Param token header string true "auth token, must register & login to get the token"
 // @Param file formData file true "subtitle file"
@@ -46,12 +46,9 @@ func AddSong(c *gin.Context) {
 	song.Singer = c.PostForm("singer")
 	song.Name = c.PostForm("name")
 	srtFile, _, err := c.Request.FormFile("file")
+	// c.BindJSON(&song)
 	if err != nil {
 		appG.Response(constant.INVALID_PARAMS, constant.ERROR_UPLOAD_SRT_FILE, nil)
-		return
-	}
-	if err != nil {
-		appG.Response(constant.SERVER_ERROR, constant.ERROR_UPLOAD_SRT_FILE, nil)
 		return
 	}
 	song.Lyrics, err = subtitle.ReadSrtFromFile(srtFile)

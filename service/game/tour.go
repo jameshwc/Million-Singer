@@ -21,3 +21,11 @@ func GetTour(param string) (*model.Tour, error) {
 	}
 	return tour, nil
 }
+
+func GetTotalTours() (int64, error) {
+	total, err := model.GetTotalTours()
+	if err != nil {
+		return 0, C.ErrDatabase
+	}
+	return total, nil
+}

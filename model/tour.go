@@ -23,3 +23,12 @@ func GetTour(id int) (*Tour, error) {
 	}
 	return &tour, nil
 }
+
+func GetTotalTours() (int64, error) {
+	var tours []*Tour
+	rows := db.Find(&tours)
+	if rows.Error != nil {
+		return 0, rows.Error
+	}
+	return rows.RowsAffected, nil
+}

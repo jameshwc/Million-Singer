@@ -10,8 +10,8 @@ import (
 )
 
 // GetTour godoc
-// @Summary Add a new tour
-// @Description Add a new tour
+// @Summary Get a tour by id
+// @Description Get a tour by id
 // @Tags game,tour
 // @Accept plain
 // @Produce json
@@ -37,6 +37,29 @@ func GetTour(c *gin.Context) {
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, tour)
+
+	}
+}
+
+// GetTotalTours godoc
+// @Summary Get total num of tours
+// @Description Get total num of tours
+// @Tags game,tour
+// @Accept plain
+// @Produce json
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/tours [get]
+func GetTotalTours(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	switch total, err := gameService.GetTotalTours(); err {
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, total)
 
 	}
 }

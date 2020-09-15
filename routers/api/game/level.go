@@ -18,7 +18,7 @@ type level struct {
 // @Summary Add a new level
 // @Description Add a new level
 // @Tags game,level
-// @Accept multipart/form-data
+// @Accept json
 // @Produce json
 // @Param token header string true "auth token, must register & login to get the token"
 // @Param songs formData string true "id of the song, should have many"

@@ -16,13 +16,13 @@ import (
 // @Accept json
 // @Produce json
 // @Param token header string true "auth token, must register & login to get the token"
-// @Param file json file true "subtitle file"
-// @Param url json string true "youtube url"
-// @Param name json string true "name of the song"
-// @Param singer json string true "singer of the song"
-// @Param miss_lyrics json string true "miss lyrics index, seperated by commas"
-// @Param genre json string false "genre of the song"
-// @Param language json string false "language of the song, needs to be short, and seperated by commas if multiple languages"
+// @Param file body string true "subtitle file"
+// @Param url body string true "youtube url"
+// @Param name body string true "name of the song"
+// @Param singer body string true "singer of the song"
+// @Param miss_lyrics body string true "miss lyrics index, seperated by commas"
+// @Param genre body string false "genre of the song"
+// @Param language body string false "language of the song, needs to be short, and seperated by commas if multiple languages"
 // @Success 200 {object} app.Response
 // @Failure 400 {object} app.Response
 // @Failure 404 {object} app.Response

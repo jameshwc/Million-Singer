@@ -21,8 +21,8 @@ type level struct {
 // @Accept json
 // @Produce json
 // @Param token header string true "auth token, must register & login to get the token"
-// @Param songs json string true "id of the song, should have many"
-// @Param title json string true "title of the level"
+// @Param songs body string true "id of the song, should have many"
+// @Param title body string true "title of the level"
 // @Success 200 {object} app.Response
 // @Failure 400 {object} app.Response
 // @Failure 404 {object} app.Response

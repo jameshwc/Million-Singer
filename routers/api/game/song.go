@@ -2,19 +2,12 @@ package game
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/app"
-	"github.com/jameshwc/Million-Singer/pkg/constant"
-	"github.com/jameshwc/Million-Singer/pkg/subtitle"
+	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	gameService "github.com/jameshwc/Million-Singer/service/game"
 )
-
-type SongInstance struct {
-	Song        *model.Song
-	MissLyricID int `json:"miss_lyric_id"`
-}
 
 // AddSong godoc
 // @Summary Add a song
@@ -37,37 +30,47 @@ type SongInstance struct {
 // @Router /game/songs/new [post]
 func AddSong(c *gin.Context) {
 	appG := app.Gin{C: c}
-	var song model.Song
-	// TODO: should seperate the model from the routers?
-	song.URL = c.PostForm("url")
-	song.Genre = c.PostForm("genre")
-	song.Language = c.PostForm("language")
-	song.MissLyrics = c.PostForm("miss_lyrics")
-	song.Singer = c.PostForm("singer")
-	song.Name = c.PostForm("name")
-	srtFile, _, err := c.Request.FormFile("file")
-	// c.BindJSON(&song)
-	if err != nil {
-		appG.Response(constant.INVALID_PARAMS, constant.ERROR_UPLOAD_SRT_FILE, nil)
-		return
+
+	var song *gameService.Song
+	// song.URL = c.PostForm("url")
+	// song.Genre = c.PostForm("genre")
+	// song.Language = c.PostForm("language")
+	// song.MissLyrics = c.PostForm("miss_lyrics")
+	// song.Singer = c.PostForm("singer")
+	// song.Name = c.PostForm("name")
+	// srtFile, _, err := c.Request.FormFile("file")
+
+	c.BindJSON(&song)
+
+	switch songID, err := gameService.AddSong(song); err {
+
+	case C.ErrSongFormatIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_FORMAT_INCORRECT, nil)
+
+	case C.ErrSongLyricsFileTypeNotSupported:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_LYRICS_FILE_TYPE_NOT_SUPPORTED, nil)
+
+	case C.ErrSongParseLyrics:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, nil)
+
+	case C.ErrSongMissLyricsIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, nil)
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_SONG_SERVER_ERROR, nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, songID)
+
 	}
-	song.Lyrics, err = subtitle.ReadSrtFromFile(srtFile)
-	if err != nil {
-		appG.Response(constant.INVALID_PARAMS, constant.ERROR_SRT_FILE_FORMAT, nil)
-		return
-	}
-	if err := song.Commit(); err != nil {
-		appG.Response(constant.SERVER_ERROR, constant.ERROR_ADD_SONG_FAIL, nil)
-		return
-	}
-	appG.Response(http.StatusOK, constant.SUCCESS, song.ID)
+
 }
 
 // GetSong godoc
 // @Summary Get a song Instance
 // @Description Get a song instance, with a miss lyrics id randomly generated
 // @Tags game,song
-// @Accept plain
+// @Accept json
 // @Produce json
 // @Param id path int true "id of the song"
 // @Success 200 {object} app.Response
@@ -77,21 +80,25 @@ func AddSong(c *gin.Context) {
 // @Router /game/songs/{id} [get]
 func GetSongInstance(c *gin.Context) {
 	appG := app.Gin{C: c}
-	songID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		appG.Response(http.StatusBadRequest, constant.INVALID_PARAMS, nil)
-		return
-	}
+
 	var hasLyrics bool
 	if queryLyrics := c.DefaultQuery("lyrics", "y"); queryLyrics == "y" {
 		hasLyrics = true
 	}
-	if s, err := model.GetSong(songID, hasLyrics); err != nil {
-		appG.Response(http.StatusInternalServerError, constant.ERROR_GET_SONG_FAIL, nil)
-	} else {
-		var songInstance SongInstance
-		songInstance.Song = s
-		songInstance.MissLyricID = s.RandomGetMissLyricID()
-		appG.Response(http.StatusOK, constant.SUCCESS, songInstance)
+
+	switch s, err := gameService.GetSongInstance(c.Param("id"), hasLyrics); err {
+
+	case C.ErrSongIDNotNumber:
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, nil)
+
+	case C.ErrSongNotFound:
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_NO_RECORD, nil)
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.ERROR_GET_SONG_SERVER_ERROR, nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, s)
+
 	}
 }

@@ -29,4 +29,11 @@ var (
 	ErrLevelNotFound               = errors.New("level record not found")
 	ErrLevelAddFormatIncorrect     = errors.New("songs not provided or title is empty string")
 	ErrLevelAddSongsRecordNotFound = errors.New("songs record not found")
+
+	ErrSongFormatIncorrect            = errors.New("song param format incorrect")
+	ErrSongLyricsFileTypeNotSupported = errors.New("lyrics file type not supported")
+	ErrSongParseLyrics                = errors.New("parse lyrics file error")
+	ErrSongMissLyricsIncorrect        = errors.New("miss lyrics id negative or exceed total num of lyrics")
+	ErrSongIDNotNumber                = errors.New("param id is not a number")
+	ErrSongNotFound                   = errors.New("song recordnot found")
 )

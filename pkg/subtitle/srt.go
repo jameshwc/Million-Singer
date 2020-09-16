@@ -2,6 +2,7 @@ package subtitle
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"strconv"
@@ -50,4 +51,8 @@ func ReadSrtFromFile(i io.Reader) ([]model.Lyric, error) {
 		}
 	}
 	return lyrics, nil
+}
+
+func ReadSrtFromBytes(file []byte) ([]model.Lyric, error) {
+	return ReadSrtFromFile(bytes.NewReader(file))
 }

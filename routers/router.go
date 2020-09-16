@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jameshwc/Million-Singer/middleware/jwt"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
 	"github.com/jameshwc/Million-Singer/routers/api/user"
 )
@@ -22,9 +21,9 @@ func InitRouters() *gin.Engine {
 	gamesAPI.GET("/tours", game.GetTotalTours)
 	gamesAPI.GET("/levels/:id", game.GetLevel)
 	gamesAPI.GET("/songs/:id", game.GetSongInstance)
-	gamesAPI.GET("/lyrics", game.GetLyricsWithSongID)
+	gamesAPI.GET("/lyrics/:id", game.GetLyricsWithSongID)
 
-	gamesAPI.Use(jwt.JWT())
+	// gamesAPI.Use(jwt.JWT())
 	{
 		gamesAPI.POST("/levels/new", game.AddLevel)
 		gamesAPI.POST("/songs/new", game.AddSong)

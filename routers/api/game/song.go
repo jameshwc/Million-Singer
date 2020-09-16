@@ -16,13 +16,13 @@ import (
 // @Accept json
 // @Produce json
 // @Param token header string true "auth token, must register & login to get the token"
-// @Param file formData file true "subtitle file"
-// @Param url formData string true "youtube url"
-// @Param name formData string true "name of the song"
-// @Param singer formData string true "singer of the song"
-// @Param miss_lyrics formData string true "miss lyrics index, seperated by commas"
-// @Param genre formData string false "genre of the song"
-// @Param language formData string false "language of the song, needs to be short, and seperated by commas if multiple languages"
+// @Param file json file true "subtitle file"
+// @Param url json string true "youtube url"
+// @Param name json string true "name of the song"
+// @Param singer json string true "singer of the song"
+// @Param miss_lyrics json string true "miss lyrics index, seperated by commas"
+// @Param genre json string false "genre of the song"
+// @Param language json string false "language of the song, needs to be short, and seperated by commas if multiple languages"
 // @Success 200 {object} app.Response
 // @Failure 400 {object} app.Response
 // @Failure 404 {object} app.Response
@@ -32,13 +32,6 @@ func AddSong(c *gin.Context) {
 	appG := app.Gin{C: c}
 
 	var song *gameService.Song
-	// song.URL = c.PostForm("url")
-	// song.Genre = c.PostForm("genre")
-	// song.Language = c.PostForm("language")
-	// song.MissLyrics = c.PostForm("miss_lyrics")
-	// song.Singer = c.PostForm("singer")
-	// song.Name = c.PostForm("name")
-	// srtFile, _, err := c.Request.FormFile("file")
 
 	c.BindJSON(&song)
 

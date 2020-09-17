@@ -9,6 +9,10 @@ import (
 	gameService "github.com/jameshwc/Million-Singer/service/game"
 )
 
+type tour struct {
+	Levels []int `json:"levels"`
+}
+
 // GetTour godoc
 // @Summary Get a tour by id
 // @Description Get a tour by id
@@ -38,6 +42,8 @@ func GetTour(c *gin.Context) {
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, tour)
 
+	default:
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err)
 	}
 }
 
@@ -60,6 +66,45 @@ func GetTotalTours(c *gin.Context) {
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, total)
+
+	}
+}
+
+// AddTour godoc
+// @Summary Add a new tour
+// @Description Add a new tour
+// @Tags game,tour
+// @Accept json
+// @Produce json
+// @Param token header string true "auth token, must register & login to get the token"
+// @Param songs body string true "id of the song, should have many"
+// @Success 200 {object} app.Response
+// @Failure 400 {object} app.Response
+// @Failure 404 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /game/tours/new [post]
+func AddTour(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	var t tour
+	if err := c.BindJSON(&t); err != nil {
+		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, nil)
+		return
+	}
+
+	switch tourID, err := gameService.AddTour(t.Levels); err {
+
+	case C.ErrTourAddFormatIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_FORMAT_INCORRECT, nil)
+
+	case C.ErrTourAddLevelsRecordNotFound:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_NO_LEVELS_RECORD, nil)
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, tourID)
 
 	}
 }

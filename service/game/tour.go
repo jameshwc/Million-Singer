@@ -29,3 +29,23 @@ func GetTotalTours() (int64, error) {
 	}
 	return total, nil
 }
+
+func AddTour(levelsID []int) (uint, error) {
+
+	if len(levelsID) == 0 {
+		return 0, C.ErrTourAddFormatIncorrect
+	}
+
+	levels, err := model.GetLevels(levelsID)
+	if err != nil {
+		return 0, C.ErrTourAddLevelsRecordNotFound
+	}
+
+	var tour model.Tour
+	tour.Levels = levels
+	if err := tour.Commit(); err != nil {
+		return 0, C.ErrDatabase
+	}
+
+	return tour.ID, nil
+}

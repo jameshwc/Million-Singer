@@ -12,10 +12,7 @@ type Level struct {
 }
 
 func (l *Level) Commit() error {
-	if err := db.Create(l).Error; err != nil {
-		return err
-	}
-	return nil
+	return db.Create(l).Error
 }
 
 func GetLevel(levelID int) (*Level, error) {
@@ -24,4 +21,10 @@ func GetLevel(levelID int) (*Level, error) {
 		return nil, err
 	}
 	return &level, nil
+}
+
+func GetLevels(levelsID []int) ([]*Level, error) {
+	var levels []*Level
+	err := db.Find(&levels, levelsID).Error
+	return levels, err
 }

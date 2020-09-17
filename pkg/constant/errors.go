@@ -21,9 +21,11 @@ var (
 
 	ErrRedisSetKeyJsonMarshal = errors.New("fail to marshal struct to json")
 
-	ErrDatabase        = errors.New("database error")
-	ErrTourIDNotNumber = errors.New("param id is not a number")
-	ErrTourNotFound    = errors.New("tour record not found")
+	ErrDatabase                    = errors.New("database error")
+	ErrTourIDNotNumber             = errors.New("param id is not a number")
+	ErrTourNotFound                = errors.New("tour record not found")
+	ErrTourAddFormatIncorrect      = errors.New("levels id null")
+	ErrTourAddLevelsRecordNotFound = errors.New("levels record not found")
 
 	ErrLevelIDNotNumber            = errors.New("param id is not a number")
 	ErrLevelNotFound               = errors.New("level record not found")

@@ -1,7 +1,9 @@
 package routers
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	"github.com/jameshwc/Million-Singer/middleware/jwt"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
 	"github.com/jameshwc/Million-Singer/routers/api/user"
@@ -11,6 +13,8 @@ func InitRouters() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	r.Use(cors.Default())
 
 	userAPI := r.Group("/api/users")
 	userAPI.GET("/check", user.ValidateUser)

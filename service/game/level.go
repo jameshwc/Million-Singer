@@ -22,9 +22,9 @@ func GetLevel(param string) (*model.Level, error) {
 	return level, nil
 }
 
-func AddLevel(songs []int, title string) error {
+func AddLevel(songs []int, title string) (uint, error) {
 	if len(songs) == 0 || title == "" {
-		return C.ErrLevelAddFormatIncorrect
+		return 0, C.ErrLevelAddFormatIncorrect
 	}
 
 	var l model.Level
@@ -32,13 +32,13 @@ func AddLevel(songs []int, title string) error {
 
 	l.Songs, err = model.GetSongs(songs)
 	if err != nil {
-		return C.ErrLevelAddSongsRecordNotFound
+		return 0, C.ErrLevelAddSongsRecordNotFound
 	}
 
 	l.Title = title
 	if err = l.Commit(); err != nil {
-		return C.ErrDatabase
+		return 0, C.ErrDatabase
 	}
 
-	return nil
+	return l.ID, nil
 }

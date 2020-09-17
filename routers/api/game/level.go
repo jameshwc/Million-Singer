@@ -38,7 +38,7 @@ func AddLevel(c *gin.Context) {
 		return
 	}
 
-	switch err := gameService.AddLevel(l.Songs, l.Title); err {
+	switch id, err := gameService.AddLevel(l.Songs, l.Title); err {
 
 	case C.ErrLevelAddFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_LEVEL_NO_SONGID_OR_TITLE, nil)
@@ -50,7 +50,7 @@ func AddLevel(c *gin.Context) {
 		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_LEVEL_SERVER_ERROR, nil)
 
 	case nil:
-		appG.Response(http.StatusOK, C.SUCCESS, nil)
+		appG.Response(http.StatusOK, C.SUCCESS, id)
 
 	}
 }

@@ -29,5 +29,6 @@ func GetTotalTours() (int64, error) {
 }
 
 func (t *Tour) Commit() error {
+
 	return db.Create(t).Error
 }

@@ -8,31 +8,31 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetLevel(param string) (*model.Level, error) {
+func GetCollect(param string) (*model.Collect, error) {
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		return nil, C.ErrLevelIDNotNumber
+		return nil, C.ErrCollectIDNotNumber
 	}
-	level, err := model.GetLevel(id)
+	collect, err := model.GetCollect(id)
 	if err == gorm.ErrRecordNotFound {
-		return nil, C.ErrLevelNotFound
+		return nil, C.ErrCollectNotFound
 	} else if err != nil {
 		return nil, C.ErrDatabase
 	}
-	return level, nil
+	return collect, nil
 }
 
-func AddLevel(songs []int, title string) (uint, error) {
+func AddCollect(songs []int, title string) (uint, error) {
 	if len(songs) == 0 || title == "" {
-		return 0, C.ErrLevelAddFormatIncorrect
+		return 0, C.ErrCollectAddFormatIncorrect
 	}
 
-	var l model.Level
+	var l model.Collect
 	var err error
 
 	l.Songs, err = model.GetSongs(songs)
 	if err != nil {
-		return 0, C.ErrLevelAddSongsRecordNotFound
+		return 0, C.ErrCollectAddSongsRecordNotFound
 	}
 
 	l.Title = title

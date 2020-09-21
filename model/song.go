@@ -10,17 +10,17 @@ import (
 
 type Song struct {
 	gorm.Model `json:"-"`
-	FrontendID uint     `json:"id"`
-	Lyrics     []Lyric  `json:"lyrics"`
-	URL        string   `json:"url"`
-	StartTime  string   `json:"start_time"`
-	EndTime    string   `json:"end_time"`
-	Language   string   `json:"language"`
-	Name       string   `json:"name"`
-	Singer     string   `json:"singer"`
-	Genre      string   `json:"genre"`
-	MissLyrics string   `json:"-"` // IDs (integers) with comma seperated
-	Levels     []*Level `gorm:"many2many:level_songs;" json:"-"`
+	FrontendID uint       `json:"id"`
+	Lyrics     []Lyric    `json:"lyrics"`
+	URL        string     `json:"url"`
+	StartTime  string     `json:"start_time"`
+	EndTime    string     `json:"end_time"`
+	Language   string     `json:"language"`
+	Name       string     `json:"name"`
+	Singer     string     `json:"singer"`
+	Genre      string     `json:"genre"`
+	MissLyrics string     `json:"-"` // IDs (integers) with comma seperated
+	Collects   []*Collect `gorm:"many2many:collect_songs;" json:"-"`
 }
 
 func (s *Song) Commit() error {

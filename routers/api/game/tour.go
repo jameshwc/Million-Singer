@@ -10,7 +10,7 @@ import (
 )
 
 type tour struct {
-	Levels []int `json:"levels"`
+	Collects []int `json:"collects"`
 }
 
 // GetTour godoc
@@ -92,13 +92,13 @@ func AddTour(c *gin.Context) {
 		return
 	}
 
-	switch tourID, err := gameService.AddTour(t.Levels); err {
+	switch tourID, err := gameService.AddTour(t.Collects); err {
 
 	case C.ErrTourAddFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_FORMAT_INCORRECT, nil)
 
-	case C.ErrTourAddLevelsRecordNotFound:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_NO_LEVELS_RECORD, nil)
+	case C.ErrTourAddCollectsRecordNotFound:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_NO_COLLECTS_RECORD, nil)
 
 	case C.ErrDatabase:
 		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, nil)

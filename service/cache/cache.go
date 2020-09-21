@@ -6,8 +6,12 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/constant"
 )
 
-func GetSongKey(id int) string {
-	return constant.CACHE_SONG + "_" + strconv.Itoa(id)
+func GetSongKey(id int, hasLyrics bool) string {
+	lyrics := ""
+	if hasLyrics {
+		lyrics = "_LYRICS"
+	}
+	return constant.CACHE_SONG + "_" + strconv.Itoa(id) + lyrics
 }
 
 func GetLyricKey(id int) string {

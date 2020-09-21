@@ -100,7 +100,7 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 		return nil, C.ErrSongIDNotNumber
 	}
 
-	key := cache.GetSongKey(id)
+	key := cache.GetSongKey(id, hasLyrics)
 	if gredis.Exists(key) {
 		data, err := gredis.Get(key)
 		if err != nil {
@@ -119,6 +119,6 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	} else if err != nil {
 		return nil, C.ErrDatabase
 	}
-	gredis.Set(key, s, 3600)
+	gredis.Set(key, s, 7200)
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }

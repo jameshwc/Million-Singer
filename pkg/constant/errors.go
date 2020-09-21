@@ -21,16 +21,16 @@ var (
 
 	ErrRedisSetKeyJsonMarshal = errors.New("fail to marshal struct to json")
 
-	ErrDatabase                    = errors.New("database error")
-	ErrTourIDNotNumber             = errors.New("param id is not a number")
-	ErrTourNotFound                = errors.New("tour record not found")
-	ErrTourAddFormatIncorrect      = errors.New("levels id null")
-	ErrTourAddLevelsRecordNotFound = errors.New("levels record not found")
+	ErrDatabase                      = errors.New("database error")
+	ErrTourIDNotNumber               = errors.New("param id is not a number")
+	ErrTourNotFound                  = errors.New("tour record not found")
+	ErrTourAddFormatIncorrect        = errors.New("collects id null")
+	ErrTourAddCollectsRecordNotFound = errors.New("collects record not found")
 
-	ErrLevelIDNotNumber            = errors.New("param id is not a number")
-	ErrLevelNotFound               = errors.New("level record not found")
-	ErrLevelAddFormatIncorrect     = errors.New("songs not provided or title is empty string")
-	ErrLevelAddSongsRecordNotFound = errors.New("songs record not found")
+	ErrCollectIDNotNumber            = errors.New("param id is not a number")
+	ErrCollectNotFound               = errors.New("collect record not found")
+	ErrCollectAddFormatIncorrect     = errors.New("songs not provided or title is empty string")
+	ErrCollectAddSongsRecordNotFound = errors.New("songs record not found")
 
 	ErrSongFormatIncorrect            = errors.New("song param format incorrect")
 	ErrSongLyricsFileTypeNotSupported = errors.New("lyrics file type not supported")

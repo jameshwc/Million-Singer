@@ -1,6 +1,7 @@
 package game
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -8,7 +9,11 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	"github.com/jameshwc/Million-Singer/pkg/gredis"
+	"github.com/prometheus/common/log"
+
 	"github.com/jameshwc/Million-Singer/pkg/subtitle"
+	"github.com/jameshwc/Million-Singer/service/cache"
 	"gorm.io/gorm"
 )
 
@@ -94,11 +99,26 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	if err != nil {
 		return nil, C.ErrSongIDNotNumber
 	}
+
+	key := cache.GetSongKey(id)
+	if gredis.Exists(key) {
+		data, err := gredis.Get(key)
+		if err != nil {
+			log.Info(err)
+		} else {
+			var s model.Song
+			log.Info("redis being used")
+			json.Unmarshal(data, &s)
+			return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
+		}
+	}
+
 	s, err := model.GetSong(id, hasLyrics)
 	if err == gorm.ErrRecordNotFound {
 		return nil, C.ErrSongNotFound
 	} else if err != nil {
 		return nil, C.ErrDatabase
 	}
+	gredis.Set(key, s, 3600)
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }

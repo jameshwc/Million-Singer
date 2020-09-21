@@ -1,4 +1,4 @@
-package redis
+package gredis
 
 import (
 	"encoding/json"
@@ -36,4 +36,11 @@ func Set(key string, data interface{}, timeout int) error {
 
 func Get(key string) ([]byte, error) {
 	return rdb.Get(key).Bytes()
+}
+
+func Exists(key string) bool {
+	if _, err := rdb.Get(key).Result(); err == redis.Nil {
+		return false
+	}
+	return true
 }

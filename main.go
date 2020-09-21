@@ -9,7 +9,7 @@ import (
 	"github.com/jameshwc/Million-Singer/conf"
 	_ "github.com/jameshwc/Million-Singer/docs"
 	"github.com/jameshwc/Million-Singer/model"
-	"github.com/jameshwc/Million-Singer/pkg/redis"
+	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/routers"
 	_ "github.com/joho/godotenv/autoload"
 	swaggerFile "github.com/swaggo/files"
@@ -19,7 +19,7 @@ import (
 func init() {
 	conf.Setup()
 	model.Setup(nil)
-	redis.Setup()
+	gredis.Setup()
 }
 
 // @title Million Singer API
@@ -50,6 +50,7 @@ func main() {
 		apiDocURL := ginSwagger.URL(fmt.Sprintf(":%d/swagger/doc.json", conf.ServerConfig.HttpPort))
 		routers.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFile.Handler, apiDocURL))
 	}
+
 	// test function code
 	// if f, err := os.Open("/home/james/下載/[Toolbxs]Eminem - Beautiful (Edited) (Explicit)-English.srt"); err != nil {
 	// log.Fatalf("open srt file")

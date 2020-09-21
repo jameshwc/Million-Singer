@@ -2,41 +2,16 @@ package model
 
 import (
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/jameshwc/Million-Singer/conf"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
-
-// type TourDatabase interface {
-// 	GetTour(id int) (*Tour, error)
-// 	AddTour(*Tour) error
-// }
-
-// type LevelDatabase interface {
-// 	GetLevel(id int) (*Level, error)
-// 	GetLevels(ids []int) ([]*Level, error)
-// 	AddLevel(*Level) error
-// }
-
-// type SongDatabase interface {
-// 	GetSong(id int) (*Song, error)
-// 	GetSongs(ids []int) ([]*Song, error)
-// }
-
-// type LyricDatabase interface {
-// 	FindLyricsWithSongID(id int) ([]*Lyric, error)
-// }
-
-// type GameDatabase interface {
-// 	TourDatabase
-// 	LevelDatabase
-// 	SongDatabase
-// 	LyricDatabase
-// }
 
 func Setup(externalDB *gorm.DB) {
 	var err error
@@ -46,10 +21,13 @@ func Setup(externalDB *gorm.DB) {
 			conf.DBconfig.User,
 			conf.DBconfig.Password,
 			conf.DBconfig.Host,
-			conf.DBconfig.Name)), &gorm.Config{})
+			conf.DBconfig.Name)), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Silent),
+		})
 		if err != nil {
 			log.Fatalf("models.Setup err: %v", err)
 		}
 	}
-	db.AutoMigrate(&Tour{}, &Level{}, &Lyric{}, &Song{}, &User{})
+	// db.AutoMigrate(&Tour{}, &Level{}, &Lyric{}, &Song{}, &User{})
+	db = db.Debug()
 }

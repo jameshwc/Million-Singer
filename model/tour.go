@@ -1,21 +1,18 @@
 package model
 
 import (
-	"log"
-
 	"gorm.io/gorm"
 )
 
 type Tour struct {
 	gorm.Model `json:"-"`
-	Levels     []*Level `gorm:"many2many:tour_songs;" json:"levels"`
+	Levels     []*Level `gorm:"many2many:tour_levels;" json:"levels"`
 }
 
 func GetTour(id int) (*Tour, error) {
 	var tour Tour
-	stmt := db.Session(&gorm.Session{DryRun: true})
-	log.Println(stmt.Preload("Levels").Where("id = ?", id).First(&tour).Statement.SQL.String())
 	err := db.Preload("Levels").Where("id = ?", id).First(&tour).Error
+	// err := db.Where("id = ?", id).First(&tour).Error
 	if err != nil {
 		return nil, err
 	}

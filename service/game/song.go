@@ -107,9 +107,12 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 			log.Info(err)
 		} else {
 			var s model.Song
-			log.Info("redis being used")
-			json.Unmarshal(data, &s)
-			return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
+			log.Info("redis being used to get song")
+			if err := json.Unmarshal(data, &s); err != nil {
+				log.Info("unable to unmarshal data: ", err)
+			} else {
+				return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
+			}
 		}
 	}
 

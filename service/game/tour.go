@@ -1,18 +1,40 @@
 package game
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	"github.com/jameshwc/Million-Singer/pkg/gredis"
+	"github.com/jameshwc/Million-Singer/service/cache"
+	"github.com/prometheus/common/log"
 	"gorm.io/gorm"
 )
 
 func GetTour(param string) (*model.Tour, error) {
+
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		return nil, C.ErrTourIDNotNumber
 	}
+
+	key := cache.GetTourKey(id)
+	if gredis.Exists(key) {
+		data, err := gredis.Get(key)
+		if err != nil {
+			log.Info(err)
+		} else {
+			log.Info("redis being used to get tour")
+			var t model.Tour
+			if err := json.Unmarshal(data, &t); err != nil {
+				log.Info("unable to unmarshal data: ", err)
+			} else {
+				return &t, nil
+			}
+		}
+	}
+
 	tour, err := model.GetTour(id)
 	if err == gorm.ErrRecordNotFound {
 		return nil, C.ErrTourNotFound

@@ -36,7 +36,7 @@ func InitRouters() *gin.Engine {
 
 	gamesAPI.GET("/tours", game.GetTotalTours)
 
-	gamesAPI.GET("/levels/:id", game.GetCollect)
+	gamesAPI.GET("/collects/:id", game.GetCollect)
 
 	gamesAPI.GET("/songs/:id", game.GetSongInstance)
 
@@ -46,7 +46,7 @@ func InitRouters() *gin.Engine {
 	// {
 	gamesAPI.POST("/tours/new", game.AddTour)
 
-	gamesAPI.POST("/levels/new", game.AddCollect)
+	gamesAPI.POST("/collects/new", game.AddCollect)
 
 	gamesAPI.POST("/songs/new", game.AddSong)
 	// }

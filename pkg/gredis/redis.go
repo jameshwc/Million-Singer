@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
-	"time"
 
 	"github.com/go-redis/redis"
 	"github.com/jameshwc/Million-Singer/conf"
@@ -27,7 +26,10 @@ func Setup() {
 }
 
 var setKeyScript = redis.NewScript(`
-	redis.call("SET KEY[1] ARGV[1] EX ARGV[2]")
+	redis.call('set', KEYS[1], ARGV[1], 'ex', ARGV[2])
+`)
+var getKeyScript = redis.NewScript(`
+	return redis.call('get', KEYS[1])
 `)
 
 func Set(key string, data interface{}, timeout int) error {
@@ -35,17 +37,11 @@ func Set(key string, data interface{}, timeout int) error {
 	if err != nil {
 		return C.ErrRedisSetKeyJsonMarshal
 	}
-	// setKeyScript.Run()
-	return rdb.Set(key, value, time.Duration(timeout)*time.Second).Err()
+	_, err = setKeyScript.Run(rdb, []string{key}, value, timeout).Result()
+	return err
 }
 
 func Get(key string) ([]byte, error) {
-	return rdb.Get(key).Bytes()
-}
-
-func Exists(key string) bool {
-	if _, err := rdb.Get(key).Result(); err == redis.Nil {
-		return false
-	}
-	return true
+	dat, err := getKeyScript.Run(rdb, []string{key}, nil).String()
+	return []byte(dat), err
 }

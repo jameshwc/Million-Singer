@@ -101,18 +101,13 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	}
 
 	key := cache.GetSongKey(id, hasLyrics)
-	if gredis.Exists(key) {
-		data, err := gredis.Get(key)
-		if err != nil {
-			log.Info(err)
+	if data, err := gredis.Get(key); err == nil {
+		var s model.Song
+		log.Info("redis being used to get song")
+		if err := json.Unmarshal(data, &s); err != nil {
+			log.Info("unable to unmarshal data: ", err)
 		} else {
-			var s model.Song
-			log.Info("redis being used to get song")
-			if err := json.Unmarshal(data, &s); err != nil {
-				log.Info("unable to unmarshal data: ", err)
-			} else {
-				return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
-			}
+			return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
 		}
 	}
 

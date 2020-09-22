@@ -20,18 +20,13 @@ func GetTour(param string) (*model.Tour, error) {
 	}
 
 	key := cache.GetTourKey(id)
-	if gredis.Exists(key) {
-		data, err := gredis.Get(key)
-		if err != nil {
-			log.Info(err)
+	if data, err := gredis.Get(key); err == nil {
+		log.Info("redis being used to get tour")
+		var t model.Tour
+		if err := json.Unmarshal(data, &t); err != nil {
+			log.Info("unable to unmarshal data: ", err)
 		} else {
-			log.Info("redis being used to get tour")
-			var t model.Tour
-			if err := json.Unmarshal(data, &t); err != nil {
-				log.Info("unable to unmarshal data: ", err)
-			} else {
-				return &t, nil
-			}
+			return &t, nil
 		}
 	}
 

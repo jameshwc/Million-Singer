@@ -20,18 +20,13 @@ func GetCollect(param string) (*model.Collect, error) {
 	}
 
 	key := cache.GetCollectKey(id)
-	if gredis.Exists(key) {
-		data, err := gredis.Get(key)
-		if err != nil {
-			log.Info(err)
+	if data, err := gredis.Get(key); err == nil {
+		log.Info("redis being used to get collect")
+		var c model.Collect
+		if err := json.Unmarshal(data, &c); err != nil {
+			log.Info("unable to unmarshal data: ", err)
 		} else {
-			log.Info("redis being used to get collect")
-			var c model.Collect
-			if err := json.Unmarshal(data, &c); err != nil {
-				log.Info("unable to unmarshal data: ", err)
-			} else {
-				return &c, nil
-			}
+			return &c, nil
 		}
 	}
 

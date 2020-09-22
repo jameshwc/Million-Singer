@@ -36,6 +36,7 @@ func GetCollect(param string) (*model.Collect, error) {
 	} else if err != nil {
 		return nil, C.ErrDatabase
 	}
+	gredis.Set(key, collect, 7200)
 	return collect, nil
 }
 

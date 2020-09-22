@@ -36,6 +36,7 @@ func GetTour(param string) (*model.Tour, error) {
 	} else if err != nil {
 		return nil, C.ErrDatabase
 	}
+	gredis.Set(key, tour, 7200)
 	return tour, nil
 }
 

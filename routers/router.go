@@ -1,6 +1,8 @@
 package routers
 
 import (
+	"net/http"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
@@ -8,6 +10,9 @@ import (
 	"github.com/jameshwc/Million-Singer/routers/api/user"
 )
 
+func methodNotAllowed(c *gin.Context) {
+	c.AbortWithStatusJSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
+}
 func InitRouters() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -15,22 +20,34 @@ func InitRouters() *gin.Engine {
 
 	r.Use(cors.Default())
 
+	r.HandleMethodNotAllowed = true
+	r.NoMethod(methodNotAllowed)
 	userAPI := r.Group("/api/users")
+
 	userAPI.GET("/check", user.ValidateUser)
+
 	userAPI.POST("/register", user.Register)
+
 	userAPI.POST("/login", user.Login)
 
 	gamesAPI := r.Group("/api/game")
+
 	gamesAPI.GET("/tours/:id", game.GetTour)
+
 	gamesAPI.GET("/tours", game.GetTotalTours)
+
 	gamesAPI.GET("/levels/:id", game.GetCollect)
+
 	gamesAPI.GET("/songs/:id", game.GetSongInstance)
+
 	gamesAPI.GET("/lyrics/:id", game.GetLyricsWithSongID)
 
 	// gamesAPI.Use(jwt.JWT())
 	// {
 	gamesAPI.POST("/tours/new", game.AddTour)
+
 	gamesAPI.POST("/levels/new", game.AddCollect)
+
 	gamesAPI.POST("/songs/new", game.AddSong)
 	// }
 	return r

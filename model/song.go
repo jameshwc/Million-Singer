@@ -20,7 +20,7 @@ type Song struct {
 	Name       string     `json:"name"`
 	Singer     string     `json:"singer"`
 	Genre      string     `json:"genre"`
-	MissLyrics string     `json:"-"` // IDs (integers) with comma seperated
+	MissLyrics string     `json:"miss_lyrics"` // IDs (integers) with comma seperated
 	Collects   []*Collect `gorm:"many2many:collect_songs;" json:"-"`
 }
 

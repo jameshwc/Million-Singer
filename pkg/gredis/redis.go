@@ -26,11 +26,16 @@ func Setup() {
 	}
 }
 
+var setKeyScript = redis.NewScript(`
+	redis.call("SET KEY[1] ARGV[1] EX ARGV[2]")
+`)
+
 func Set(key string, data interface{}, timeout int) error {
 	value, err := json.Marshal(data)
 	if err != nil {
 		return C.ErrRedisSetKeyJsonMarshal
 	}
+	// setKeyScript.Run()
 	return rdb.Set(key, value, time.Duration(timeout)*time.Second).Err()
 }
 

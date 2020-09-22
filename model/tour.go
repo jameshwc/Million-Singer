@@ -12,7 +12,6 @@ type Tour struct {
 func GetTour(id int) (*Tour, error) {
 	var tour Tour
 	err := db.Preload("Collects").Where("id = ?", id).First(&tour).Error
-	// err := db.Where("id = ?", id).First(&tour).Error
 	if err != nil {
 		return nil, err
 	}
@@ -29,6 +28,5 @@ func GetTotalTours() (int64, error) {
 }
 
 func (t *Tour) Commit() error {
-
 	return db.Create(t).Error
 }

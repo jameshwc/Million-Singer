@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -33,6 +35,12 @@ func GetCollect(collectID int) (*Collect, error) {
 func GetCollects(collectsID []int) ([]*Collect, error) {
 	var collects []*Collect
 	err := db.Find(&collects, collectsID).Error
+	if err != nil {
+		return nil, err
+	}
+	if len(collects) != len(collectsID) {
+		return nil, errors.New("some collects ID are incorrect")
+	}
 	for i := range collects {
 		collects[i].FrontendID = collects[i].ID
 	}

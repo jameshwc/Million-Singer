@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -61,6 +62,9 @@ func GetSongs(songsID []int) ([]*Song, error) {
 	err := db.Find(&songs, songsID).Error
 	if err != nil {
 		return nil, err
+	}
+	if len(songs) != len(songsID) {
+		return nil, errors.New("some songs ID are incorrect")
 	}
 	for i := range songs {
 		songs[i].FrontendID = songs[i].ID

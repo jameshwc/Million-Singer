@@ -38,19 +38,19 @@ func AddSong(c *gin.Context) {
 	switch songID, err := gameService.AddSong(song); err {
 
 	case C.ErrSongFormatIncorrect:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_FORMAT_INCORRECT, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_FORMAT_INCORRECT, err.Error())
 
 	case C.ErrSongLyricsFileTypeNotSupported:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_LYRICS_FILE_TYPE_NOT_SUPPORTED, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_LYRICS_FILE_TYPE_NOT_SUPPORTED, err.Error())
 
 	case C.ErrSongParseLyrics:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, err.Error())
 
 	case C.ErrSongMissLyricsIncorrect:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, err.Error())
 
 	case C.ErrDatabase:
-		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_SONG_SERVER_ERROR, nil)
+		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_SONG_SERVER_ERROR, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, songID)
@@ -82,13 +82,13 @@ func GetSongInstance(c *gin.Context) {
 	switch s, err := gameService.GetSongInstance(c.Param("id"), hasLyrics); err {
 
 	case C.ErrSongIDNotNumber:
-		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, err.Error())
 
 	case C.ErrSongNotFound:
-		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_NO_RECORD, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_NO_RECORD, err.Error())
 
 	case C.ErrDatabase:
-		appG.Response(http.StatusInternalServerError, C.ERROR_GET_SONG_SERVER_ERROR, nil)
+		appG.Response(http.StatusInternalServerError, C.ERROR_GET_SONG_SERVER_ERROR, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, s)

@@ -32,16 +32,16 @@ func Register(c *gin.Context) {
 	switch err := userService.Register(u.Username, u.Email, u.Password); err {
 
 	case C.ErrUserRegisterFormat:
-		appG.Response(http.StatusBadRequest, C.ERROR_REGISTER_FORMAT_INCORRECT, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_REGISTER_FORMAT_INCORRECT, err.Error())
 
 	case C.ErrUserRegisterNameConflict:
-		appG.Response(http.StatusConflict, C.ERROR_REGISTER_USERNAME_CONFLICT, nil)
+		appG.Response(http.StatusConflict, C.ERROR_REGISTER_USERNAME_CONFLICT, err.Error())
 
 	case C.ErrUserRegisterEmailConflict:
-		appG.Response(http.StatusConflict, C.ERROR_REGISTER_EMAIL_CONFLICT, nil)
+		appG.Response(http.StatusConflict, C.ERROR_REGISTER_EMAIL_CONFLICT, err.Error())
 
 	case C.ErrUserRegisterFailServerError:
-		appG.Response(http.StatusInternalServerError, C.ERROR_REGISTER_FAIL_SERVER_ERROR, nil)
+		appG.Response(http.StatusInternalServerError, C.ERROR_REGISTER_FAIL_SERVER_ERROR, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, nil)

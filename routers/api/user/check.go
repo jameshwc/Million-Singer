@@ -31,16 +31,16 @@ func ValidateUser(c *gin.Context) {
 	switch err := userService.ValidateUser(username, email); err {
 
 	case C.ErrUserCheckParamIncorrect:
-		appG.Response(http.StatusBadRequest, C.ERROR_CHECK_PARAM_INCORRECT, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_CHECK_PARAM_INCORRECT, err.Error())
 
 	case C.ErrUserCheckFormat:
-		appG.Response(http.StatusBadRequest, C.ERROR_CHECK_FORMAT_INCORRECT, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_CHECK_FORMAT_INCORRECT, err.Error())
 
 	case C.ErrUserCheckEmailConflict:
-		appG.Response(http.StatusConflict, C.ERROR_CHECK_EMAIL_CONFLICT, nil)
+		appG.Response(http.StatusConflict, C.ERROR_CHECK_EMAIL_CONFLICT, err.Error())
 
 	case C.ErrUserCheckNameConflict:
-		appG.Response(http.StatusConflict, C.ERROR_CHECK_NAME_CONFLICT, nil)
+		appG.Response(http.StatusConflict, C.ERROR_CHECK_NAME_CONFLICT, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, nil)

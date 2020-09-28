@@ -34,20 +34,20 @@ func AddCollect(c *gin.Context) {
 	var l collect
 
 	if err := c.BindJSON(&l); err != nil {
-		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, nil)
+		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, err.Error())
 		return
 	}
 
 	switch id, err := gameService.AddCollect(l.Songs, l.Title); err {
 
 	case C.ErrCollectAddFormatIncorrect:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_COLLECT_NO_SONGID_OR_TITLE, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_COLLECT_NO_SONGID_OR_TITLE, err.Error())
 
 	case C.ErrCollectAddSongsRecordNotFound:
-		appG.Response(http.StatusBadRequest, C.ERROR_ADD_COLLECT_NO_SONGID_RECORD, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_COLLECT_NO_SONGID_RECORD, err.Error())
 
 	case C.ErrDatabase:
-		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_COLLECT_SERVER_ERROR, nil)
+		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_COLLECT_SERVER_ERROR, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, id)
@@ -74,10 +74,10 @@ func GetCollect(c *gin.Context) {
 	switch Collect, err := gameService.GetCollect(c.Param("id")); err {
 
 	case C.ErrCollectIDNotNumber:
-		appG.Response(http.StatusBadRequest, C.ERROR_GET_COLLECT_ID_NAN, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_COLLECT_ID_NAN, err.Error())
 
 	case C.ErrCollectNotFound:
-		appG.Response(http.StatusBadRequest, C.ERROR_GET_COLLECT_NO_RECORD, nil)
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_COLLECT_NO_RECORD, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, Collect)

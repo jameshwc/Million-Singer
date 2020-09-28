@@ -27,10 +27,10 @@ func GetLyricsWithSongID(c *gin.Context) {
 	switch lyrics, err := game.GetLyricsWithSongID(c.Param("song_id")); err {
 
 	case constant.ErrSongIDNotNumber:
-		appG.Response(http.StatusBadRequest, constant.ERROR_GET_SONG_ID_NAN, nil)
+		appG.Response(http.StatusBadRequest, constant.ERROR_GET_SONG_ID_NAN, err.Error())
 
 	case constant.ErrSongNotFound:
-		appG.Response(http.StatusBadRequest, constant.ERROR_GET_SONG_NO_RECORD, nil)
+		appG.Response(http.StatusBadRequest, constant.ERROR_GET_SONG_NO_RECORD, err.Error())
 
 	case nil:
 		appG.Response(http.StatusOK, constant.SUCCESS, lyrics)

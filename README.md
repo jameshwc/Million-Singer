@@ -14,6 +14,6 @@ $ docker-compose up -d --build
 
 ## TODO
 
-- Custom Error
-- Frontend Error Code
-- Redis
+- Custom Logging
+- Unit tests
+- lrc support

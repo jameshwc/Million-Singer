@@ -2,14 +2,13 @@ package model
 
 import (
 	"crypto/sha1"
+	"database/sql"
 	"fmt"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type User struct {
-	gorm.Model
+	ID        int
 	Name      string
 	Email     string
 	Password  string
@@ -17,37 +16,39 @@ type User struct {
 	LastLogin *time.Time
 }
 
-func (u *User) Commit() error {
-	u.Password = encrypt(u.Password)
-	if err := db.Create(u).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
 func IsUserNameDuplicate(name string) bool {
-	var u User
-	if db.Where("name = ?", name).First(&u).Error != gorm.ErrRecordNotFound {
-		return true
+	cnt := 0
+	if db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE name = ?)", name).Scan(&cnt) == sql.ErrNoRows {
+		return false
 	}
-	return false
+	return true
 }
 
 func IsUserEmailDuplicate(email string) bool {
-	var u User
-	if db.Where("email = ?", email).First(&u).Error != gorm.ErrRecordNotFound {
-		return true
+	cnt := 0
+	if db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&cnt) == sql.ErrNoRows {
+		return false
 	}
-	return false
+	return true
 }
 
 func encrypt(pw string) string {
 	return fmt.Sprintf("%x", sha1.Sum([]byte(pw)))
 }
 
+func AddUser(name, email, password string) (int64, error) {
+	password = encrypt(password)
+	result, err := db.Exec("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", name, email, password)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
 func AuthUser(username string, password string) (*User, error) {
 	var u User
-	if err := db.Where("name = ?", username).Where("password = ?", encrypt(password)).First(&u).Error; err != nil {
+	row := db.QueryRow("SELECT id, name, last_login WHERE name = ? AND password = ?", username, encrypt(password))
+	if err := row.Scan(&u.ID, &u.Name, &u.LastLogin); err != nil {
 		return nil, err
 	}
 	return &u, nil

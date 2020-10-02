@@ -1,6 +1,7 @@
 package game
 
 import (
+	"database/sql"
 	"encoding/json"
 	"strconv"
 
@@ -8,8 +9,7 @@ import (
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/service/cache"
-	"github.com/prometheus/common/log"
-	"gorm.io/gorm"
+	log "github.com/sirupsen/logrus"
 )
 
 func GetTour(param string) (*model.Tour, error) {
@@ -31,39 +31,43 @@ func GetTour(param string) (*model.Tour, error) {
 	}
 
 	tour, err := model.GetTour(id)
-	if err == gorm.ErrRecordNotFound {
+	if err == sql.ErrNoRows {
 		return nil, C.ErrTourNotFound
 	} else if err != nil {
+		log.Error(err)
 		return nil, C.ErrDatabase
 	}
 	gredis.Set(key, tour, 7200)
 	return tour, nil
 }
 
-func GetTotalTours() (int64, error) {
+func GetTotalTours() (int, error) {
 	total, err := model.GetTotalTours()
 	if err != nil {
+		log.Error(err)
 		return 0, C.ErrDatabase
 	}
 	return total, nil
 }
 
-func AddTour(collectsID []int) (uint, error) {
+func AddTour(collectsID []int) (int, error) {
 
 	if len(collectsID) == 0 {
 		return 0, C.ErrTourAddFormatIncorrect
 	}
 
-	collects, err := model.GetCollects(collectsID)
+	collectNum, err := model.CheckCollectsExist(collectsID)
 	if err != nil {
+		log.Error("Check Collects Exist: ", err)
+		return 0, C.ErrDatabase
+	} else if len(collectsID) != int(collectNum) {
 		return 0, C.ErrTourAddCollectsRecordNotFound
 	}
-
-	var tour model.Tour
-	tour.Collects = collects
-	if err := tour.Commit(); err != nil {
+	id, err := model.AddTour(collectsID)
+	if err != nil {
+		log.Error("Add Tour: ", err)
 		return 0, C.ErrDatabase
 	}
 
-	return tour.ID, nil
+	return id, nil
 }

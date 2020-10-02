@@ -1,6 +1,7 @@
 package game
 
 import (
+	"database/sql"
 	"encoding/json"
 	"strconv"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/service/cache"
 	"github.com/prometheus/common/log"
-	"gorm.io/gorm"
 )
 
 func GetCollect(param string) (*model.Collect, error) {
@@ -31,7 +31,7 @@ func GetCollect(param string) (*model.Collect, error) {
 	}
 
 	collect, err := model.GetCollect(id)
-	if err == gorm.ErrRecordNotFound {
+	if err == sql.ErrNoRows {
 		return nil, C.ErrCollectNotFound
 	} else if err != nil {
 		return nil, C.ErrDatabase
@@ -40,23 +40,24 @@ func GetCollect(param string) (*model.Collect, error) {
 	return collect, nil
 }
 
-func AddCollect(songs []int, title string) (uint, error) {
+func AddCollect(songs []int, title string) (int, error) {
 	if len(songs) == 0 || title == "" {
 		return 0, C.ErrCollectAddFormatIncorrect
 	}
 
-	var l model.Collect
-	var err error
-
-	l.Songs, err = model.GetSongs(songs)
+	songNum, err := model.CheckSongsExist(songs)
+	log.Info("songNum:", songNum)
 	if err != nil {
+		log.Error("Check songs Exist: ", err)
+		return 0, C.ErrDatabase
+	} else if len(songs) != int(songNum) {
 		return 0, C.ErrCollectAddSongsRecordNotFound
 	}
-
-	l.Title = title
-	if err = l.Commit(); err != nil {
+	log.Info("Call model.AddCollect")
+	id, err := model.AddCollect(title, songs)
+	if err != nil {
 		return 0, C.ErrDatabase
 	}
+	return id, nil
 
-	return l.ID, nil
 }

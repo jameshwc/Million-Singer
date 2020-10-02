@@ -1,6 +1,7 @@
 package game
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -14,7 +15,6 @@ import (
 
 	"github.com/jameshwc/Million-Singer/pkg/subtitle"
 	"github.com/jameshwc/Million-Singer/service/cache"
-	"gorm.io/gorm"
 )
 
 func lyricsJoin(lyrics []int) string {
@@ -54,7 +54,7 @@ type SongInstance struct {
 	MissLyricID int `json:"miss_lyric_id"`
 }
 
-func AddSong(s *Song) (uint, error) {
+func AddSong(s *Song) (int, error) {
 
 	valid := validation.Validation{}
 
@@ -63,11 +63,11 @@ func AddSong(s *Song) (uint, error) {
 		return 0, C.ErrSongFormatIncorrect
 	}
 
-	var song model.Song
+	var lyrics []model.Lyric
 	var err error
 	switch s.FileType {
 	case "srt":
-		song.Lyrics, err = subtitle.ReadSrtFromBytes(s.File)
+		lyrics, err = subtitle.ReadSrtFromBytes(s.File)
 	default:
 		return 0, C.ErrSongLyricsFileTypeNotSupported
 	}
@@ -76,22 +76,17 @@ func AddSong(s *Song) (uint, error) {
 	}
 
 	maxIdx, err := findMax(s.MissLyrics)
-	if err != nil || maxIdx > len(song.Lyrics) {
+	if err != nil || maxIdx > len(lyrics) {
 		return 0, C.ErrSongMissLyricsIncorrect
 	}
 
-	song.MissLyrics = lyricsJoin(s.MissLyrics)
-	song.Genre = s.Genre
-	song.Language = s.Language
-	song.URL = s.URL
-	song.Singer = s.Singer
-	song.Name = s.Name
-
-	if err = song.Commit(); err != nil {
+	id, err := model.AddSong(s.URL, s.Name, s.Singer, s.Genre, s.Language, lyricsJoin(s.MissLyrics), "", "", lyrics)
+	if err != nil {
+		log.Error(err)
 		return 0, C.ErrDatabase
 	}
 
-	return song.ID, nil
+	return id, nil
 }
 
 func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
@@ -110,9 +105,8 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 			return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
 		}
 	}
-
 	s, err := model.GetSong(id, hasLyrics)
-	if err == gorm.ErrRecordNotFound {
+	if err == sql.ErrNoRows {
 		return nil, C.ErrSongNotFound
 	} else if err != nil {
 		return nil, C.ErrDatabase

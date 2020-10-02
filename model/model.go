@@ -5,29 +5,25 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"database/sql"
+
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jameshwc/Million-Singer/conf"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
-var db *gorm.DB
+var db *sql.DB
 
-func Setup(externalDB *gorm.DB) {
+func Setup(externalDB *sql.DB) {
 	var err error
 	db = externalDB
 	if db == nil {
-		db, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 			conf.DBconfig.User,
 			conf.DBconfig.Password,
 			conf.DBconfig.Host,
-			conf.DBconfig.Name)), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Silent),
-		})
+			conf.DBconfig.Name))
 		if err != nil {
 			log.Fatalf("models.Setup err: %v", err)
 		}
 	}
-	db.AutoMigrate(&Tour{}, &Collect{}, &Lyric{}, &Song{}, &User{})
-	db = db.Debug()
 }

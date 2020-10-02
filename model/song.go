@@ -1,37 +1,64 @@
 package model
 
 import (
+	"database/sql"
 	"errors"
 	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 
-	"gorm.io/gorm"
+	"github.com/prometheus/common/log"
 )
 
 type Song struct {
-	gorm.Model `json:"-"`
-	FrontendID uint       `json:"id"`
-	Lyrics     []Lyric    `json:"lyrics"`
-	URL        string     `json:"url"`
-	StartTime  string     `json:"start_time"`
-	EndTime    string     `json:"end_time"`
-	Language   string     `json:"language"`
-	Name       string     `json:"name"`
-	Singer     string     `json:"singer"`
-	Genre      string     `json:"genre"`
-	MissLyrics string     `json:"miss_lyrics"` // IDs (integers) with comma seperated
-	Collects   []*Collect `gorm:"many2many:collect_songs;" json:"-"`
+	ID         int      `json:"id"`
+	Lyrics     []*Lyric `json:"lyrics"`
+	URL        string   `json:"url"`
+	StartTime  string   `json:"start_time"`
+	EndTime    string   `json:"end_time"`
+	Language   string   `json:"language"`
+	Name       string   `json:"name"`
+	Singer     string   `json:"singer"`
+	Genre      string   `json:"genre"`
+	MissLyrics string   `json:"miss_lyrics"` // IDs (integers) with comma seperated
 }
 
-func (s *Song) Commit() error {
-	if err := db.Create(s).Error; err != nil {
-		return err
+func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {
+	cur := time.Now()
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
 	}
-	if err := db.Model(s).UpdateColumn("FrontendID", s.ID).Error; err != nil {
-		return err
+
+	result, err := tx.Exec(`INSERT INTO songs (
+	url, name, singer, genre, language, miss_lyrics, start_time, end_time, created_at, updated_at, deleted_at
+	) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, url, name, singer, genre, language, missLyrics, startTime, endTime, cur, cur, sql.NullTime{})
+	if err != nil {
+		return 0, err
 	}
-	return nil
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	stmt := "INSERT INTO lyrics (created_at, updated_at, deleted_at, `index`, line, start_at, end_at, song_id) VALUES "
+	log.Info("song id ", id)
+	songID := strconv.Itoa(int(id))
+	curString := cur.Format("2006-01-02 15:04:05")
+	for i := range lyrics {
+		stmt += "('" + curString + "','" + curString + "',NULL," + strconv.Itoa(lyrics[i].Index) + ",'" + escape(lyrics[i].Line) + "'," + strconv.FormatInt(lyrics[i].StartAt.Milliseconds(), 10) + "," + strconv.FormatInt(lyrics[i].EndAt.Milliseconds(), 10) + "," + songID + "),"
+	}
+	stmt = stmt[:len(stmt)-1]
+	result, err = tx.Exec(stmt)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	return int(id), tx.Commit()
 }
 
 func (s *Song) RandomGetMissLyricID() int {
@@ -43,31 +70,39 @@ func (s *Song) RandomGetMissLyricID() int {
 
 func GetSong(songID int, hasLyrics bool) (*Song, error) {
 	var song Song
-	var subdb *gorm.DB
-	if hasLyrics {
-		subdb = db.Preload("Lyrics")
-	} else {
-		subdb = db
-	}
-	if err := subdb.Where("id = ?", songID).First(&song).Error; err != nil {
+	if err := db.QueryRow("SELECT id, url, name, singer, genre, language, miss_lyrics FROM songs WHERE id = ? AND deleted_at IS NULL", songID).
+		Scan(&song.ID, &song.URL, &song.Name, &song.Singer, &song.Genre, &song.Language, &song.MissLyrics); err != nil {
 		return nil, err
+	} else if song.ID != songID {
+		return nil, errors.New("scan id and param id are not matched")
 	}
-	// db.Where("song_id = ?", songID).Find(&song.Lyrics)
-	song.FrontendID = song.ID // workaround; TODO: find a pretty solution
-	return &song, nil
-}
 
-func GetSongs(songsID []int) ([]*Song, error) {
-	var songs []*Song
-	err := db.Find(&songs, songsID).Error
+	rows, err := db.Query("SELECT `index`, line, start_at, end_at FROM lyrics WHERE song_id = ?", songID)
 	if err != nil {
 		return nil, err
 	}
-	if len(songs) != len(songsID) {
-		return nil, errors.New("some songs ID are incorrect")
+	defer rows.Close()
+	for rows.Next() {
+		var lyric Lyric
+		if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
+			log.Info(err)
+			return nil, err
+		}
+		song.Lyrics = append(song.Lyrics, &lyric)
 	}
-	for i := range songs {
-		songs[i].FrontendID = songs[i].ID
+	return &song, nil
+}
+
+func CheckSongsExist(songsID []int) (int64, error) {
+	var count int64
+	stmt := "SELECT COUNT(*) FROM songs WHERE id IN ("
+	for i := range songsID {
+		stmt += strconv.Itoa(songsID[i]) + ","
 	}
-	return songs, nil
+	stmt = stmt[:len(stmt)-1] + ")"
+	row := db.QueryRow(stmt)
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
 }

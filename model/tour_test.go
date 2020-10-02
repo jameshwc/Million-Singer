@@ -14,7 +14,7 @@ var collectColumns = append(tourColumns, "title")
 var testCollectID = []driver.Value{1, 2, 3}
 
 func setupTestDatabase(t *testing.T) sqlmock.Sqlmock {
-	mockdb, mock, err := gormmock.New(gormmock.Config{DriverName: "mysql", SkipInitializeWithVersion: true})
+	mockdb, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatal("sqlmock fail to new", err.Error())
 		return nil
@@ -93,9 +93,7 @@ func TestAddTour(t *testing.T) {
 	mock.ExpectExec("INSERT INTO `tours` \\(`created_at`,`updated_at`,`deleted_at`\\) VALUES").
 		WithArgs(gormmock.AnyTime{}, gormmock.AnyTime{}, nil).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	var tour = &Tour{}
-
-	if err := tour.Commit(); err != nil {
+	if _, err := AddTour(nil); err != nil {
 		t.Error("errors: tour commit: ", err.Error())
 	}
 

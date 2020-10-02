@@ -1,32 +1,93 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"database/sql"
+	"errors"
+
+	"strconv"
+	"time"
 )
 
 type Tour struct {
-	gorm.Model `json:"-"`
-	Collects   []*Collect `gorm:"many2many:tour_collects;" json:"collects"`
+	ID        int               `json:"id"`
+	CreatedAt time.Time         `json:"-"`
+	UpdatedAt time.Time         `json:"-"`
+	DeletedAt sql.NullTime      `json:"-"`
+	Collects  []frontendCollect `json:"collects"`
+}
+
+type frontendCollect struct {
+	Title string `json:"title"`
+	ID    int    `json:"id"`
+}
+
+type scanID struct {
+	ID int
 }
 
 func GetTour(id int) (*Tour, error) {
-	var tour Tour
-	err := db.Preload("Collects").Where("id = ?", id).First(&tour).Error
+
+	scanID := 0
+	if err := db.QueryRow("SELECT id FROM tours WHERE id = ? AND deleted_at IS NULL", id).Scan(&scanID); err != nil {
+		return nil, err
+	} else if scanID != id {
+		return nil, errors.New("scan id and param id are not matched")
+	}
+
+	rows, err := db.Query(`SELECT collects.title, collects.id FROM collects 
+								INNER JOIN tour_collects ON collects.id = tour_collects.collect_id 
+								AND tour_collects.tour_id = ?`, id)
 	if err != nil {
 		return nil, err
+	}
+	defer rows.Close()
+
+	var tour Tour
+	tour.ID = id
+	for rows.Next() {
+		title, id := "", 0
+		rows.Scan(&title, &id)
+		tour.Collects = append(tour.Collects, frontendCollect{Title: title, ID: id})
 	}
 	return &tour, nil
 }
 
-func GetTotalTours() (int64, error) {
-	var tours []*Tour
-	rows := db.Find(&tours)
-	if rows.Error != nil {
-		return 0, rows.Error
-	}
-	return rows.RowsAffected, nil
+func GetTotalTours() (int, error) {
+	count := 0
+	err := db.QueryRow("SELECT COUNT(*) FROM tours WHERE deleted_at IS NULL").Scan(&count)
+	return count, err
 }
 
-func (t *Tour) Commit() error {
-	return db.Create(t).Error
+func AddTour(collectsID []int) (int, error) {
+	cur := time.Now()
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	result, err := tx.Exec("INSERT INTO tours (created_at, updated_at, deleted_at) VALUES (?, ?, ?)", cur, cur, sql.NullTime{})
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	stmt := "INSERT INTO tour_collects VALUES "
+	tourIDstring := strconv.Itoa(int(id))
+	for i := range collectsID {
+		stmt += "(" + tourIDstring + "," + strconv.Itoa(collectsID[i]) + "),"
+	}
+	stmt = stmt[:len(stmt)-1]
+
+	result, err = tx.Exec(stmt)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	return int(id), tx.Commit()
 }

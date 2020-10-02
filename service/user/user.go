@@ -7,6 +7,7 @@ import (
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/token"
+	"github.com/sirupsen/logrus"
 )
 
 type user struct {
@@ -67,7 +68,6 @@ func ValidateUser(username string, email string) error {
 }
 
 func Register(username, email, password string) error {
-	var u model.User
 	valid := validation.Validation{}
 	ok, _ := valid.Valid(&registerUser{
 		Username: username, Email: email, Password: password,
@@ -81,12 +81,11 @@ func Register(username, email, password string) error {
 	if model.IsUserNameDuplicate(username) {
 		return C.ErrUserRegisterNameConflict
 	}
-	u.Email = email
-	u.Name = username
-	u.Password = password
-	if err := u.Commit(); err != nil {
+	id, err := model.AddUser(username, email, password)
+	if err != nil {
 		log.Println("error when register a user: ", err)
 		return C.ErrUserRegisterFailServerError
 	}
+	logrus.Infof("user %d has registered with username %s", id, username)
 	return nil
 }

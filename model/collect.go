@@ -1,48 +1,103 @@
 package model
 
 import (
+	"database/sql"
 	"errors"
-
-	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 type Collect struct {
-	gorm.Model `json:"-"`
-	Title      string  `json:"title"`
-	Songs      []*Song `gorm:"many2many:collect_songs;" json:"songs"`
-	FrontendID uint    `json:"id"`
+	ID        int             `json:"id"`
+	CreatedAt time.Time       `json:"-"`
+	UpdatedAt time.Time       `json:"-"`
+	DeletedAt sql.NullTime    `json:"-"`
+	Title     string          `json:"title"`
+	Songs     []*frontendSong `json:"songs"`
 }
 
-func (l *Collect) Commit() error {
-	if err := db.Create(l).Error; err != nil {
-		return err
-	}
-	if err := db.Model(l).UpdateColumn("FrontendID", l.ID).Error; err != nil {
-		return err
-	}
-	return nil
+type frontendSong struct {
+	ID       int    `json:"id"`
+	URL      string `json:"url"`
+	Name     string `json:"name"`
+	Singer   string `json:"singer"`
+	Language string `json:"string"`
+	Genre    string `json:"genre"`
 }
 
-func GetCollect(collectID int) (*Collect, error) {
-	var collect Collect
-	if err := db.Preload("Songs").Where("id = ?", collectID).First(&collect).Error; err != nil {
+func GetCollect(id int) (*Collect, error) {
+
+	scanID := 0
+	title := ""
+	if err := db.QueryRow("SELECT id, title FROM collects WHERE id = ? AND deleted_at IS NULL", id).Scan(&scanID, &title); err != nil {
 		return nil, err
+	} else if scanID != id {
+		return nil, errors.New("scan id and param id are not matched")
 	}
-	collect.FrontendID = collect.ID
-	return &collect, nil
-}
 
-func GetCollects(collectsID []int) ([]*Collect, error) {
-	var collects []*Collect
-	err := db.Find(&collects, collectsID).Error
+	var collect Collect
+	collect.ID = id
+	collect.Title = title
+
+	rows, err := db.Query(`SELECT songs.id as song_id, songs.url, songs.name, songs.singer, songs.language, songs.genre
+				FROM songs
+				INNER JOIN collect_songs ON collect_songs.collect_id = ? AND collect_songs.song_id = songs.id`, id)
 	if err != nil {
 		return nil, err
 	}
-	if len(collects) != len(collectsID) {
-		return nil, errors.New("some collects ID are incorrect")
+	defer rows.Close()
+
+	for rows.Next() {
+		var song frontendSong
+		rows.Scan(&song.ID, &song.URL, &song.Name, &song.Singer, &song.Language, &song.Genre)
+		collect.Songs = append(collect.Songs, &song)
 	}
-	for i := range collects {
-		collects[i].FrontendID = collects[i].ID
+	return &collect, nil
+}
+
+func AddCollect(title string, songsID []int) (int, error) {
+	cur := time.Now()
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
 	}
-	return collects, err
+	result, err := tx.Exec("INSERT INTO collects (title, created_at, updated_at, deleted_at) VALUES (?,?,?,?)", title, cur, cur, sql.NullTime{})
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	stmt := "INSERT INTO collect_songs (collect_id, song_id) VALUES "
+	collectID := strconv.Itoa(int(id))
+	for i := range songsID {
+		stmt += "(" + collectID + "," + strconv.Itoa(songsID[i]) + "),"
+	}
+	stmt = stmt[:len(stmt)-1]
+
+	result, err = tx.Exec(stmt)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	return int(id), tx.Commit()
+}
+
+func CheckCollectsExist(collectsID []int) (int64, error) {
+	var count int64
+	stmt := "SELECT COUNT(*) FROM collects WHERE id IN ("
+	for i := range collectsID {
+		stmt += strconv.Itoa(collectsID[i]) + ","
+	}
+	stmt = stmt[:len(stmt)-1] + ")"
+	row := db.QueryRow(stmt)
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
 }

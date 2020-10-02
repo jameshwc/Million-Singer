@@ -9,20 +9,11 @@ import (
 )
 
 type Tour struct {
-	ID        int               `json:"id"`
-	CreatedAt time.Time         `json:"-"`
-	UpdatedAt time.Time         `json:"-"`
-	DeletedAt sql.NullTime      `json:"-"`
-	Collects  []frontendCollect `json:"collects"`
-}
-
-type frontendCollect struct {
-	Title string `json:"title"`
-	ID    int    `json:"id"`
-}
-
-type scanID struct {
-	ID int
+	ID        int          `json:"id"`
+	CreatedAt time.Time    `json:"-"`
+	UpdatedAt time.Time    `json:"-"`
+	DeletedAt sql.NullTime `json:"-"`
+	Collects  []*Collect   `json:"collects"`
 }
 
 func GetTour(id int) (*Tour, error) {
@@ -47,7 +38,7 @@ func GetTour(id int) (*Tour, error) {
 	for rows.Next() {
 		title, id := "", 0
 		rows.Scan(&title, &id)
-		tour.Collects = append(tour.Collects, frontendCollect{Title: title, ID: id})
+		tour.Collects = append(tour.Collects, &Collect{Title: title, ID: id})
 	}
 	return &tour, nil
 }

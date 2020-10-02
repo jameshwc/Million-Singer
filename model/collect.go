@@ -8,21 +8,12 @@ import (
 )
 
 type Collect struct {
-	ID        int             `json:"id"`
-	CreatedAt time.Time       `json:"-"`
-	UpdatedAt time.Time       `json:"-"`
-	DeletedAt sql.NullTime    `json:"-"`
-	Title     string          `json:"title"`
-	Songs     []*frontendSong `json:"songs"`
-}
-
-type frontendSong struct {
-	ID       int    `json:"id"`
-	URL      string `json:"url"`
-	Name     string `json:"name"`
-	Singer   string `json:"singer"`
-	Language string `json:"string"`
-	Genre    string `json:"genre"`
+	ID        int          `json:"id"`
+	CreatedAt time.Time    `json:"-"`
+	UpdatedAt time.Time    `json:"-"`
+	DeletedAt sql.NullTime `json:"-"`
+	Title     string       `json:"title"`
+	Songs     []*Song      `json:"songs,omitempty"`
 }
 
 func GetCollect(id int) (*Collect, error) {
@@ -48,7 +39,7 @@ func GetCollect(id int) (*Collect, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var song frontendSong
+		var song Song
 		rows.Scan(&song.ID, &song.URL, &song.Name, &song.Singer, &song.Language, &song.Genre)
 		collect.Songs = append(collect.Songs, &song)
 	}

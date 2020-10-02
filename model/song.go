@@ -13,15 +13,15 @@ import (
 
 type Song struct {
 	ID         int      `json:"id"`
-	Lyrics     []*Lyric `json:"lyrics"`
+	Lyrics     []*Lyric `json:"lyrics,omitempty"`
 	URL        string   `json:"url"`
-	StartTime  string   `json:"start_time"`
-	EndTime    string   `json:"end_time"`
+	StartTime  string   `json:"start_time,omitempty"`
+	EndTime    string   `json:"end_time,omitempty"`
 	Language   string   `json:"language"`
 	Name       string   `json:"name"`
 	Singer     string   `json:"singer"`
 	Genre      string   `json:"genre"`
-	MissLyrics string   `json:"miss_lyrics"` // IDs (integers) with comma seperated
+	MissLyrics string   `json:"miss_lyrics,omitempty"` // IDs (integers) with comma seperated
 }
 
 func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {

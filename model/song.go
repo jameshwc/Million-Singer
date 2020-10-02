@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prometheus/common/log"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 )
 
 type Song struct {

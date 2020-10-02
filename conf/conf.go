@@ -1,7 +1,8 @@
 package conf
 
 import (
-	"log"
+	"github.com/jameshwc/Million-Singer/pkg/log"
+
 	"os"
 	"strconv"
 	"time"

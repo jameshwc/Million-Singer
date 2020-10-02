@@ -2,7 +2,9 @@ package gredis
 
 import (
 	"encoding/json"
-	"log"
+
+	"github.com/jameshwc/Million-Singer/pkg/log"
+
 	"strconv"
 
 	"github.com/go-redis/redis"

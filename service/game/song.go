@@ -11,7 +11,7 @@ import (
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
-	"github.com/prometheus/common/log"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 
 	"github.com/jameshwc/Million-Singer/pkg/subtitle"
 	"github.com/jameshwc/Million-Singer/service/cache"

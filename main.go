@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +9,7 @@ import (
 	_ "github.com/jameshwc/Million-Singer/docs"
 	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/routers"
 	_ "github.com/joho/godotenv/autoload"
 	swaggerFile "github.com/swaggo/files"
@@ -20,6 +20,7 @@ func init() {
 	conf.Setup()
 	model.Setup(nil)
 	gredis.Setup()
+	log.Setup()
 }
 
 // @title Million Singer API
@@ -45,21 +46,11 @@ func main() {
 		MaxHeaderBytes: maxHeaderBytes,
 	}
 
-	log.Printf("[info] start http server listening %s", endPoint)
+	log.Infof("start http server listening %s", endPoint)
 	if gin.Mode() == gin.DebugMode {
 		apiDocURL := ginSwagger.URL(fmt.Sprintf(":%d/swagger/doc.json", conf.ServerConfig.HttpPort))
 		routers.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFile.Handler, apiDocURL))
 	}
-
-	// test function code
-	// if f, err := os.Open("/home/james/下載/[Toolbxs]Eminem - Beautiful (Edited) (Explicit)-English.srt"); err != nil {
-	// log.Fatalf("open srt file")
-	// } else {
-	// subtitle.ReadSrtFromFile(f)
-	// defer f.Close()
-	// }
-
-	// end test function
 
 	server.ListenAndServe()
 }

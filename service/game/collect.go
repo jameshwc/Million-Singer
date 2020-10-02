@@ -8,8 +8,8 @@ import (
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/service/cache"
-	"github.com/prometheus/common/log"
 )
 
 func GetCollect(param string) (*model.Collect, error) {
@@ -46,14 +46,12 @@ func AddCollect(songs []int, title string) (int, error) {
 	}
 
 	songNum, err := model.CheckSongsExist(songs)
-	log.Info("songNum:", songNum)
 	if err != nil {
 		log.Error("Check songs Exist: ", err)
 		return 0, C.ErrDatabase
 	} else if len(songs) != int(songNum) {
 		return 0, C.ErrCollectAddSongsRecordNotFound
 	}
-	log.Info("Call model.AddCollect")
 	id, err := model.AddCollect(title, songs)
 	if err != nil {
 		return 0, C.ErrDatabase

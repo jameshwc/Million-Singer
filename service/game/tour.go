@@ -8,8 +8,8 @@ import (
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/service/cache"
-	log "github.com/sirupsen/logrus"
 )
 
 func GetTour(param string) (*model.Tour, error) {

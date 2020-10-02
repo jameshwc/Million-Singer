@@ -1,13 +1,11 @@
 package user
 
 import (
-	"log"
-
 	"github.com/astaxie/beego/validation"
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/pkg/token"
-	"github.com/sirupsen/logrus"
 )
 
 type user struct {
@@ -83,9 +81,9 @@ func Register(username, email, password string) error {
 	}
 	id, err := model.AddUser(username, email, password)
 	if err != nil {
-		log.Println("error when register a user: ", err)
+		log.Error("error when register a user: ", err)
 		return C.ErrUserRegisterFailServerError
 	}
-	logrus.Infof("user %d has registered with username %s", id, username)
+	log.Infof("user %d has registered with username %s", id, username)
 	return nil
 }

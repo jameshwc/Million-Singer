@@ -76,19 +76,20 @@ func GetSong(songID int, hasLyrics bool) (*Song, error) {
 	} else if song.ID != songID {
 		return nil, errors.New("scan id and param id are not matched")
 	}
-
-	rows, err := db.Query("SELECT `index`, line, start_at, end_at FROM lyrics WHERE song_id = ?", songID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var lyric Lyric
-		if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
-			log.Info(err)
+	if hasLyrics {
+		rows, err := db.Query("SELECT `index`, line, start_at, end_at FROM lyrics WHERE song_id = ?", songID)
+		if err != nil {
 			return nil, err
 		}
-		song.Lyrics = append(song.Lyrics, &lyric)
+		defer rows.Close()
+		for rows.Next() {
+			var lyric Lyric
+			if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
+				log.Info(err)
+				return nil, err
+			}
+			song.Lyrics = append(song.Lyrics, &lyric)
+		}
 	}
 	return &song, nil
 }

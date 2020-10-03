@@ -38,7 +38,6 @@ deploy:
       git pull origin master
       docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
       cp ../docker-compose.yml .
-      export CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
-      echo $CI_COMMIT_SHORT_SHA
+      sed -i 's/server_git_commit_sha=/server_git_commit_sha=$CI_COMMIT_SHORT_SHA/' .env
       docker-compose pull web && docker-compose up -d
       "

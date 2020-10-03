@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/jameshwc/Million-Singer/middleware/prom"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
 	"github.com/jameshwc/Million-Singer/routers/api/user"
 )
@@ -19,6 +21,9 @@ func InitRouters() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.Use(cors.Default())
+
+	r.Use(prom.PromMiddleware())
+	r.GET("/metrics", prom.PromHandler(promhttp.Handler()))
 
 	r.HandleMethodNotAllowed = true
 	r.NoMethod(methodNotAllowed)

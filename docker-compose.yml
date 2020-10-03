@@ -10,6 +10,7 @@ services:
       server_runmode: ${server_runmode}
       server_port: ${server_port}
       server_jwt_secret: ${server_jwt_secret}
+      server_git_commit_sha: ${CI_COMMIT_SHORT_SHA}
       redis_host: ${redis_host}
       redis_port: ${redis_port}
       redis_password: ${redis_password}

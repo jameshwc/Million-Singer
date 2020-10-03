@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jameshwc/Million-Singer/middleware/prom"
+	"github.com/jameshwc/Million-Singer/middleware/version"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
 	"github.com/jameshwc/Million-Singer/routers/api/user"
 )
@@ -21,6 +22,8 @@ func InitRouters() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.Use(cors.Default())
+
+	r.Use(version.RevisionMiddleware())
 
 	r.Use(prom.PromMiddleware())
 	r.GET("/metrics", prom.PromHandler(promhttp.Handler()))

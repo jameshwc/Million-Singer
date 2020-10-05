@@ -3,6 +3,7 @@ package prom
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,20 @@ import (
 
 const namespace = "service"
 
+var EndpointList = []string{
+	"/metrics",
+	"/api/users",
+	"/api/users/check",
+	"/api/users/register",
+	"/api/users/login",
+	"/api/users/check",
+	"/api/game",
+	"/api/game/tours",
+	"/api/game/collects",
+	"/api/game/songs",
+	"/api/game/lyrics",
+	"/swagger/",
+}
 var (
 	labels = []string{"status", "endpoint", "method"}
 
@@ -22,12 +37,20 @@ var (
 		}, nil,
 	)
 
+	reqCountPerEndpoint = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "http_request_count_total_per_endpoint",
+			Help:      "Total number of HTTP requests made per endpoint.",
+		}, labels,
+	)
+
 	reqCount = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: namespace,
 			Name:      "http_request_count_total",
 			Help:      "Total number of HTTP requests made.",
-		}, labels,
+		}, nil,
 	)
 
 	reqDuration = prometheus.NewHistogramVec(
@@ -102,10 +125,19 @@ func PromMiddleware() gin.HandlerFunc {
 		status := fmt.Sprintf("%d", c.Writer.Status())
 		endpoint := c.Request.URL.Path
 		method := c.Request.Method
-
-		lvs := []string{status, endpoint, method}
-
-		reqCount.WithLabelValues(lvs...).Inc()
+		recordEndpoint := ""
+		for i := range EndpointList {
+			if strings.HasPrefix(endpoint, EndpointList[i]) && len(recordEndpoint) < len(EndpointList[i]) {
+				recordEndpoint = EndpointList[i]
+			}
+		}
+		if recordEndpoint == "" {
+			recordEndpoint = "unknown"
+		}
+		lvs := []string{status, recordEndpoint, method}
+		// TODO: filter unknown url: make a endpoint map, return unknown when key not found
+		reqCount.WithLabelValues().Inc()
+		reqCountPerEndpoint.WithLabelValues(lvs...).Inc()
 		reqDuration.WithLabelValues(lvs...).Observe(time.Since(start).Seconds())
 		reqSizeBytes.WithLabelValues(lvs...).Observe(calcRequestSize(c.Request))
 		respSizeBytes.WithLabelValues(lvs...).Observe(float64(c.Writer.Size()))

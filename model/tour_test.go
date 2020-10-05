@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql/driver"
 	"testing"
 	"time"
 
@@ -9,19 +8,6 @@ import (
 	gormmock "github.com/jameshwc/Million-Singer/pkg/gorm-sqlmock"
 )
 
-var tourColumns = []string{"id", "updated_at", "created_at", "deleted_at"}
-var collectColumns = append(tourColumns, "title")
-var testCollectID = []driver.Value{1, 2, 3}
-
-func setupTestDatabase(t *testing.T) sqlmock.Sqlmock {
-	mockdb, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatal("sqlmock fail to new", err.Error())
-		return nil
-	}
-	Setup(mockdb)
-	return mock
-}
 func TestGetTourSuccess(t *testing.T) {
 
 	mock := setupTestDatabase(t)
@@ -29,10 +15,10 @@ func TestGetTourSuccess(t *testing.T) {
 		return
 	}
 
-	mock.ExpectQuery("SELECT (.+) FROM `tours` WHERE (.+) AND `tours`.`deleted_at` IS NULL ORDER BY `tours`.`id` LIMIT 1").
+	mock.ExpectQuery("SELECT id FROM tours WHERE (.+) AND deleted_at IS NULL").
 		WithArgs(1).
 		WillReturnRows(
-			sqlmock.NewRows(tourColumns).AddRow(1, time.Now(), time.Now(), nil),
+			sqlmock.NewRows([]string{"id"}).AddRow(1),
 		)
 	mock.ExpectQuery("SELECT (.+) FROM `tour_collects` WHERE `tour_collects`.`tour_id` = \\?").
 		WithArgs(1).WillReturnRows(

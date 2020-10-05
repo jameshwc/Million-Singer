@@ -16,6 +16,7 @@ import (
 func methodNotAllowed(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
 }
+
 func InitRouters() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())

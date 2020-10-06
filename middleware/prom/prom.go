@@ -69,13 +69,21 @@ var (
 			Help:      "System CPU Usage.",
 		}, nil,
 	)
+
+	memUsage = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "system_mem_usage",
+			Help:      "System Mem Usage.",
+		}, nil,
+	)
 )
 
 // init registers the prometheus metrics
 func init() {
 	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint, userCPU, systemCPU)
 	go recordUptime()
-	go recordCpuUsage()
+	go recordServerMetrics()
 }
 
 // recordUptime increases service uptime per second.
@@ -85,13 +93,14 @@ func recordUptime() {
 	}
 }
 
-func recordCpuUsage() {
-	prev := stat.CalCpuUsage()
+func recordServerMetrics() {
+	prev := stat.GetServer()
 	for range time.Tick(time.Second) {
-		cur := stat.CalCpuUsage()
-		total := float64(cur.Total - prev.Total)
-		userCPU.WithLabelValues().Set(float64(cur.User-prev.User) / total * 100)
-		systemCPU.WithLabelValues().Set(float64(cur.System-prev.System) / total * 100)
+		cur := stat.GetServer()
+		cpuTotal := float64(cur.CPU.Total - prev.CPU.Total)
+		userCPU.WithLabelValues().Set(float64(cur.CPU.User-prev.CPU.User) / cpuTotal * 100)
+		systemCPU.WithLabelValues().Set(float64(cur.CPU.System-prev.CPU.System) / cpuTotal * 100)
+		memUsage.WithLabelValues().Set(float64(cur.Mem.Used) / float64(cur.Mem.Total) * 100)
 		prev = cur
 	}
 }

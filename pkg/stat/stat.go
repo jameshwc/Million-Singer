@@ -10,7 +10,16 @@ type CPU struct {
 	Total, User, System, Idle uint64
 }
 
-func CalCpuUsage() *CPU {
+type Mem struct {
+	Used, Available, Total uint64
+}
+
+type Server struct {
+	CPU
+	Mem
+}
+
+func CalCpuUsage() CPU {
 	stat, err := linuxproc.ReadStat("/proc/stat")
 	if err != nil {
 		log.Fatal("stat read fail")
@@ -22,5 +31,17 @@ func CalCpuUsage() *CPU {
 		st.System += s.System
 		st.Idle += s.Idle
 	}
-	return &st
+	return st
+}
+
+func CalMemUsage() Mem {
+	stat, err := linuxproc.ReadMemInfo("/proc/meminfo")
+	if err != nil {
+		log.Fatal("stat read fail")
+	}
+	return Mem{Used: stat.MemTotal - stat.MemAvailable, Available: stat.MemAvailable, Total: stat.MemTotal}
+}
+
+func GetServer() *Server {
+	return &Server{CalCpuUsage(), CalMemUsage()}
 }

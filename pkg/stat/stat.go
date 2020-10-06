@@ -14,9 +14,22 @@ type Mem struct {
 	Used, Available, Total uint64
 }
 
+type Disk struct {
+	Used, Total uint64
+}
+
+func (m *Mem) Usage() float64 {
+	return 1 - float64(m.Available)/float64(m.Total)
+}
+
+func (d *Disk) Usage() float64 {
+	return float64(d.Used) / float64(d.Total)
+}
+
 type Server struct {
 	CPU
 	Mem
+	Disk
 }
 
 func CalCpuUsage() CPU {
@@ -42,6 +55,14 @@ func CalMemUsage() Mem {
 	return Mem{Used: stat.MemTotal - stat.MemAvailable, Available: stat.MemAvailable, Total: stat.MemTotal}
 }
 
+func CalDiskUsage() Disk {
+	stat, err := linuxproc.ReadDisk("/")
+	if err != nil {
+		log.Fatal("stat read fail")
+	}
+	return Disk{Used: stat.Used, Total: stat.All}
+}
+
 func GetServer() *Server {
-	return &Server{CalCpuUsage(), CalMemUsage()}
+	return &Server{CalCpuUsage(), CalMemUsage(), CalDiskUsage()}
 }

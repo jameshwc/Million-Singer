@@ -11,7 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const namespace = "service"
+const namespace = ""
 
 var EndpointList = []string{
 	"/metrics",
@@ -77,20 +77,20 @@ var (
 			Help:      "System Mem Usage.",
 		}, nil,
 	)
+
+	diskUsage = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "system_disk_usage",
+			Help:      "System Disk Usage.",
+		}, nil,
+	)
 )
 
 // init registers the prometheus metrics
 func init() {
-	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint, userCPU, systemCPU)
-	go recordUptime()
+	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint, userCPU, systemCPU, memUsage, diskUsage)
 	go recordServerMetrics()
-}
-
-// recordUptime increases service uptime per second.
-func recordUptime() {
-	for range time.Tick(time.Second) {
-		uptime.WithLabelValues().Inc()
-	}
 }
 
 func recordServerMetrics() {
@@ -98,9 +98,11 @@ func recordServerMetrics() {
 	for range time.Tick(time.Second) {
 		cur := stat.GetServer()
 		cpuTotal := float64(cur.CPU.Total - prev.CPU.Total)
+		uptime.WithLabelValues().Inc()
 		userCPU.WithLabelValues().Set(float64(cur.CPU.User-prev.CPU.User) / cpuTotal * 100)
 		systemCPU.WithLabelValues().Set(float64(cur.CPU.System-prev.CPU.System) / cpuTotal * 100)
-		memUsage.WithLabelValues().Set(float64(cur.Mem.Used) / float64(cur.Mem.Total) * 100)
+		memUsage.WithLabelValues().Set(cur.Mem.Usage() * 100)
+		diskUsage.WithLabelValues().Set(cur.Disk.Usage() * 100)
 		prev = cur
 	}
 }

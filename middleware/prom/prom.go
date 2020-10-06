@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jameshwc/Million-Singer/pkg/stat"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -52,18 +53,46 @@ var (
 			Help:      "Total number of HTTP requests made.",
 		}, nil,
 	)
+
+	userCPU = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "user_cpu_usage",
+			Help:      "User CPU Usage.",
+		}, nil,
+	)
+
+	systemCPU = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "system_cpu_usage",
+			Help:      "System CPU Usage.",
+		}, nil,
+	)
 )
 
 // init registers the prometheus metrics
 func init() {
-	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint)
+	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint, userCPU, systemCPU)
 	go recordUptime()
+	go recordCpuUsage()
 }
 
 // recordUptime increases service uptime per second.
 func recordUptime() {
 	for range time.Tick(time.Second) {
 		uptime.WithLabelValues().Inc()
+	}
+}
+
+func recordCpuUsage() {
+	prev := stat.CalCpuUsage()
+	for range time.Tick(time.Second) {
+		cur := stat.CalCpuUsage()
+		total := float64(cur.Total - prev.Total)
+		userCPU.WithLabelValues().Set(float64(cur.User-prev.User) / total * 100)
+		systemCPU.WithLabelValues().Set(float64(cur.System-prev.System) / total * 100)
+		prev = cur
 	}
 }
 

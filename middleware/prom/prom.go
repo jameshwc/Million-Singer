@@ -52,35 +52,11 @@ var (
 			Help:      "Total number of HTTP requests made.",
 		}, nil,
 	)
-
-	reqDuration = prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
-			Namespace: namespace,
-			Name:      "http_request_duration_seconds",
-			Help:      "HTTP request latencies in seconds.",
-		}, labels,
-	)
-
-	reqSizeBytes = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
-			Namespace: namespace,
-			Name:      "http_request_size_bytes",
-			Help:      "HTTP request sizes in bytes.",
-		}, labels,
-	)
-
-	respSizeBytes = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
-			Namespace: namespace,
-			Name:      "http_response_size_bytes",
-			Help:      "HTTP request sizes in bytes.",
-		}, labels,
-	)
 )
 
 // init registers the prometheus metrics
 func init() {
-	prometheus.MustRegister(uptime, reqCount, reqDuration, reqSizeBytes, respSizeBytes)
+	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint)
 	go recordUptime()
 }
 
@@ -119,7 +95,7 @@ func calcRequestSize(r *http.Request) float64 {
 func PromMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		start := time.Now()
+
 		c.Next()
 
 		status := fmt.Sprintf("%d", c.Writer.Status())
@@ -135,12 +111,9 @@ func PromMiddleware() gin.HandlerFunc {
 			recordEndpoint = "unknown"
 		}
 		lvs := []string{status, recordEndpoint, method}
-		// TODO: filter unknown url: make a endpoint map, return unknown when key not found
+
 		reqCount.WithLabelValues().Inc()
 		reqCountPerEndpoint.WithLabelValues(lvs...).Inc()
-		reqDuration.WithLabelValues(lvs...).Observe(time.Since(start).Seconds())
-		reqSizeBytes.WithLabelValues(lvs...).Observe(calcRequestSize(c.Request))
-		respSizeBytes.WithLabelValues(lvs...).Observe(float64(c.Writer.Size()))
 	}
 }
 func PromHandler(handler http.Handler) gin.HandlerFunc {

@@ -52,6 +52,8 @@ func AddSong(c *gin.Context) {
 	case C.ErrDatabase:
 		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_SONG_SERVER_ERROR, err.Error())
 
+	case C.ErrSongDuplicate:
+		appG.Response(http.StatusUnprocessableEntity, C.ERROR_ADD_SONG_DUPLICATE, songID)
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, songID)
 

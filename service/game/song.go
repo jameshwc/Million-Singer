@@ -63,6 +63,14 @@ func AddSong(s *Song) (int, error) {
 		return 0, C.ErrSongFormatIncorrect
 	}
 
+	switch id, err := model.QuerySongByUrl(s.URL); err {
+	case sql.ErrNoRows:
+		break
+	case nil:
+		return int(id), C.ErrSongDuplicate
+	default:
+		return 0, C.ErrDatabase
+	}
 	var lyrics []model.Lyric
 	var err error
 	switch s.FileType {

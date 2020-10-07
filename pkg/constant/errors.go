@@ -38,4 +38,5 @@ var (
 	ErrSongMissLyricsIncorrect        = errors.New("miss lyrics id negative or exceed total num of lyrics")
 	ErrSongIDNotNumber                = errors.New("param id is not a number")
 	ErrSongNotFound                   = errors.New("song record not found")
+	ErrSongDuplicate                  = errors.New("url duplicate in database")
 )

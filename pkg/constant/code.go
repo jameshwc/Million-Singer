@@ -29,6 +29,7 @@ const (
 	ERROR_ADD_SONG_PARSE_LYRICS_ERROR             = 30004
 	ERROR_ADD_SONG_MISS_LYRICS_ERROR              = 30005
 	ERROR_ADD_SONG_SERVER_ERROR                   = 30006
+	ERROR_ADD_SONG_DUPLICATE                      = 30007
 	ERROR_GET_SONG_ID_NAN                         = 30011
 	ERROR_GET_SONG_NO_RECORD                      = 30012
 	ERROR_GET_SONG_SERVER_ERROR                   = 30013

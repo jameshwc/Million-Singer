@@ -107,3 +107,10 @@ func CheckSongsExist(songsID []int) (int64, error) {
 	}
 	return count, nil
 }
+
+func QuerySongByUrl(url string) (id int64, err error) {
+	if err = db.QueryRow("SELECT id FROM songs WHERE songs.url = ?", url).Scan(&id); err != nil {
+		return 0, err
+	}
+	return id, err
+}

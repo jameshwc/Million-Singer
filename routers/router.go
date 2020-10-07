@@ -58,6 +58,8 @@ func InitRouters() *gin.Engine {
 	gamesAPI.POST("/collects/new", game.AddCollect)
 
 	gamesAPI.POST("/songs/new", game.AddSong)
+
+	gamesAPI.DELETE("/songs/:id", game.DeleteSong)
 	// }
 	return r
 }

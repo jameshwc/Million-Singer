@@ -114,3 +114,20 @@ func QuerySongByVideoID(videoID string) (id int64, err error) {
 	}
 	return id, err
 }
+
+// TODO: Fix foreign key or abandon the idea of delete data
+func DeleteSong(id int) error {
+	if res, err := db.Exec("DELETE FROM songs WHERE songs.id = ?", id); err != nil {
+		log.WarnWithSource(err)
+		return err
+	} else {
+		if cnt, err := res.RowsAffected(); err != nil {
+			return err
+		} else if cnt == 0 {
+			err = errors.New("no song record deleted")
+			log.WarnWithSource(err)
+			return err
+		}
+	}
+	return nil
+}

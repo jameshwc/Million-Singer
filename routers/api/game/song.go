@@ -102,3 +102,19 @@ func GetSongInstance(c *gin.Context) {
 
 	}
 }
+
+func DeleteSong(c *gin.Context) {
+	appG := app.Gin{C: c}
+	switch err := gameService.DeleteSong(c.Param("id")); err {
+
+	case C.ErrSongIDNotNumber:
+		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, err.Error())
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.ERROR_GET_SONG_SERVER_ERROR, err.Error())
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, nil)
+
+	}
+}

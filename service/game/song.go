@@ -134,5 +134,21 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }
 
-// TODO: Delete Song
-// func DeleteSong()
+func DeleteSong(param string) error {
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		return C.ErrSongIDNotNumber
+	}
+	if err = model.DeleteSong(id); err != nil {
+		return C.ErrDatabase
+	}
+	key := cache.GetSongKey(id, true)
+	if err = gredis.Del(key); err != nil {
+		log.WarnWithSource(err)
+	}
+	key = cache.GetSongKey(id, false)
+	if err = gredis.Del(key); err != nil {
+		log.WarnWithSource(err)
+	}
+	return nil
+}

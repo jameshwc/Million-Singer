@@ -41,6 +41,10 @@ func Get(key string) ([]byte, error) {
 	return get(key)
 }
 
+func Del(key string) error {
+	return rdb.Del(key).Err()
+}
+
 func setWithLua(key string, data interface{}, timeout int) error {
 	value, err := json.Marshal(data)
 	if err != nil {

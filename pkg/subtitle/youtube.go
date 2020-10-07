@@ -2,7 +2,6 @@ package subtitle
 
 import (
 	"fmt"
-	"html"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -120,7 +119,7 @@ func (y *youtubeDownloader) getLyrics() ([]model.Lyric, error) {
 		}
 		l.StartAt = time.Duration(start * float64(time.Second))
 		l.EndAt = time.Duration((start + dur) * float64(time.Second))
-		l.Line = html.UnescapeString(s.Text())
+		l.Line = strings.ReplaceAll(s.Text(), "&#39;", "'")
 		l.Index = idx
 		idx++
 		lyrics = append(lyrics, l)

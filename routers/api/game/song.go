@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -53,7 +54,11 @@ func AddSong(c *gin.Context) {
 		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_SONG_SERVER_ERROR, err.Error())
 
 	case C.ErrSongDuplicate:
-		appG.Response(http.StatusUnprocessableEntity, C.ERROR_ADD_SONG_DUPLICATE, songID)
+		appG.Response(http.StatusUnprocessableEntity, C.ERROR_ADD_SONG_DUPLICATE, fmt.Errorf("%w, song id: %d", err, songID).Error())
+
+	case C.ErrSongURLIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_URL_INCORRECT, err.Error())
+
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, songID)
 

@@ -22,7 +22,7 @@ func newYoutubeDownloader(URL string) (*youtubeDownloader, error) {
 	y := new(youtubeDownloader)
 	y.URL = URL
 	var err error
-	y.VideoID, err = parseVideoID(URL)
+	y.VideoID, err = ParseVideoID(URL)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func newYoutubeDownloader(URL string) (*youtubeDownloader, error) {
 // - http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed
 // - http://www.youtube.com/embed/5MgBikgcWnY
 // - http://www.youtube.com/v/5MgBikgcWnY?version=3&amp;hl=en_US
-func parseVideoID(URL string) (string, error) {
+func ParseVideoID(URL string) (string, error) {
 	u, err := url.Parse(URL)
 	if err != nil {
 		return "", err

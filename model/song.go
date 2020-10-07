@@ -14,7 +14,7 @@ import (
 type Song struct {
 	ID         int      `json:"id"`
 	Lyrics     []*Lyric `json:"lyrics,omitempty"`
-	URL        string   `json:"url"`
+	VideoID    string   `json:"video_id"`
 	StartTime  string   `json:"start_time,omitempty"`
 	EndTime    string   `json:"end_time,omitempty"`
 	Language   string   `json:"language"`
@@ -24,7 +24,7 @@ type Song struct {
 	MissLyrics string   `json:"miss_lyrics,omitempty"` // IDs (integers) with comma seperated
 }
 
-func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {
+func AddSong(videoID, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {
 	cur := time.Now()
 	tx, err := db.Begin()
 	if err != nil {
@@ -32,8 +32,8 @@ func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime 
 	}
 
 	result, err := tx.Exec(`INSERT INTO songs (
-	url, name, singer, genre, language, miss_lyrics, start_time, end_time, created_at, updated_at, deleted_at
-	) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, url, name, singer, genre, language, missLyrics, startTime, endTime, cur, cur, sql.NullTime{})
+	video_id, name, singer, genre, language, miss_lyrics, start_time, end_time, created_at, updated_at, deleted_at
+	) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, videoID, name, singer, genre, language, missLyrics, startTime, endTime, cur, cur, sql.NullTime{})
 	if err != nil {
 		return 0, err
 	}
@@ -70,8 +70,8 @@ func (s *Song) RandomGetMissLyricID() int {
 
 func GetSong(songID int, hasLyrics bool) (*Song, error) {
 	var song Song
-	if err := db.QueryRow("SELECT id, url, name, singer, genre, language, miss_lyrics FROM songs WHERE id = ? AND deleted_at IS NULL", songID).
-		Scan(&song.ID, &song.URL, &song.Name, &song.Singer, &song.Genre, &song.Language, &song.MissLyrics); err != nil {
+	if err := db.QueryRow("SELECT id, video_id, name, singer, genre, language, miss_lyrics FROM songs WHERE id = ? AND deleted_at IS NULL", songID).
+		Scan(&song.ID, &song.VideoID, &song.Name, &song.Singer, &song.Genre, &song.Language, &song.MissLyrics); err != nil {
 		return nil, err
 	} else if song.ID != songID {
 		return nil, errors.New("scan id and param id are not matched")
@@ -108,8 +108,8 @@ func CheckSongsExist(songsID []int) (int64, error) {
 	return count, nil
 }
 
-func QuerySongByUrl(url string) (id int64, err error) {
-	if err = db.QueryRow("SELECT id FROM songs WHERE songs.url = ?", url).Scan(&id); err != nil {
+func QuerySongByVideoID(videoID string) (id int64, err error) {
+	if err = db.QueryRow("SELECT id FROM songs WHERE songs.video_id = ?", videoID).Scan(&id); err != nil {
 		return 0, err
 	}
 	return id, err

@@ -7,35 +7,37 @@ import (
 
 var (
 	sampleLanguages = map[string]string{
-		"ar":    "العربية",
-		"bn":    "বাংলা",
-		"de":    "Deutsch",
-		"en":    "English",
-		"es":    "Español",
-		"es-ES": "Español (España)",
-		"fa":    "فارسی",
-		"fr":    "Français",
-		"hr":    "Hrvatski",
-		"hu":    "Magyar",
-		"it":    "Italiano",
-		"iw":    "עברית",
-		"ja":    "日本語",
-		"my":    "မြန်မာ",
-		"pl":    "Polski",
-		"pt-BR": "Português (Brasil)",
-		"ru":    "Русский",
-		"sk":    "Slovenčina",
-		"sr":    "Српски",
-		"th":    "ไทย",
-		"tr":    "Türkçe",
-		"uk":    "Українська",
-		"vi":    "Tiếng Việt",
-		"zh-CN": "中文（简体）",
-		"zh-TW": "中文（繁體）",
+		"Deutsch":            "de",
+		"English":            "en",
+		"Español":            "es",
+		"Español (España)":   "es-ES",
+		"Français":           "fr",
+		"Hrvatski":           "hr",
+		"Italiano":           "it",
+		"Magyar":             "hu",
+		"Polski":             "pl",
+		"Português (Brasil)": "pt-BR",
+		"Slovenčina":         "sk",
+		"Tiếng Việt":         "vi",
+		"Türkçe":             "tr",
+		"default":            "en",
+		"Русский":            "ru",
+		"Српски":             "sr",
+		"Українська":         "uk",
+		"עברית":              "iw",
+		"العربية":            "ar",
+		"فارسی":              "fa",
+		"বাংলা":              "bn",
+		"ไทย":                "th",
+		"မြန်မာ":             "my",
+		"中文（简体）":             "zh-CN",
+		"中文（繁體）":             "zh-TW",
+		"日本語":                "ja",
 	}
+	sampleAndDefault = sampleLanguages
 )
 
-func Test_parseVideoID(t *testing.T) {
+func Test_ParseVideoID(t *testing.T) {
 	type args struct {
 		URL string
 	}
@@ -53,19 +55,20 @@ func Test_parseVideoID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseVideoID(tt.args.URL)
+			got, err := ParseVideoID(tt.args.URL)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("parseVideoID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseVideoID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("parseVideoID() = %v, want %v", got, tt.want)
+				t.Errorf("ParseVideoID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestNewYoutubeDownloader(t *testing.T) {
+	sampleAndDefault["default"] = "en"
 	type args struct {
 		URL string
 	}
@@ -75,10 +78,10 @@ func TestNewYoutubeDownloader(t *testing.T) {
 		want    *youtubeDownloader
 		wantErr bool
 	}{
-		{"http short url", args{URL: "http://youtu.be/5MgBikgcWnY"}, &youtubeDownloader{"http://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleLanguages}, false},
-		{"https short url", args{URL: "https://youtu.be/5MgBikgcWnY"}, &youtubeDownloader{"https://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleLanguages}, false},
-		{"http long url", args{URL: "http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed"}, &youtubeDownloader{"http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleLanguages}, false},
-		{"https long url", args{URL: "https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed"}, &youtubeDownloader{"https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleLanguages}, false},
+		{"http short url", args{URL: "http://youtu.be/5MgBikgcWnY"}, &youtubeDownloader{"http://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleAndDefault}, false},
+		{"https short url", args{URL: "https://youtu.be/5MgBikgcWnY"}, &youtubeDownloader{"https://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleAndDefault}, false},
+		{"http long url", args{URL: "http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed"}, &youtubeDownloader{"http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleAndDefault}, false},
+		{"https long url", args{URL: "https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed"}, &youtubeDownloader{"https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleAndDefault}, false},
 		{"no protocol url", args{URL: "www.youtube.com/watch?v=5MgBikgcWnY&feature=feed"}, nil, true},
 	}
 	for _, tt := range tests {
@@ -96,6 +99,7 @@ func TestNewYoutubeDownloader(t *testing.T) {
 }
 
 func TestyoutubeDownloader_getAvailableLanguages(t *testing.T) {
+	sampleAndDefault["default"] = "en"
 	type fields struct {
 		URL       string
 		VideoID   string
@@ -106,10 +110,10 @@ func TestyoutubeDownloader_getAvailableLanguages(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
-		{"http short url", fields{"http://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleLanguages}, false},
-		{"https short url", fields{"https://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleLanguages}, false},
-		{"http long url", fields{"http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleLanguages}, false},
-		{"https long url", fields{"https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleLanguages}, false},
+		{"http short url", fields{"http://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleAndDefault}, false},
+		{"https short url", fields{"https://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleAndDefault}, false},
+		{"http long url", fields{"http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleAndDefault}, false},
+		{"https long url", fields{"https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleAndDefault}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

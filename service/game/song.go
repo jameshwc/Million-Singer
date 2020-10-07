@@ -63,7 +63,12 @@ func AddSong(s *Song) (int, error) {
 		return 0, C.ErrSongFormatIncorrect
 	}
 
-	switch id, err := model.QuerySongByUrl(s.URL); err {
+	videoID, err := subtitle.ParseVideoID(s.URL)
+	if err != nil {
+		return 0, C.ErrSongURLIncorrect
+	}
+
+	switch id, err := model.QuerySongByVideoID(videoID); err {
 	case sql.ErrNoRows:
 		break
 	case nil:
@@ -73,7 +78,6 @@ func AddSong(s *Song) (int, error) {
 	}
 
 	var lyrics []model.Lyric
-	var err error
 	switch s.FileType {
 	case "srt":
 		lyrics, err = subtitle.ReadSrtFromBytes(s.File)
@@ -95,7 +99,7 @@ func AddSong(s *Song) (int, error) {
 		return 0, C.ErrSongMissLyricsIncorrect
 	}
 
-	id, err := model.AddSong(s.URL, s.Name, s.Singer, s.Genre, s.Language, lyricsJoin(s.MissLyrics), "", "", lyrics)
+	id, err := model.AddSong(videoID, s.Name, s.Singer, s.Genre, s.Language, lyricsJoin(s.MissLyrics), "", "", lyrics)
 	if err != nil {
 		log.Error(err)
 		return 0, C.ErrDatabase

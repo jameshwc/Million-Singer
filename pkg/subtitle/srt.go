@@ -45,10 +45,16 @@ func ReadSrtFromFile(i io.Reader) ([]model.Lyric, error) {
 			if lyric.EndAt, err = parseSrtDuration(boundaries[1]); err != nil {
 				return nil, fmt.Errorf("subtitle: parsing srt duration %s failed: %w", boundaries[1], err)
 			}
+			if lyric.StartAt > lyric.EndAt {
+				return nil, fmt.Errorf("subtitle: start_at is greater than end_at")
+			}
 			lyrics = append(lyrics, lyric)
 		} else {
 			prev = line
 		}
+	}
+	if len(lyrics) == 0 {
+		return nil, fmt.Errorf("subtitle: file not parse correctly")
 	}
 	return lyrics, nil
 }

@@ -68,9 +68,12 @@ func AddSong(s *Song) (int, error) {
 	switch s.FileType {
 	case "srt":
 		lyrics, err = subtitle.ReadSrtFromBytes(s.File)
+	case "lrc":
+		lyrics, err = subtitle.ReadLrcFromBytes(s.File)
 	default:
 		return 0, C.ErrSongLyricsFileTypeNotSupported
 	}
+
 	if err != nil {
 		return 0, C.ErrSongParseLyrics
 	}

@@ -1,7 +1,7 @@
 package stat
 
 import (
-	"log"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 
 	linuxproc "github.com/c9s/goprocinfo/linux"
 )

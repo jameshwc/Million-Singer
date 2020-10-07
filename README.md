@@ -16,5 +16,3 @@ $ docker-compose up -d --build
 
 - Custom Logging
 - Unit tests
-- lrc support
-- Prometheus exporter

@@ -39,7 +39,7 @@ func findMax(l []int) (int, error) {
 }
 
 type Song struct {
-	File       []byte `json:"file" valid:"Required;"`
+	File       []byte `json:"file"`
 	FileType   string `json:"file_type" valid:"Required;MaxSize(50)"`
 	URL        string `json:"url" valid:"Required;Match(/^https?://)"`
 	Name       string `json:"name" valid:"Required;MaxSize(100)"`
@@ -59,7 +59,7 @@ func AddSong(s *Song) (int, error) {
 	valid := validation.Validation{}
 
 	ok, _ := valid.Valid(s)
-	if !ok {
+	if !ok || (s.FileType != "youtube" && len(s.File) == 0) {
 		return 0, C.ErrSongFormatIncorrect
 	}
 
@@ -71,6 +71,7 @@ func AddSong(s *Song) (int, error) {
 	default:
 		return 0, C.ErrDatabase
 	}
+
 	var lyrics []model.Lyric
 	var err error
 	switch s.FileType {
@@ -78,11 +79,14 @@ func AddSong(s *Song) (int, error) {
 		lyrics, err = subtitle.ReadSrtFromBytes(s.File)
 	case "lrc":
 		lyrics, err = subtitle.ReadLrcFromBytes(s.File)
+	case "youtube":
+		lyrics, err = subtitle.GetLyricsFromYoutubeSubtitle(s.URL)
 	default:
 		return 0, C.ErrSongLyricsFileTypeNotSupported
 	}
 
 	if err != nil {
+		log.WarnWithSource(err)
 		return 0, C.ErrSongParseLyrics
 	}
 
@@ -125,3 +129,6 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	gredis.Set(key, s, 7200)
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }
+
+// TODO: Delete Song
+// func DeleteSong()

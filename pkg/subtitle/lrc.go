@@ -3,7 +3,6 @@ package subtitle
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"regexp"
 	"strings"
@@ -52,7 +51,6 @@ func ReadLrcFromFile(i io.Reader) ([]model.Lyric, error) {
 	}
 	prev.EndAt = time.Duration(int64(1) << 62) // infinite end_at for the last lyric
 	lyrics = append(lyrics, *prev)
-	fmt.Println(lyrics)
 	return lyrics, nil
 }
 

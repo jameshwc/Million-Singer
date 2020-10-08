@@ -36,18 +36,18 @@ func Login(c *gin.Context) {
 	switch err {
 
 	case C.ErrUserLoginFormat:
-		appG.Response(http.StatusBadRequest, C.ERROR_LOGIN_FAIL_FORMAT_INCORRECT, err.Error())
+		appG.Response(http.StatusBadRequest, C.ERROR_LOGIN_FAIL_FORMAT_INCORRECT, err.Error(), nil)
 
 	case C.ErrUserLoginAuthentication:
-		appG.Response(http.StatusBadRequest, C.ERROR_LOGIN_FAIL_AUTHENTICATION, err.Error())
+		appG.Response(http.StatusBadRequest, C.ERROR_LOGIN_FAIL_AUTHENTICATION, err.Error(), nil)
 
 	case C.ErrUserLoginJwtTokenGeneration:
-		appG.Response(http.StatusInternalServerError, C.ERROR_LOGIN_FAIL_JWT_TOKEN_GENERATION, err.Error())
+		appG.Response(http.StatusInternalServerError, C.ERROR_LOGIN_FAIL_JWT_TOKEN_GENERATION, err.Error(), nil)
 
 	case C.ErrUserLoginUpdateUserStatus:
-		appG.Response(http.StatusInternalServerError, C.ERROR_LOGIN_FAIL_UPDATE_LOGIN_STATUS, err.Error())
+		appG.Response(http.StatusInternalServerError, C.ERROR_LOGIN_FAIL_UPDATE_LOGIN_STATUS, err.Error(), nil)
 
 	case nil:
-		appG.Response(http.StatusOK, C.SUCCESS, token)
+		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, token)
 	}
 }

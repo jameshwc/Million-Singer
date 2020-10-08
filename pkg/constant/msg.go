@@ -52,6 +52,8 @@ var MsgFlags = map[int]string{
 	ERROR_AUTH_TOKEN_FAIL:                 "auth token incorrect",
 }
 
+var SuccessMsg = "Success"
+
 func GetMsg(code int) string {
 	msg, ok := MsgFlags[code]
 	if ok {

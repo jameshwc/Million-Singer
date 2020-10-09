@@ -16,3 +16,6 @@ $ docker-compose up -d --build
 
 - Custom Logging
 - Unit tests
+- User & Game integration
+- Autofill songs' information by third-party API
+- MongoDB for lyrics

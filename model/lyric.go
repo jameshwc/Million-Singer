@@ -11,6 +11,11 @@ type Lyric struct {
 	EndAt   time.Duration `json:"end_time"`
 }
 
+type Lyrics struct {
+	ID     int     `json:"song_id"`
+	Lyrics []Lyric `json:"lyrics"`
+}
+
 // func GetLyricsWithSongID(songID int) (lyrics []*Lyric, err error) {
 // 	if err = db.Where("song_id = ?", songID).Find(&lyrics).Error; err != nil {
 // 		return nil, err

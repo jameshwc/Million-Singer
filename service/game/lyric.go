@@ -8,7 +8,7 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/constant"
 )
 
-func GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
+func GetLyricsWithSongID(param string) (*model.Lyrics, error) {
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		return nil, constant.ErrSongIDNotNumber
@@ -17,5 +17,5 @@ func GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
 	if err == sql.ErrNoRows {
 		return nil, constant.ErrSongNotFound
 	}
-	return s.Lyrics, nil
+	return &s.Lyrics, nil
 }

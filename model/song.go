@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"math/rand"
@@ -9,19 +10,20 @@ import (
 	"time"
 
 	"github.com/jameshwc/Million-Singer/pkg/log"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Song struct {
-	ID         int      `json:"id"`
-	Lyrics     []*Lyric `json:"lyrics,omitempty"`
-	VideoID    string   `json:"video_id"`
-	StartTime  string   `json:"start_time,omitempty"`
-	EndTime    string   `json:"end_time,omitempty"`
-	Language   string   `json:"language"`
-	Name       string   `json:"name"`
-	Singer     string   `json:"singer"`
-	Genre      string   `json:"genre"`
-	MissLyrics string   `json:"miss_lyrics,omitempty"` // IDs (integers) with comma seperated
+	ID         int    `json:"id"`
+	Lyrics     Lyrics `json:"lyrics,omitempty"`
+	VideoID    string `json:"video_id,omitempty"`
+	StartTime  string `json:"start_time,omitempty"`
+	EndTime    string `json:"end_time,omitempty"`
+	Language   string `json:"language,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Singer     string `json:"singer,omitempty"`
+	Genre      string `json:"genre,omitempty"`
+	MissLyrics string `json:"miss_lyrics,omitempty"` // IDs (integers) with comma seperated
 }
 
 func AddSong(videoID, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {
@@ -35,6 +37,7 @@ func AddSong(videoID, name, singer, genre, language, missLyrics, startTime, endT
 	video_id, name, singer, genre, language, miss_lyrics, start_time, end_time, created_at, updated_at, deleted_at
 	) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, videoID, name, singer, genre, language, missLyrics, startTime, endTime, cur, cur, sql.NullTime{})
 	if err != nil {
+		tx.Rollback()
 		return 0, err
 	}
 
@@ -44,20 +47,12 @@ func AddSong(videoID, name, singer, genre, language, missLyrics, startTime, endT
 		return 0, err
 	}
 
-	stmt := "INSERT INTO lyrics (created_at, updated_at, deleted_at, `index`, line, start_at, end_at, song_id) VALUES "
-	log.Info("song id ", id)
-	songID := strconv.Itoa(int(id))
-	curString := cur.Format("2006-01-02 15:04:05")
-	for i := range lyrics {
-		stmt += "('" + curString + "','" + curString + "',NULL," + strconv.Itoa(lyrics[i].Index) + ",'" + escape(lyrics[i].Line) + "'," + strconv.FormatInt(lyrics[i].StartAt.Milliseconds(), 10) + "," + strconv.FormatInt(lyrics[i].EndAt.Milliseconds(), 10) + "," + songID + "),"
-	}
-	stmt = stmt[:len(stmt)-1]
-	result, err = tx.Exec(stmt)
+	insertResult, err := lyricsCollection.InsertOne(context.TODO(), Lyrics{int(id), lyrics})
 	if err != nil {
 		tx.Rollback()
-		return 0, err
+		log.Error(err)
 	}
-
+	log.InfoWithSource(insertResult.InsertedID)
 	return int(id), tx.Commit()
 }
 
@@ -77,19 +72,32 @@ func GetSong(songID int, hasLyrics bool) (*Song, error) {
 		return nil, errors.New("scan id and param id are not matched")
 	}
 	if hasLyrics {
-		rows, err := db.Query("SELECT `index`, line, start_at, end_at FROM lyrics WHERE song_id = ?", songID)
+		filter := bson.M{"song_id": songID}
+		cursor, err := lyricsCollection.Find(context.TODO(), filter)
 		if err != nil {
+			log.Error(err)
 			return nil, err
 		}
-		defer rows.Close()
-		for rows.Next() {
-			var lyric Lyric
-			if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
-				log.Info(err)
-				return nil, err
-			}
-			song.Lyrics = append(song.Lyrics, &lyric)
+		var lyrics Lyrics
+		err = cursor.Decode(&lyrics)
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
 		}
+		song.Lyrics = lyrics
+		// rows, err := db.Query("SELECT `index`, line, start_at, end_at FROM lyrics WHERE song_id = ?", songID)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// defer rows.Close()
+		// for rows.Next() {
+		// 	var lyric Lyric
+		// 	if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
+		// 		log.Info(err)
+		// 		return nil, err
+		// 	}
+		// 	song.Lyrics = append(song.Lyrics, lyric)
+		// }
 	}
 	return &song, nil
 }

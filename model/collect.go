@@ -30,7 +30,7 @@ func GetCollect(id int) (*Collect, error) {
 	collect.ID = id
 	collect.Title = title
 
-	rows, err := db.Query(`SELECT songs.id as song_id, songs.url, songs.name, songs.singer, songs.language, songs.genre
+	rows, err := db.Query(`SELECT songs.id as song_id, songs.video_id, songs.name, songs.singer, songs.language, songs.genre
 				FROM songs
 				INNER JOIN collect_songs ON collect_songs.collect_id = ? AND collect_songs.song_id = songs.id`, id)
 	if err != nil {
@@ -40,7 +40,7 @@ func GetCollect(id int) (*Collect, error) {
 
 	for rows.Next() {
 		var song Song
-		rows.Scan(&song.ID, &song.URL, &song.Name, &song.Singer, &song.Language, &song.Genre)
+		rows.Scan(&song.ID, &song.VideoID, &song.Name, &song.Singer, &song.Language, &song.Genre)
 		collect.Songs = append(collect.Songs, &song)
 	}
 	return &collect, nil

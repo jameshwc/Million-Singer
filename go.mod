@@ -5,6 +5,9 @@ go 1.15
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/astaxie/beego v1.12.2
+	github.com/beevik/etree v1.1.0
+	github.com/bshuster-repo/logrus-logstash-hook v1.0.0
+	github.com/c9s/goprocinfo v0.0.0-20200311234719-5750cbd54a3b
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
@@ -17,7 +20,7 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/onsi/ginkgo v1.14.1 // indirect
 	github.com/onsi/gomega v1.10.2 // indirect
-	github.com/prometheus/client_golang v1.7.1 // indirect
+	github.com/prometheus/client_golang v1.7.1
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14

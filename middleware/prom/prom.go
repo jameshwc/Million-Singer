@@ -3,14 +3,30 @@ package prom
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jameshwc/Million-Singer/pkg/stat"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const namespace = "service"
+const namespace = ""
 
+var EndpointList = []string{
+	"/metrics",
+	"/api/users",
+	"/api/users/check",
+	"/api/users/register",
+	"/api/users/login",
+	"/api/users/check",
+	"/api/game",
+	"/api/game/tours",
+	"/api/game/collects",
+	"/api/game/songs",
+	"/api/game/lyrics",
+	"/swagger/",
+}
 var (
 	labels = []string{"status", "endpoint", "method"}
 
@@ -22,49 +38,72 @@ var (
 		}, nil,
 	)
 
+	reqCountPerEndpoint = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "http_request_count_total_per_endpoint",
+			Help:      "Total number of HTTP requests made per endpoint.",
+		}, labels,
+	)
+
 	reqCount = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: namespace,
 			Name:      "http_request_count_total",
 			Help:      "Total number of HTTP requests made.",
-		}, labels,
+		}, nil,
 	)
 
-	reqDuration = prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
+	userCPU = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name:      "http_request_duration_seconds",
-			Help:      "HTTP request latencies in seconds.",
-		}, labels,
+			Name:      "user_cpu_usage",
+			Help:      "User CPU Usage.",
+		}, nil,
 	)
 
-	reqSizeBytes = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
+	systemCPU = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name:      "http_request_size_bytes",
-			Help:      "HTTP request sizes in bytes.",
-		}, labels,
+			Name:      "system_cpu_usage",
+			Help:      "System CPU Usage.",
+		}, nil,
 	)
 
-	respSizeBytes = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
+	memUsage = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name:      "http_response_size_bytes",
-			Help:      "HTTP request sizes in bytes.",
-		}, labels,
+			Name:      "system_mem_usage",
+			Help:      "System Mem Usage.",
+		}, nil,
+	)
+
+	diskUsage = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "system_disk_usage",
+			Help:      "System Disk Usage.",
+		}, nil,
 	)
 )
 
 // init registers the prometheus metrics
 func init() {
-	prometheus.MustRegister(uptime, reqCount, reqDuration, reqSizeBytes, respSizeBytes)
-	go recordUptime()
+	prometheus.MustRegister(uptime, reqCount, reqCountPerEndpoint, userCPU, systemCPU, memUsage, diskUsage)
+	go recordServerMetrics()
 }
 
-// recordUptime increases service uptime per second.
-func recordUptime() {
+func recordServerMetrics() {
+	prev := stat.GetServer()
 	for range time.Tick(time.Second) {
+		cur := stat.GetServer()
+		cpuTotal := float64(cur.CPU.Total - prev.CPU.Total)
 		uptime.WithLabelValues().Inc()
+		userCPU.WithLabelValues().Set(float64(cur.CPU.User-prev.CPU.User) / cpuTotal * 100)
+		systemCPU.WithLabelValues().Set(float64(cur.CPU.System-prev.CPU.System) / cpuTotal * 100)
+		memUsage.WithLabelValues().Set(cur.Mem.Usage() * 100)
+		diskUsage.WithLabelValues().Set(cur.Disk.Usage() * 100)
+		prev = cur
 	}
 }
 
@@ -96,19 +135,25 @@ func calcRequestSize(r *http.Request) float64 {
 func PromMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		start := time.Now()
+
 		c.Next()
 
 		status := fmt.Sprintf("%d", c.Writer.Status())
 		endpoint := c.Request.URL.Path
 		method := c.Request.Method
+		recordEndpoint := ""
+		for i := range EndpointList {
+			if strings.HasPrefix(endpoint, EndpointList[i]) && len(recordEndpoint) < len(EndpointList[i]) {
+				recordEndpoint = EndpointList[i]
+			}
+		}
+		if recordEndpoint == "" {
+			recordEndpoint = "unknown"
+		}
+		lvs := []string{status, recordEndpoint, method}
 
-		lvs := []string{status, endpoint, method}
-
-		reqCount.WithLabelValues(lvs...).Inc()
-		reqDuration.WithLabelValues(lvs...).Observe(time.Since(start).Seconds())
-		reqSizeBytes.WithLabelValues(lvs...).Observe(calcRequestSize(c.Request))
-		respSizeBytes.WithLabelValues(lvs...).Observe(float64(c.Writer.Size()))
+		reqCount.WithLabelValues().Inc()
+		reqCountPerEndpoint.WithLabelValues(lvs...).Inc()
 	}
 }
 func PromHandler(handler http.Handler) gin.HandlerFunc {

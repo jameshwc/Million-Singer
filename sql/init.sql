@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `created_at` datetime(3) DEFAULT NULL,
   `updated_at` datetime(3) DEFAULT NULL,
   `deleted_at` datetime(3) DEFAULT NULL,
-  `url` varchar(200),
+  `video_id` varchar(200),
   `start_time` varchar(200),
   `end_time` varchar(200),
   `language` varchar(200),

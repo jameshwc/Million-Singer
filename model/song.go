@@ -7,14 +7,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/jameshwc/Million-Singer/pkg/log"
 )
 
 type Song struct {
 	ID         int      `json:"id"`
 	Lyrics     []*Lyric `json:"lyrics,omitempty"`
-	URL        string   `json:"url"`
+	VideoID    string   `json:"video_id"`
 	StartTime  string   `json:"start_time,omitempty"`
 	EndTime    string   `json:"end_time,omitempty"`
 	Language   string   `json:"language"`
@@ -24,7 +22,7 @@ type Song struct {
 	MissLyrics string   `json:"miss_lyrics,omitempty"` // IDs (integers) with comma seperated
 }
 
-func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {
+func AddSong(videoID, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []Lyric) (int, error) {
 	cur := time.Now()
 	tx, err := db.Begin()
 	if err != nil {
@@ -32,8 +30,8 @@ func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime 
 	}
 
 	result, err := tx.Exec(`INSERT INTO songs (
-	url, name, singer, genre, language, miss_lyrics, start_time, end_time, created_at, updated_at, deleted_at
-	) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, url, name, singer, genre, language, missLyrics, startTime, endTime, cur, cur, sql.NullTime{})
+	video_id, name, singer, genre, language, miss_lyrics, start_time, end_time, created_at, updated_at, deleted_at
+	) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, videoID, name, singer, genre, language, missLyrics, startTime, endTime, cur, cur, sql.NullTime{})
 	if err != nil {
 		return 0, err
 	}
@@ -45,7 +43,6 @@ func AddSong(url, name, singer, genre, language, missLyrics, startTime, endTime 
 	}
 
 	stmt := "INSERT INTO lyrics (created_at, updated_at, deleted_at, `index`, line, start_at, end_at, song_id) VALUES "
-	log.Info("song id ", id)
 	songID := strconv.Itoa(int(id))
 	curString := cur.Format("2006-01-02 15:04:05")
 	for i := range lyrics {
@@ -70,8 +67,8 @@ func (s *Song) RandomGetMissLyricID() int {
 
 func GetSong(songID int, hasLyrics bool) (*Song, error) {
 	var song Song
-	if err := db.QueryRow("SELECT id, url, name, singer, genre, language, miss_lyrics FROM songs WHERE id = ? AND deleted_at IS NULL", songID).
-		Scan(&song.ID, &song.URL, &song.Name, &song.Singer, &song.Genre, &song.Language, &song.MissLyrics); err != nil {
+	if err := db.QueryRow("SELECT id, video_id, name, singer, genre, language, miss_lyrics FROM songs WHERE id = ? AND deleted_at IS NULL", songID).
+		Scan(&song.ID, &song.VideoID, &song.Name, &song.Singer, &song.Genre, &song.Language, &song.MissLyrics); err != nil {
 		return nil, err
 	} else if song.ID != songID {
 		return nil, errors.New("scan id and param id are not matched")
@@ -85,7 +82,6 @@ func GetSong(songID int, hasLyrics bool) (*Song, error) {
 		for rows.Next() {
 			var lyric Lyric
 			if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
-				log.Info(err)
 				return nil, err
 			}
 			song.Lyrics = append(song.Lyrics, &lyric)
@@ -106,4 +102,26 @@ func CheckSongsExist(songsID []int) (int64, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func QuerySongByVideoID(videoID string) (id int64, err error) {
+	if err = db.QueryRow("SELECT id FROM songs WHERE songs.video_id = ?", videoID).Scan(&id); err != nil {
+		return 0, err
+	}
+	return id, err
+}
+
+// TODO: Fix foreign key or abandon the idea of delete data
+func DeleteSong(id int) error {
+	if res, err := db.Exec("DELETE FROM songs WHERE songs.id = ?", id); err != nil {
+		return err
+	} else {
+		if cnt, err := res.RowsAffected(); err != nil {
+			return err
+		} else if cnt == 0 {
+			err = errors.New("no song record deleted")
+			return err
+		}
+	}
+	return nil
 }

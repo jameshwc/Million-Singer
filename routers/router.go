@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/jameshwc/Million-Singer/middleware/iplog"
 	"github.com/jameshwc/Million-Singer/middleware/prom"
 	"github.com/jameshwc/Million-Singer/middleware/version"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
@@ -16,6 +17,7 @@ import (
 func methodNotAllowed(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
 }
+
 func InitRouters() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -26,6 +28,9 @@ func InitRouters() *gin.Engine {
 	r.Use(version.RevisionMiddleware())
 
 	r.Use(prom.PromMiddleware())
+
+	r.Use(iplog.TraceIP())
+
 	r.GET("/metrics", prom.PromHandler(promhttp.Handler()))
 
 	r.HandleMethodNotAllowed = true
@@ -57,6 +62,8 @@ func InitRouters() *gin.Engine {
 	gamesAPI.POST("/collects/new", game.AddCollect)
 
 	gamesAPI.POST("/songs/new", game.AddSong)
+
+	gamesAPI.DELETE("/songs/:id", game.DeleteSong)
 	// }
 	return r
 }

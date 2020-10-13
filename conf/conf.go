@@ -1,8 +1,7 @@
 package conf
 
 import (
-	"github.com/jameshwc/Million-Singer/pkg/log"
-
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -32,9 +31,14 @@ type Redis struct {
 	IdleTimeout time.Duration
 }
 
+type Log struct {
+	LogStashAddr string
+}
+
 var DBconfig = &Database{}
 var ServerConfig = &Server{}
 var RedisConfig = &Redis{}
+var LogConfig = &Log{}
 
 func Setup() {
 	DBconfig = &Database{
@@ -73,5 +77,8 @@ func Setup() {
 		Password:    os.Getenv("redis_password"),
 		MinIdleConn: minIdleConn,
 		IdleTimeout: time.Duration(idleTimeout) * time.Second,
+	}
+	LogConfig = &Log{
+		LogStashAddr: os.Getenv("logstash_addr"),
 	}
 }

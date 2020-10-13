@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/jameshwc/Million-Singer/pkg/log"
 )
 
 type Song struct {
@@ -45,7 +43,6 @@ func AddSong(videoID, name, singer, genre, language, missLyrics, startTime, endT
 	}
 
 	stmt := "INSERT INTO lyrics (created_at, updated_at, deleted_at, `index`, line, start_at, end_at, song_id) VALUES "
-	log.Info("song id ", id)
 	songID := strconv.Itoa(int(id))
 	curString := cur.Format("2006-01-02 15:04:05")
 	for i := range lyrics {
@@ -85,7 +82,6 @@ func GetSong(songID int, hasLyrics bool) (*Song, error) {
 		for rows.Next() {
 			var lyric Lyric
 			if err := rows.Scan(&lyric.Index, &lyric.Line, &lyric.StartAt, &lyric.EndAt); err != nil {
-				log.Info(err)
 				return nil, err
 			}
 			song.Lyrics = append(song.Lyrics, &lyric)
@@ -118,14 +114,12 @@ func QuerySongByVideoID(videoID string) (id int64, err error) {
 // TODO: Fix foreign key or abandon the idea of delete data
 func DeleteSong(id int) error {
 	if res, err := db.Exec("DELETE FROM songs WHERE songs.id = ?", id); err != nil {
-		log.WarnWithSource(err)
 		return err
 	} else {
 		if cnt, err := res.RowsAffected(); err != nil {
 			return err
 		} else if cnt == 0 {
 			err = errors.New("no song record deleted")
-			log.WarnWithSource(err)
 			return err
 		}
 	}

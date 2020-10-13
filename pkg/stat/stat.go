@@ -33,11 +33,12 @@ type Server struct {
 }
 
 func CalCpuUsage() CPU {
+	var st CPU
 	stat, err := linuxproc.ReadStat("/proc/stat")
 	if err != nil {
-		log.Fatal("stat read fail")
+		log.Error("stat read fail")
+		return st
 	}
-	var st CPU
 	for _, s := range stat.CPUStats {
 		st.Total += s.IOWait + s.IRQ + s.Idle + s.Nice + s.SoftIRQ + s.Steal + s.System + s.User
 		st.User += s.User
@@ -50,7 +51,7 @@ func CalCpuUsage() CPU {
 func CalMemUsage() Mem {
 	stat, err := linuxproc.ReadMemInfo("/proc/meminfo")
 	if err != nil {
-		log.Fatal("stat read fail")
+		log.Error("stat read fail")
 	}
 	return Mem{Used: stat.MemTotal - stat.MemAvailable, Available: stat.MemAvailable, Total: stat.MemTotal}
 }
@@ -58,7 +59,7 @@ func CalMemUsage() Mem {
 func CalDiskUsage() Disk {
 	stat, err := linuxproc.ReadDisk("/")
 	if err != nil {
-		log.Fatal("stat read fail")
+		log.Error("stat read fail")
 	}
 	return Disk{Used: stat.Used, Total: stat.All}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/jameshwc/Million-Singer/middleware/iplog"
 	"github.com/jameshwc/Million-Singer/middleware/prom"
 	"github.com/jameshwc/Million-Singer/middleware/version"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
@@ -27,6 +28,9 @@ func InitRouters() *gin.Engine {
 	r.Use(version.RevisionMiddleware())
 
 	r.Use(prom.PromMiddleware())
+
+	r.Use(iplog.TraceIP())
+
 	r.GET("/metrics", prom.PromHandler(promhttp.Handler()))
 
 	r.HandleMethodNotAllowed = true

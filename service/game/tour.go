@@ -16,25 +16,27 @@ func GetTour(param string) (*model.Tour, error) {
 
 	id, err := strconv.Atoi(param)
 	if err != nil {
+		log.Debugf("Get Tour: param id %s is not a number", id)
 		return nil, C.ErrTourIDNotNumber
 	}
 
 	key := cache.GetTourKey(id)
 	if data, err := gredis.Get(key); err == nil {
-		log.Info("redis being used to get tour")
 		var t model.Tour
 		if err := json.Unmarshal(data, &t); err != nil {
-			log.Info("unable to unmarshal data: ", err)
+			log.Info("Get Tour: unable to unmarshal data: ", err)
 		} else {
+			log.Info("Get Tour: redis being used to get tour")
 			return &t, nil
 		}
 	}
 
 	tour, err := model.GetTour(id)
 	if err == sql.ErrNoRows {
+		log.Debugf("Get Tour: tour id %d record not found", id)
 		return nil, C.ErrTourNotFound
 	} else if err != nil {
-		log.Error(err)
+		log.Error("Get Tour: unknown database error", err.Error())
 		return nil, C.ErrDatabase
 	}
 	gredis.Set(key, tour, 7200)
@@ -44,7 +46,7 @@ func GetTour(param string) (*model.Tour, error) {
 func GetTotalTours() (int, error) {
 	total, err := model.GetTotalTours()
 	if err != nil {
-		log.Error(err)
+		log.Error("Get Total Tours: unknown database error, ", err.Error())
 		return 0, C.ErrDatabase
 	}
 	return total, nil

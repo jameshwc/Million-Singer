@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 services:
   web:
     environment:
@@ -17,16 +17,19 @@ services:
       redis_min_idle_conn: ${redis_min_idle_conn}
       redis_idle_timeout: ${redis_idle_timeout}
     
-    # image: registry.gitlab.com/jameshwc/million-singer:latest
-    build: .
+    image: registry.gitlab.com/jameshwc/million-singer:latest
     ports:
       - 80:8000
     links:
       - db
       - redis
+      - logstash
+      - kibana
+      - elasticsearch
     depends_on:
       - db
       - redis
+      - logstash
   
   db:
     image: mysql:8.0
@@ -51,5 +54,58 @@ services:
     image: redis:6.0.8-alpine
     restart: always
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    volumes:
+      - type: bind
+        source: ./conf/elk/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks
+      # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.9.2
+    volumes:
+      - type: bind
+        source: ./conf/elk/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./conf/elk/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    volumes:
+      - type: bind
+        source: ./conf/elk/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
 volumes:
   data: {}
+  elasticsearch:

@@ -16,10 +16,11 @@ services:
       redis_password: ${redis_password}
       redis_min_idle_conn: ${redis_min_idle_conn}
       redis_idle_timeout: ${redis_idle_timeout}
+      logstash_addr: ${logstash_addr}
     
     image: registry.gitlab.com/jameshwc/million-singer:latest
     ports:
-      - 80:8000
+      - 80:80
     links:
       - db
       - redis

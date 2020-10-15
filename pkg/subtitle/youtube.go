@@ -96,7 +96,9 @@ func (y *youtubeDownloader) getAvailableLanguages() error {
 			y.Languages["default"] = s.SelectAttr("lang_code").Value
 		}
 	}
-
+	if _, ok := y.Languages["default"]; !ok {
+		y.Languages["default"] = root.SelectElements("track")[0].SelectAttr("lang_code").Value // TODO: is zero index always correct lang?
+	}
 	return nil
 }
 

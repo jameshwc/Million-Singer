@@ -9,6 +9,7 @@ import (
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
+	"github.com/jameshwc/Million-Singer/repo"
 	"github.com/jameshwc/Million-Singer/service/cache"
 )
 
@@ -31,7 +32,7 @@ func GetCollect(param string) (*model.Collect, error) {
 		}
 	}
 
-	collect, err := model.GetCollect(id)
+	collect, err := repo.Collect.Get(id)
 	if err == sql.ErrNoRows {
 		log.Debugf("Get Collect: param id %s is not a number", param)
 		return nil, C.ErrCollectNotFound
@@ -48,7 +49,7 @@ func AddCollect(songs []int, title string) (int, error) {
 		return 0, C.ErrCollectAddFormatIncorrect
 	}
 
-	songNum, err := model.CheckSongsExist(songs)
+	songNum, err := repo.Song.CheckManyExist(songs)
 	if err != nil {
 		log.Error("Add Collect: ", err.Error())
 		return 0, C.ErrDatabase
@@ -56,7 +57,7 @@ func AddCollect(songs []int, title string) (int, error) {
 		log.Debug("Add Collect: Songs record not found, songs id: ", songs)
 		return 0, C.ErrCollectAddSongsRecordNotFound
 	}
-	id, err := model.AddCollect(title, songs)
+	id, err := repo.Collect.Add(title, songs)
 	if err != nil {
 		log.Error("Add Collect: unknown database error, ", err.Error())
 		return 0, C.ErrDatabase

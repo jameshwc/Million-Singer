@@ -9,6 +9,7 @@ import (
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
+	"github.com/jameshwc/Million-Singer/repo"
 	"github.com/jameshwc/Million-Singer/service/cache"
 )
 
@@ -31,7 +32,7 @@ func GetTour(param string) (*model.Tour, error) {
 		}
 	}
 
-	tour, err := model.GetTour(id)
+	tour, err := repo.Tour.Get(id)
 	if err == sql.ErrNoRows {
 		log.Debugf("Get Tour: tour id %d record not found", id)
 		return nil, C.ErrTourNotFound
@@ -44,7 +45,7 @@ func GetTour(param string) (*model.Tour, error) {
 }
 
 func GetTotalTours() (int, error) {
-	total, err := model.GetTotalTours()
+	total, err := repo.Tour.GetTotal()
 	if err != nil {
 		log.Error("Get Total Tours: unknown database error, ", err.Error())
 		return 0, C.ErrDatabase
@@ -58,14 +59,14 @@ func AddTour(collectsID []int) (int, error) {
 		return 0, C.ErrTourAddFormatIncorrect
 	}
 
-	collectNum, err := model.CheckCollectsExist(collectsID)
+	collectNum, err := repo.Collect.CheckManyExist(collectsID)
 	if err != nil {
 		log.Error("Check Collects Exist: ", err)
 		return 0, C.ErrDatabase
 	} else if len(collectsID) != int(collectNum) {
 		return 0, C.ErrTourAddCollectsRecordNotFound
 	}
-	id, err := model.AddTour(collectsID)
+	id, err := repo.Tour.Add(collectsID)
 	if err != nil {
 		log.Error("Add Tour: ", err)
 		return 0, C.ErrDatabase

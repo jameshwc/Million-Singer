@@ -12,6 +12,7 @@ import (
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
+	"github.com/jameshwc/Million-Singer/repo"
 
 	"github.com/jameshwc/Million-Singer/pkg/subtitle"
 	"github.com/jameshwc/Million-Singer/service/cache"
@@ -74,7 +75,7 @@ func AddSong(s *Song) (int, error) {
 		return 0, C.ErrSongURLIncorrect
 	}
 
-	switch id, err := model.QuerySongByVideoID(videoID); err {
+	switch id, err := repo.Song.QueryByVideoID(videoID); err {
 	case sql.ErrNoRows:
 		break
 	case nil:
@@ -113,7 +114,7 @@ func AddSong(s *Song) (int, error) {
 		return 0, C.ErrSongMissLyricsIncorrect
 	}
 
-	id, err := model.AddSong(videoID, s.Name, s.Singer, s.Genre, s.Language, lyricsJoin(s.MissLyrics), "", "", lyrics)
+	id, err := repo.Song.Add(videoID, s.Name, s.Singer, s.Genre, s.Language, lyricsJoin(s.MissLyrics), "", "", lyrics)
 	if err != nil {
 		log.Error("Add Song: unknown database error: ", err.Error())
 		return 0, C.ErrDatabase
@@ -139,7 +140,7 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 			return &SongInstance{Song: &s, MissLyricID: s.RandomGetMissLyricID()}, nil
 		}
 	}
-	s, err := model.GetSong(id, hasLyrics)
+	s, err := repo.Song.Get(id, hasLyrics)
 	if err == sql.ErrNoRows {
 		log.Infof("Get Song: song id %d not found", id)
 		return nil, C.ErrSongNotFound
@@ -156,7 +157,7 @@ func DeleteSong(param string) error {
 	if err != nil {
 		return C.ErrSongIDNotNumber
 	}
-	if err = model.DeleteSong(id); err != nil {
+	if err = repo.Song.Delete(id); err != nil {
 		log.Error(err)
 		return C.ErrDatabase
 	}

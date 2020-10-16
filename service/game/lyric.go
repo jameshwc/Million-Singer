@@ -6,6 +6,7 @@ import (
 
 	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/constant"
+	"github.com/jameshwc/Million-Singer/repo"
 )
 
 func GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
@@ -13,7 +14,7 @@ func GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
 	if err != nil {
 		return nil, constant.ErrSongIDNotNumber
 	}
-	s, err := model.GetSong(id, true)
+	s, err := repo.Song.Get(id, true)
 	if err == sql.ErrNoRows {
 		return nil, constant.ErrSongNotFound
 	}

@@ -2,10 +2,10 @@ package user
 
 import (
 	"github.com/astaxie/beego/validation"
-	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/pkg/token"
+	"github.com/jameshwc/Million-Singer/repo"
 )
 
 type user struct {
@@ -32,7 +32,7 @@ func AuthUser(username, password string) (string, error) {
 	if !ok {
 		return "", C.ErrUserLoginFormat
 	}
-	u, err := model.AuthUser(username, password)
+	u, err := repo.User.Auth(username, password)
 	if err != nil {
 		return "", C.ErrUserLoginAuthentication
 	}
@@ -56,10 +56,10 @@ func ValidateUser(username string, email string) error {
 	if !ok {
 		return C.ErrUserCheckFormat
 	}
-	if username != "" && model.IsUserNameDuplicate(username) {
+	if username != "" && repo.User.IsNameDuplicate(username) {
 		return C.ErrUserCheckNameConflict
 	}
-	if email != "" && model.IsUserEmailDuplicate(email) {
+	if email != "" && repo.User.IsEmailDuplicate(email) {
 		return C.ErrUserCheckEmailConflict
 	}
 	return nil
@@ -73,13 +73,13 @@ func Register(username, email, password string) error {
 	if !ok {
 		return C.ErrUserRegisterFormat
 	}
-	if model.IsUserEmailDuplicate(email) {
+	if repo.User.IsEmailDuplicate(email) {
 		return C.ErrUserRegisterEmailConflict
 	}
-	if model.IsUserNameDuplicate(username) {
+	if repo.User.IsNameDuplicate(username) {
 		return C.ErrUserRegisterNameConflict
 	}
-	id, err := model.AddUser(username, email, password)
+	id, err := repo.User.Add(username, email, password)
 	if err != nil {
 		log.Error("error when register a user: ", err)
 		return C.ErrUserRegisterFailServerError

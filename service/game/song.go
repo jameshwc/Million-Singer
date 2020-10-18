@@ -10,7 +10,6 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/repo"
 
@@ -74,7 +73,7 @@ func AddSong(s *Song) (int, error) {
 		log.Debug("Add Song: parse video id error: ", err.Error())
 		return 0, C.ErrSongURLIncorrect
 	}
-
+	repo.Song.
 	switch id, err := repo.Song.QueryByVideoID(videoID); err {
 	case sql.ErrNoRows:
 		break
@@ -131,7 +130,7 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	}
 
 	key := cache.GetSongKey(id, hasLyrics)
-	if data, err := gredis.Get(key); err == nil {
+	if data, err := repo.Cache.Get(key); err == nil {
 		var s model.Song
 		if err := json.Unmarshal(data, &s); err != nil {
 			log.Info("Get Song: redis unable to unmarshal data: ", err)
@@ -148,7 +147,7 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 		log.Error("Get Song: database error ", err.Error())
 		return nil, C.ErrDatabase
 	}
-	gredis.Set(key, s, 7200)
+	repo.Cache.Set(key, s, 7200)
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }
 
@@ -162,11 +161,11 @@ func DeleteSong(param string) error {
 		return C.ErrDatabase
 	}
 	key := cache.GetSongKey(id, true)
-	if err = gredis.Del(key); err != nil {
+	if err = repo.Cache.Del(key); err != nil {
 		log.WarnWithSource(err)
 	}
 	key = cache.GetSongKey(id, false)
-	if err = gredis.Del(key); err != nil {
+	if err = repo.Cache.Del(key); err != nil {
 		log.WarnWithSource(err)
 	}
 	return nil

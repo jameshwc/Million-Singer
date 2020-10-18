@@ -7,7 +7,6 @@ import (
 
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/repo"
 	"github.com/jameshwc/Million-Singer/service/cache"
@@ -22,7 +21,7 @@ func GetCollect(param string) (*model.Collect, error) {
 	}
 
 	key := cache.GetCollectKey(id)
-	if data, err := gredis.Get(key); err == nil {
+	if data, err := repo.Cache.Get(key); err == nil {
 		var c model.Collect
 		if err := json.Unmarshal(data, &c); err != nil {
 			log.Info("Get Collect: unable to unmarshal data: ", err)
@@ -40,7 +39,7 @@ func GetCollect(param string) (*model.Collect, error) {
 		log.Error("Get Collect: unknown database error, ", err.Error())
 		return nil, C.ErrDatabase
 	}
-	gredis.Set(key, collect, 7200)
+	repo.Cache.Set(key, collect, 7200)
 	return collect, nil
 }
 

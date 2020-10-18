@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/conf"
 	_ "github.com/jameshwc/Million-Singer/docs"
-	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/repo"
 	"github.com/jameshwc/Million-Singer/routers"
@@ -19,7 +18,6 @@ import (
 func init() {
 	conf.Setup()
 	repo.Setup()
-	gredis.Setup()
 	log.Setup()
 }
 

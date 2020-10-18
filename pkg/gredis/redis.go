@@ -11,10 +11,12 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/log"
 )
 
-var rdb *redis.Client
+type redisRepository struct {
+	rdb *redis.Client
+}
 
-func Setup() {
-	rdb = redis.NewClient(&redis.Options{
+func NewRedisRepository() *redisRepository {
+	rdb := redis.NewClient(&redis.Options{
 		Addr:         conf.RedisConfig.Host + ":" + strconv.Itoa(conf.RedisConfig.Port),
 		Password:     conf.RedisConfig.Password,
 		IdleTimeout:  conf.RedisConfig.IdleTimeout,
@@ -24,6 +26,7 @@ func Setup() {
 	if err != nil {
 		log.Fatal("redis: error when sending request", err)
 	}
+	return &redisRepository{rdb: rdb}
 }
 
 var setKeyScript = redis.NewScript(`
@@ -33,40 +36,40 @@ var getKeyScript = redis.NewScript(`
 	return redis.call('get', KEYS[1])
 `)
 
-func Set(key string, data interface{}, timeout int) error {
-	return set(key, data, timeout)
+func (r *redisRepository) Set(key string, data interface{}, timeout int) error {
+	return r.set(key, data, timeout)
 }
 
-func Get(key string) ([]byte, error) {
-	return get(key)
+func (r *redisRepository) Get(key string) ([]byte, error) {
+	return r.get(key)
 }
 
-func Del(key string) error {
-	return rdb.Del(key).Err()
+func (r *redisRepository) Del(key string) error {
+	return r.rdb.Del(key).Err()
 }
 
-func setWithLua(key string, data interface{}, timeout int) error {
+func (r *redisRepository) setWithLua(key string, data interface{}, timeout int) error {
 	value, err := json.Marshal(data)
 	if err != nil {
 		return C.ErrRedisSetKeyJsonMarshal
 	}
-	_, err = setKeyScript.Run(rdb, []string{key}, value, timeout).Result()
+	_, err = setKeyScript.Run(r.rdb, []string{key}, value, timeout).Result()
 	return err
 }
 
-func getWithLua(key string) ([]byte, error) {
-	dat, err := getKeyScript.Run(rdb, []string{key}, nil).String()
+func (r *redisRepository) getWithLua(key string) ([]byte, error) {
+	dat, err := getKeyScript.Run(r.rdb, []string{key}, nil).String()
 	return []byte(dat), err
 }
 
-func set(key string, data interface{}, timeout int) error {
+func (r *redisRepository) set(key string, data interface{}, timeout int) error {
 	value, err := json.Marshal(data)
 	if err != nil {
 		return C.ErrRedisSetKeyJsonMarshal
 	}
-	return rdb.Set(key, value, time.Duration(timeout)*time.Second).Err()
+	return r.rdb.Set(key, value, time.Duration(timeout)*time.Second).Err()
 }
 
-func get(key string) ([]byte, error) {
-	return rdb.Get(key).Bytes()
+func (r *redisRepository) get(key string) ([]byte, error) {
+	return r.rdb.Get(key).Bytes()
 }

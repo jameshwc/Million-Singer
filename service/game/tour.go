@@ -7,7 +7,6 @@ import (
 
 	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/repo"
 	"github.com/jameshwc/Million-Singer/service/cache"
@@ -22,7 +21,7 @@ func GetTour(param string) (*model.Tour, error) {
 	}
 
 	key := cache.GetTourKey(id)
-	if data, err := gredis.Get(key); err == nil {
+	if data, err := repo.Cache.Get(key); err == nil {
 		var t model.Tour
 		if err := json.Unmarshal(data, &t); err != nil {
 			log.Info("Get Tour: unable to unmarshal data: ", err)
@@ -40,7 +39,7 @@ func GetTour(param string) (*model.Tour, error) {
 		log.Error("Get Tour: unknown database error", err.Error())
 		return nil, C.ErrDatabase
 	}
-	gredis.Set(key, tour, 7200)
+	repo.Cache.Set(key, tour, 7200)
 	return tour, nil
 }
 

@@ -73,7 +73,7 @@ func AddSong(s *Song) (int, error) {
 		log.Debug("Add Song: parse video id error: ", err.Error())
 		return 0, C.ErrSongURLIncorrect
 	}
-	repo.Song.
+
 	switch id, err := repo.Song.QueryByVideoID(videoID); err {
 	case sql.ErrNoRows:
 		break

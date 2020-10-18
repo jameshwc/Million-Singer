@@ -1,1 +1,0 @@
-select collects.title, collects.id from collects inner join tour_collects on collects.id = tour_collects.collect_id and tour_collects.tour_id = 2

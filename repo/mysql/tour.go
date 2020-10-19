@@ -1,4 +1,4 @@
-package game
+package mysql
 
 import (
 	"database/sql"
@@ -14,7 +14,7 @@ type mysqlTourRepository struct {
 	db *sql.DB
 }
 
-func NewMySQLTourRepository(db *sql.DB) *mysqlTourRepository {
+func NewTourRepository(db *sql.DB) *mysqlTourRepository {
 	return &mysqlTourRepository{db: db}
 }
 

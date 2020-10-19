@@ -24,7 +24,7 @@ type registerUser struct {
 	Email    string `valid:"Required; MaxSize(100)"`
 }
 
-func AuthUser(username, password string) (string, error) {
+func (src *Service) Auth(username, password string) (string, error) {
 	// TODO: email
 	checkUser := user{Username: username, Password: password}
 	valid := validation.Validation{}
@@ -46,7 +46,7 @@ func AuthUser(username, password string) (string, error) {
 	return userToken, nil
 }
 
-func ValidateUser(username string, email string) error {
+func (src *Service) Validate(username string, email string) error {
 	if username == "" && email == "" {
 		return C.ErrUserCheckParamIncorrect
 	}
@@ -65,7 +65,7 @@ func ValidateUser(username string, email string) error {
 	return nil
 }
 
-func Register(username, email, password string) error {
+func (src *Service) Register(username, email, password string) error {
 	valid := validation.Validation{}
 	ok, _ := valid.Valid(&registerUser{
 		Username: username, Email: email, Password: password,

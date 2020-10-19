@@ -54,7 +54,7 @@ type SongInstance struct {
 	MissLyricID int `json:"miss_lyric_id"`
 }
 
-func AddSong(s *Song) (int, error) {
+func (srv *Service) AddSong(s *Song) (int, error) {
 
 	valid := validation.Validation{}
 
@@ -122,7 +122,7 @@ func AddSong(s *Song) (int, error) {
 	return id, nil
 }
 
-func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
+func (srv *Service) GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		log.Debugf("Get Song: param id %s is not a number", param)
@@ -151,7 +151,7 @@ func GetSongInstance(param string, hasLyrics bool) (*SongInstance, error) {
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }
 
-func DeleteSong(param string) error {
+func (srv *Service) DeleteSong(param string) error {
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		return C.ErrSongIDNotNumber

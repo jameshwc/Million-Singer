@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	userService "github.com/jameshwc/Million-Singer/service/user"
+	"github.com/jameshwc/Million-Singer/service"
 )
 
 // ValidateUser godoc
@@ -28,7 +28,7 @@ func ValidateUser(c *gin.Context) {
 	username := c.Query("name")
 	email := c.Query("email")
 
-	switch err := userService.ValidateUser(username, email); err {
+	switch err := service.User.Validate(username, email); err {
 
 	case C.ErrUserCheckParamIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_CHECK_PARAM_INCORRECT, err.Error(), nil)

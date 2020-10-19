@@ -12,7 +12,7 @@ import (
 	"github.com/jameshwc/Million-Singer/service/cache"
 )
 
-func GetCollect(param string) (*model.Collect, error) {
+func (srv *Service) GetCollect(param string) (*model.Collect, error) {
 
 	id, err := strconv.Atoi(param)
 	if err != nil {
@@ -43,7 +43,7 @@ func GetCollect(param string) (*model.Collect, error) {
 	return collect, nil
 }
 
-func AddCollect(songs []int, title string) (int, error) {
+func (srv *Service) AddCollect(songs []int, title string) (int, error) {
 	if len(songs) == 0 || title == "" {
 		return 0, C.ErrCollectAddFormatIncorrect
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	userService "github.com/jameshwc/Million-Singer/service/user"
+	"github.com/jameshwc/Million-Singer/service"
 )
 
 type user struct {
@@ -32,7 +32,7 @@ func Login(c *gin.Context) {
 	appG := app.Gin{C: c}
 	var u user
 	c.BindJSON(&u)
-	token, err := userService.AuthUser(u.Username, u.Password)
+	token, err := service.User.Auth(u.Username, u.Password)
 	switch err {
 
 	case C.ErrUserLoginFormat:

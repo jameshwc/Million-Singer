@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	gameService "github.com/jameshwc/Million-Singer/service/game"
+	"github.com/jameshwc/Million-Singer/service"
 )
 
 type collect struct {
@@ -38,7 +38,7 @@ func AddCollect(c *gin.Context) {
 		return
 	}
 
-	switch id, err := gameService.AddCollect(l.Songs, l.Title); err {
+	switch id, err := service.Game.AddCollect(l.Songs, l.Title); err {
 
 	case C.ErrCollectAddFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_COLLECT_NO_SONGID_OR_TITLE, err.Error(), nil)
@@ -71,7 +71,7 @@ func GetCollect(c *gin.Context) {
 
 	appG := app.Gin{C: c}
 
-	switch Collect, err := gameService.GetCollect(c.Param("id")); err {
+	switch Collect, err := service.Game.GetCollect(c.Param("id")); err {
 
 	case C.ErrCollectIDNotNumber:
 		appG.Response(http.StatusBadRequest, C.ERROR_GET_COLLECT_ID_NAN, err.Error(), nil)

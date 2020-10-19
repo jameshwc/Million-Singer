@@ -1,4 +1,4 @@
-package game
+package mysql
 
 import (
 	"database/sql"
@@ -13,7 +13,7 @@ type mysqlCollectRepository struct {
 	db *sql.DB
 }
 
-func NewMySQLCollectRepository(db *sql.DB) *mysqlCollectRepository {
+func NewCollectRepository(db *sql.DB) *mysqlCollectRepository {
 	return &mysqlCollectRepository{db: db}
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	userService "github.com/jameshwc/Million-Singer/service/user"
+	"github.com/jameshwc/Million-Singer/service"
 )
 
 // Register godoc
@@ -29,7 +29,7 @@ func Register(c *gin.Context) {
 	var u user
 	c.BindJSON(&u)
 
-	switch err := userService.Register(u.Username, u.Email, u.Password); err {
+	switch err := service.User.Register(u.Username, u.Email, u.Password); err {
 
 	case C.ErrUserRegisterFormat:
 		appG.Response(http.StatusBadRequest, C.ERROR_REGISTER_FORMAT_INCORRECT, err.Error(), nil)

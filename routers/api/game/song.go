@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
+	"github.com/jameshwc/Million-Singer/service"
 	gameService "github.com/jameshwc/Million-Singer/service/game"
 )
 
@@ -36,7 +37,7 @@ func AddSong(c *gin.Context) {
 
 	c.BindJSON(&song)
 
-	switch songID, err := gameService.AddSong(song); err {
+	switch songID, err := service.Game.AddSong(song); err {
 
 	case C.ErrSongFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_FORMAT_INCORRECT, err.Error(), nil)
@@ -86,7 +87,7 @@ func GetSongInstance(c *gin.Context) {
 		hasLyrics = true
 	}
 
-	switch s, err := gameService.GetSongInstance(c.Param("id"), hasLyrics); err {
+	switch s, err := service.Game.GetSongInstance(c.Param("id"), hasLyrics); err {
 
 	case C.ErrSongIDNotNumber:
 		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, err.Error(), nil)
@@ -105,7 +106,7 @@ func GetSongInstance(c *gin.Context) {
 
 func DeleteSong(c *gin.Context) {
 	appG := app.Gin{C: c}
-	switch err := gameService.DeleteSong(c.Param("id")); err {
+	switch err := service.Game.DeleteSong(c.Param("id")); err {
 
 	case C.ErrSongIDNotNumber:
 		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, err.Error(), nil)

@@ -1,4 +1,4 @@
-package user
+package mysql
 
 import (
 	"crypto/sha1"
@@ -12,7 +12,7 @@ type mysqlUserRepository struct {
 	db *sql.DB
 }
 
-func NewMySQLUserRepository(db *sql.DB) *mysqlUserRepository {
+func NewUserRepository(db *sql.DB) *mysqlUserRepository {
 	return &mysqlUserRepository{db: db}
 }
 

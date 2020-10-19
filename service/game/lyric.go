@@ -9,7 +9,7 @@ import (
 	"github.com/jameshwc/Million-Singer/repo"
 )
 
-func GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
+func (srv *Service) GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		return nil, constant.ErrSongIDNotNumber

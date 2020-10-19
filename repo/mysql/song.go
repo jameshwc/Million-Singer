@@ -1,4 +1,4 @@
-package game
+package mysql
 
 import (
 	"database/sql"
@@ -13,7 +13,7 @@ type mysqlSongRepository struct {
 	db *sql.DB
 }
 
-func NewMySQLSongRepository(db *sql.DB) *mysqlSongRepository {
+func NewSongRepository(db *sql.DB) *mysqlSongRepository {
 	return &mysqlSongRepository{db: db}
 }
 

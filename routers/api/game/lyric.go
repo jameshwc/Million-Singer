@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	"github.com/jameshwc/Million-Singer/pkg/constant"
-	"github.com/jameshwc/Million-Singer/service/game"
+	"github.com/jameshwc/Million-Singer/service"
 )
 
 // GetLyricsWithSongID godoc
@@ -24,7 +24,7 @@ import (
 func GetLyricsWithSongID(c *gin.Context) {
 	appG := app.Gin{C: c}
 
-	switch lyrics, err := game.GetLyricsWithSongID(c.Param("song_id")); err {
+	switch lyrics, err := service.Game.GetLyricsWithSongID(c.Param("song_id")); err {
 
 	case constant.ErrSongIDNotNumber:
 		appG.Response(http.StatusBadRequest, constant.ERROR_GET_SONG_ID_NAN, err.Error(), nil)

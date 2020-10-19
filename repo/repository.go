@@ -6,8 +6,7 @@ import (
 	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"
-	game "github.com/jameshwc/Million-Singer/repo/game/mysql"
-	"github.com/jameshwc/Million-Singer/repo/user"
+	"github.com/jameshwc/Million-Singer/repo/mysql"
 
 	"database/sql"
 
@@ -61,9 +60,9 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("models.Setup err: %v", err)
 	}
-	Song = game.NewMySQLSongRepository(db)
-	Collect = game.NewMySQLCollectRepository(db)
-	Tour = game.NewMySQLTourRepository(db)
-	User = user.NewMySQLUserRepository(db)
+	Song = mysql.NewSongRepository(db)
+	Collect = mysql.NewCollectRepository(db)
+	Tour = mysql.NewTourRepository(db)
+	User = mysql.NewUserRepository(db)
 	Cache = gredis.NewRedisRepository()
 }

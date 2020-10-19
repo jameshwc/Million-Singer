@@ -12,7 +12,7 @@ import (
 	"github.com/jameshwc/Million-Singer/service/cache"
 )
 
-func GetTour(param string) (*model.Tour, error) {
+func (srv *Service) GetTour(param string) (*model.Tour, error) {
 
 	id, err := strconv.Atoi(param)
 	if err != nil {
@@ -43,7 +43,7 @@ func GetTour(param string) (*model.Tour, error) {
 	return tour, nil
 }
 
-func GetTotalTours() (int, error) {
+func (srv *Service) GetTotalTours() (int, error) {
 	total, err := repo.Tour.GetTotal()
 	if err != nil {
 		log.Error("Get Total Tours: unknown database error, ", err.Error())
@@ -52,7 +52,7 @@ func GetTotalTours() (int, error) {
 	return total, nil
 }
 
-func AddTour(collectsID []int) (int, error) {
+func (srv *Service) AddTour(collectsID []int) (int, error) {
 
 	if len(collectsID) == 0 {
 		return 0, C.ErrTourAddFormatIncorrect

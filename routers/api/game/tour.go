@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/pkg/app"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
-	gameService "github.com/jameshwc/Million-Singer/service/game"
+	"github.com/jameshwc/Million-Singer/service"
 )
 
 type tour struct {
@@ -28,7 +28,7 @@ type tour struct {
 func GetTour(c *gin.Context) {
 	appG := app.Gin{C: c}
 
-	switch tour, err := gameService.GetTour(c.Param("id")); err {
+	switch tour, err := service.Game.GetTour(c.Param("id")); err {
 
 	case C.ErrTourIDNotNumber:
 		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, err.Error(), nil)
@@ -59,7 +59,7 @@ func GetTour(c *gin.Context) {
 func GetTotalTours(c *gin.Context) {
 	appG := app.Gin{C: c}
 
-	switch total, err := gameService.GetTotalTours(); err {
+	switch total, err := service.Game.GetTotalTours(); err {
 
 	case C.ErrDatabase:
 		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err.Error(), nil)
@@ -92,7 +92,7 @@ func AddTour(c *gin.Context) {
 		return
 	}
 
-	switch tourID, err := gameService.AddTour(t.Collects); err {
+	switch tourID, err := service.Game.AddTour(t.Collects); err {
 
 	case C.ErrTourAddFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_FORMAT_INCORRECT, err.Error(), nil)

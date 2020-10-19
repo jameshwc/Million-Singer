@@ -16,7 +16,7 @@ func (srv *Service) GetTour(param string) (*model.Tour, error) {
 
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		log.Debugf("Get Tour: param id %s is not a number", id)
+		log.Debugf("Get Tour: param id %s is not a number", param)
 		return nil, C.ErrTourIDNotNumber
 	}
 

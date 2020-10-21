@@ -16,6 +16,10 @@ import (
 
 var db *sql.DB
 
+type fields struct {
+	db *sql.DB
+}
+
 func TestMain(m *testing.M) {
 	// uses a sensible default on windows (tcp/http) and linux/osx (socket)
 	pool, err := dockertest.NewPool("")

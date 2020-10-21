@@ -1,6 +1,8 @@
 package user
 
 import (
+	"database/sql"
+
 	"github.com/astaxie/beego/validation"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/log"
@@ -33,8 +35,10 @@ func (src *Service) Auth(username, password string) (string, error) {
 		return "", C.ErrUserLoginFormat
 	}
 	u, err := repo.User.Auth(username, password)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return "", C.ErrUserLoginAuthentication
+	} else if err != nil {
+		return "", C.ErrDatabase
 	}
 	userToken, err := token.Generate(username, password)
 	if err != nil {

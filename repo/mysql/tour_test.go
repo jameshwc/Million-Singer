@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"database/sql"
 	"reflect"
 	"testing"
 
@@ -9,9 +8,6 @@ import (
 )
 
 func Test_mysqlTourRepository_Get(t *testing.T) {
-	type fields struct {
-		db *sql.DB
-	}
 	type args struct {
 		id int
 	}
@@ -45,9 +41,6 @@ func Test_mysqlTourRepository_Get(t *testing.T) {
 }
 
 func Test_mysqlTourRepository_GetTotal(t *testing.T) {
-	type fields struct {
-		db *sql.DB
-	}
 	tests := []struct {
 		name    string
 		fields  fields
@@ -74,9 +67,6 @@ func Test_mysqlTourRepository_GetTotal(t *testing.T) {
 }
 
 func Test_mysqlTourRepository_Add(t *testing.T) {
-	type fields struct {
-		db *sql.DB
-	}
 	type args struct {
 		collectsID []int
 	}
@@ -87,7 +77,7 @@ func Test_mysqlTourRepository_Add(t *testing.T) {
 		want    int
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{"success", fields{db}, args{[]int{1, 3, 5}}, 2, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

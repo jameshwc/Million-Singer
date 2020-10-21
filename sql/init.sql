@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `collect_songs` (
-  `song_id` int unsigned NOT NULL,
   `collect_id` int unsigned NOT NULL,
+  `song_id` int unsigned NOT NULL,
   PRIMARY KEY (`song_id`,`collect_id`),
   KEY `fk_collect_songs_collect` (`collect_id`),
   CONSTRAINT `fk_collect_songs_collect` FOREIGN KEY (`collect_id`) REFERENCES `collects` (`id`),

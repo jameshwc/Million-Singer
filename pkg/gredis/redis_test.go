@@ -13,20 +13,20 @@ func testRedisSetup() {
 		Host: "127.0.0.1",
 		Port: 6379,
 	}
-	testRdb = NewRedisRepository()
+	testRdb = &redisRepository{}
 }
 func BenchmarkRedisNoLua(b *testing.B) {
 	testRedisSetup()
 	for i := 0; i < b.N; i++ {
-		testRdb.set("hello", conf.RedisConfig, 100)
-		testRdb.get("hello")
+		set(testRdb.rdb, "hello", conf.RedisConfig, 100)
+		get(testRdb.rdb, "hello")
 	}
 }
 
 func BenchmarkRedisLua(b *testing.B) {
 	testRedisSetup()
 	for i := 0; i < b.N; i++ {
-		testRdb.setWithLua("hello", conf.RedisConfig, 100)
-		testRdb.getWithLua("hello")
+		setWithLua(testRdb.rdb, "hello", conf.RedisConfig, 100)
+		getWithLua(testRdb.rdb, "hello")
 	}
 }

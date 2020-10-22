@@ -1,17 +1,9 @@
 package repo
 
 import (
-	"fmt"
-
 	"github.com/jameshwc/Million-Singer/model"
-	"github.com/jameshwc/Million-Singer/pkg/gredis"
-	"github.com/jameshwc/Million-Singer/pkg/log"
-	"github.com/jameshwc/Million-Singer/repo/mysql"
-
-	"database/sql"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jameshwc/Million-Singer/conf"
 )
 
 type TourRepo interface {
@@ -50,19 +42,3 @@ var Collect CollectRepo
 var Song SongRepo
 var User UserRepo
 var Cache CacheRepo
-
-func Setup() {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		conf.DBconfig.User,
-		conf.DBconfig.Password,
-		conf.DBconfig.Host,
-		conf.DBconfig.Name))
-	if err != nil {
-		log.Fatalf("models.Setup err: %v", err)
-	}
-	Song = mysql.NewSongRepository(db)
-	Collect = mysql.NewCollectRepository(db)
-	Tour = mysql.NewTourRepository(db)
-	User = mysql.NewUserRepository(db)
-	Cache = gredis.NewRedisRepository()
-}

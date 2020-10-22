@@ -8,13 +8,14 @@ import (
 	"time"
 
 	"github.com/jameshwc/Million-Singer/model"
+	"github.com/jameshwc/Million-Singer/repo"
 )
 
 type mysqlTourRepository struct {
 	db *sql.DB
 }
 
-func NewTourRepository(db *sql.DB) *mysqlTourRepository {
+func NewTourRepository(db *sql.DB) repo.TourRepo {
 	return &mysqlTourRepository{db: db}
 }
 

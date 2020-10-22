@@ -1,7 +1,27 @@
 package mysql
 
-func init() {
+import (
+	"database/sql"
+	"fmt"
+	"log"
 
+	"github.com/jameshwc/Million-Singer/conf"
+	"github.com/jameshwc/Million-Singer/repo"
+)
+
+func Setup() {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		conf.DBconfig.User,
+		conf.DBconfig.Password,
+		conf.DBconfig.Host,
+		conf.DBconfig.Name))
+	if err != nil {
+		log.Fatalf("models.Setup err: %v", err)
+	}
+	repo.Song = NewSongRepository(db)
+	repo.Collect = NewCollectRepository(db)
+	repo.Tour = NewTourRepository(db)
+	repo.User = NewUserRepository(db)
 }
 
 func escape(sql string) string {

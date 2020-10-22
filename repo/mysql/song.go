@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"github.com/jameshwc/Million-Singer/model"
+	"github.com/jameshwc/Million-Singer/repo"
 )
 
 type mysqlSongRepository struct {
 	db *sql.DB
 }
 
-func NewSongRepository(db *sql.DB) *mysqlSongRepository {
+func NewSongRepository(db *sql.DB) repo.SongRepo {
 	return &mysqlSongRepository{db: db}
 }
 

@@ -6,13 +6,14 @@ import (
 	"fmt"
 
 	"github.com/jameshwc/Million-Singer/model"
+	"github.com/jameshwc/Million-Singer/repo"
 )
 
 type mysqlUserRepository struct {
 	db *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) *mysqlUserRepository {
+func NewUserRepository(db *sql.DB) repo.UserRepo {
 	return &mysqlUserRepository{db: db}
 }
 

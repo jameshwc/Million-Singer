@@ -48,6 +48,10 @@ func (srv *Service) AddCollect(songs []int, title string) (int, error) {
 		return 0, C.ErrCollectAddFormatIncorrect
 	}
 
+	if checkDuplicateInts(songs) {
+		return 0, C.ErrCollectAddSongsDuplicate
+	}
+
 	songNum, err := repo.Song.CheckManyExist(songs)
 	if err != nil {
 		log.Error("Add Collect: ", err.Error())

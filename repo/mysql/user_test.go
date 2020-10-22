@@ -128,14 +128,14 @@ func Test_mysqlUserRepository_Auth(t *testing.T) {
 		password string
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *model.User
-		wantErr bool
+		name   string
+		fields fields
+		args   args
+		want   *model.User
+		err    error
 	}{
-		{"success", fields{db}, args{"alice", "password"}, &model.User{1, "alice", "", false, nil}, false},
-		{"fail", fields{db}, args{"alice", "password123"}, nil, true}, // err == sql.ErrNoRows
+		{"success", fields{db}, args{"alice", "password"}, &model.User{1, "alice", "", false, nil}, nil},
+		{"fail", fields{db}, args{"alice", "password123"}, nil, sql.ErrNoRows},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -143,8 +143,8 @@ func Test_mysqlUserRepository_Auth(t *testing.T) {
 				db: tt.fields.db,
 			}
 			got, err := m.Auth(tt.args.username, tt.args.password)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("mysqlUserRepository.Auth() error = %v, wantErr %v", err, tt.wantErr)
+			if err != tt.err {
+				t.Errorf("mysqlUserRepository.Auth() error = %v, wantErr %v", err, tt.err)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

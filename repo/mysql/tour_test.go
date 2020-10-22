@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"reflect"
 	"testing"
 
@@ -12,16 +13,16 @@ func Test_mysqlTourRepository_Get(t *testing.T) {
 		id int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *model.Tour
-		wantErr bool
+		name   string
+		fields fields
+		args   args
+		want   *model.Tour
+		err    error
 	}{
 		{"success", fields{db}, args{1}, &model.Tour{1, []*model.Collect{
 			{1, "collect-1", nil}, {2, "collect-2", nil}, {3, "collect-3", nil}, {4, "collect-4", nil}, {5, "collect-5", nil},
-		}}, false},
-		{"fail", fields{db}, args{2}, nil, true},
+		}}, nil},
+		{"fail", fields{db}, args{2}, nil, sql.ErrNoRows},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -29,8 +30,8 @@ func Test_mysqlTourRepository_Get(t *testing.T) {
 				db: tt.fields.db,
 			}
 			got, err := m.Get(tt.args.id)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("mysqlTourRepository.Get() error = %v, wantErr %v", err, tt.wantErr)
+			if err != tt.err {
+				t.Errorf("mysqlTourRepository.Get() error = %v, wantErr %v", err, tt.err)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

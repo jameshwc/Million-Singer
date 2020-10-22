@@ -58,6 +58,10 @@ func (srv *Service) AddTour(collectsID []int) (int, error) {
 		return 0, C.ErrTourAddFormatIncorrect
 	}
 
+	if checkDuplicateInts(collectsID) {
+		return 0, C.ErrTourAddCollectsDuplicate
+	}
+
 	collectNum, err := repo.Collect.CheckManyExist(collectsID)
 	if err != nil {
 		log.Error("Check Collects Exist: ", err)

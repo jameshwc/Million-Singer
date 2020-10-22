@@ -3,9 +3,7 @@ package game
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"strconv"
-	"strings"
 
 	"github.com/astaxie/beego/validation"
 	"github.com/jameshwc/Million-Singer/model"
@@ -16,27 +14,6 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/subtitle"
 	"github.com/jameshwc/Million-Singer/service/cache"
 )
-
-func lyricsJoin(lyrics []int) string {
-	s := make([]string, len(lyrics))
-	for i, v := range lyrics {
-		s[i] = strconv.Itoa(v)
-	}
-	return strings.Join(s, ",")
-}
-
-func findMax(l []int) (int, error) {
-	var max int
-	for i := range l {
-		if l[i] > max {
-			max = l[i]
-		}
-		if l[i] < 0 {
-			return 0, errors.New("lyrics id negative")
-		}
-	}
-	return max, nil
-}
 
 type Song struct {
 	File       []byte `json:"file"`
@@ -68,10 +45,14 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 		return 0, C.ErrSongFormatIncorrect
 	}
 
+	if checkDuplicateInts(s.MissLyrics) {
+		return 0, C.ErrSongAddLyricsIndexDuplicate
+	}
+
 	videoID, err := subtitle.ParseVideoID(s.URL)
 	if err != nil {
 		log.Debug("Add Song: parse video id error: ", err.Error())
-		return 0, C.ErrSongURLIncorrect
+		return 0, C.ErrSongAddURLIncorrect
 	}
 
 	switch id, err := repo.Song.QueryByVideoID(videoID); err {
@@ -79,7 +60,7 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 		break
 	case nil:
 		log.Debug("Add Song: add duplicate song", int(id))
-		return int(id), C.ErrSongDuplicate
+		return int(id), C.ErrSongAddDuplicate
 	default:
 		log.Error("Add Song: unknown database error: ", err.Error())
 		return 0, C.ErrDatabase
@@ -95,22 +76,18 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 		lyrics, err = subtitle.GetLyricsFromYoutubeSubtitle(s.URL)
 	default:
 		log.Debug("Add Song: file type not supported: ", s.FileType)
-		return 0, C.ErrSongLyricsFileTypeNotSupported
+		return 0, C.ErrSongAddLyricsFileTypeNotSupported
 	}
 
 	if err != nil {
 		log.WarnWithSource("Add Song: parse lyrics error: ", err)
-		return 0, C.ErrSongParseLyrics
+		return 0, C.ErrSongAddParseLyrics
 	}
 
-	maxIdx, err := findMax(s.MissLyrics)
-	if err != nil || maxIdx > len(lyrics) {
-		if err != nil {
-			log.Info("Add Song: find miss lyrics index error: ", err.Error())
-		} else {
-			log.Info("Add Song: miss lyrics id out of index")
-		}
-		return 0, C.ErrSongMissLyricsIncorrect
+	maxIdx := findMax(s.MissLyrics)
+	if maxIdx < 0 || maxIdx > len(lyrics) {
+		log.Info("Add Song: miss lyrics id out of index or negative")
+		return 0, C.ErrSongAddMissLyricsIncorrect
 	}
 
 	id, err := repo.Song.Add(videoID, s.Name, s.Singer, s.Genre, s.Language, lyricsJoin(s.MissLyrics), "", "", lyrics)

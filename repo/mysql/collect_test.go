@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"reflect"
 	"testing"
 
@@ -12,18 +13,18 @@ func Test_mysqlCollectRepository_Get(t *testing.T) {
 		id int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *model.Collect
-		wantErr bool
+		name   string
+		fields fields
+		args   args
+		want   *model.Collect
+		err    error
 	}{
 		{"success", fields{db}, args{1}, &model.Collect{1, "collect-1", []*model.Song{
 			{1, nil, "avLxcVkPgug", "", "", "en", "Beautiful", "Eminem", "rap,hip-hop", ""},
 			{2, nil, "JxzKNHfNRdI", "", "", "en", "No Sleep", "Martin Garrix feat. Bonn", "edm", ""},
 			{3, nil, "VDvr08sCPOc", "", "", "en", "Remember The Name", "Fort Minor", "rap,hip-hop", ""},
-		}}, false},
-		{"fail", fields{db}, args{6}, nil, true},
+		}}, nil},
+		{"fail", fields{db}, args{6}, nil, sql.ErrNoRows},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -31,8 +32,8 @@ func Test_mysqlCollectRepository_Get(t *testing.T) {
 				db: tt.fields.db,
 			}
 			got, err := m.Get(tt.args.id)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("mysqlCollectRepository.Get() error = %v, wantErr %v", err, tt.wantErr)
+			if err != tt.err {
+				t.Errorf("mysqlCollectRepository.Get() error = %v, wantErr %v", err, tt.err)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

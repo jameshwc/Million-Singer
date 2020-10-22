@@ -42,22 +42,22 @@ func AddSong(c *gin.Context) {
 	case C.ErrSongFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_FORMAT_INCORRECT, err.Error(), nil)
 
-	case C.ErrSongLyricsFileTypeNotSupported:
+	case C.ErrSongAddLyricsFileTypeNotSupported:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_LYRICS_FILE_TYPE_NOT_SUPPORTED, err.Error(), nil)
 
-	case C.ErrSongParseLyrics:
+	case C.ErrSongAddParseLyrics:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, err.Error(), nil)
 
-	case C.ErrSongMissLyricsIncorrect:
+	case C.ErrSongAddMissLyricsIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_PARSE_LYRICS_ERROR, err.Error(), nil)
 
 	case C.ErrDatabase:
 		appG.Response(http.StatusInternalServerError, C.ERROR_ADD_SONG_SERVER_ERROR, err.Error(), nil)
 
-	case C.ErrSongDuplicate:
+	case C.ErrSongAddDuplicate:
 		appG.Response(http.StatusUnprocessableEntity, C.ERROR_ADD_SONG_DUPLICATE, fmt.Errorf("%w, song id: %d", err, songID).Error(), nil)
 
-	case C.ErrSongURLIncorrect:
+	case C.ErrSongAddURLIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_SONG_URL_INCORRECT, err.Error(), nil)
 
 	case nil:

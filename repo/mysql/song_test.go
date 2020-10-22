@@ -49,14 +49,14 @@ func Test_mysqlSongRepository_QueryByVideoID(t *testing.T) {
 		videoID string
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantId  int64
-		wantErr bool
+		name   string
+		fields fields
+		args   args
+		wantId int64
+		err    error
 	}{
-		{"success", fields{db}, args{"VDvr08sCPOc"}, 3, false},
-		{"fail", fields{db}, args{"VDvr08sCPOa"}, 0, true},
+		{"success", fields{db}, args{"VDvr08sCPOc"}, 3, nil},
+		{"fail", fields{db}, args{"VDvr08sCPOa"}, 0, sql.ErrNoRows},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -64,8 +64,8 @@ func Test_mysqlSongRepository_QueryByVideoID(t *testing.T) {
 				db: tt.fields.db,
 			}
 			gotId, err := m.QueryByVideoID(tt.args.videoID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("mysqlSongRepository.QueryByVideoID() error = %v, wantErr %v", err, tt.wantErr)
+			if err != tt.err {
+				t.Errorf("mysqlSongRepository.QueryByVideoID() error = %v, wantErr %v", err, tt.err)
 				return
 			}
 			if gotId != tt.wantId {

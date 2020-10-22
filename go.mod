@@ -18,6 +18,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/mailru/easyjson v0.7.6 // indirect

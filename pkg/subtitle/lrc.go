@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jameshwc/Million-Singer/model"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 )
 
@@ -16,44 +15,44 @@ func parseLrcDuration(s string) (time.Duration, error) {
 	return parseDuration("00:"+s, ".", 2)
 }
 
-func ReadLrcFromFile(i io.Reader) ([]model.Lyric, error) {
+func ReadLrcFromFile(i io.Reader) ([]Line, error) {
 	scanner := bufio.NewScanner(i)
-	var lyrics []model.Lyric
-	var prev *model.Lyric = nil
+	var lines []Line
+	var prev *Line = nil
 	idx := 1
 	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if len(line) == 0 {
+		text := strings.TrimSpace(scanner.Text())
+		if len(text) == 0 {
 			continue
 		}
-		if match, err := regexp.Match("^\\[\\d+:\\d+\\.\\d+\\]", []byte(line)); err != nil {
+		if match, err := regexp.Match("^\\[\\d+:\\d+\\.\\d+\\]", []byte(text)); err != nil {
 			log.Error(err)
 			return nil, err
 		} else if !match {
 			continue
 		}
-		var lyric model.Lyric
-		splits := strings.Split(line, "]")
+		var line Line
+		splits := strings.Split(text, "]")
 		duration, err := parseLrcDuration(splits[0][1:])
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
-		lyric.Line = splits[1]
-		lyric.StartAt = duration
-		lyric.Index = idx
+		line.Text = splits[1]
+		line.StartAt = duration
+		line.Index = idx
 		if prev != nil {
 			prev.EndAt = duration
-			lyrics = append(lyrics, *prev)
+			lines = append(lines, *prev)
 		}
-		prev = &lyric
+		prev = &line
 		idx++
 	}
-	prev.EndAt = time.Duration(int64(1) << 62) // infinite end_at for the last lyric
-	lyrics = append(lyrics, *prev)
-	return lyrics, nil
+	prev.EndAt = time.Duration(int64(1) << 62) // infinite end_at for the last line
+	lines = append(lines, *prev)
+	return lines, nil
 }
 
-func ReadLrcFromBytes(file []byte) ([]model.Lyric, error) {
+func ReadLrcFromBytes(file []byte) ([]Line, error) {
 	return ReadLrcFromFile(bytes.NewReader(file))
 }

@@ -17,12 +17,6 @@ type Claims struct {
 
 const expire = 3 * time.Hour
 
-var jwtSecret []byte
-
-func init() {
-	jwtSecret = []byte(conf.ServerConfig.JwtSecret)
-}
-
 func Generate(username, password string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(expire)
@@ -37,14 +31,14 @@ func Generate(username, password string) (string, error) {
 	}
 
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenClaims.SignedString(jwtSecret)
+	token, err := tokenClaims.SignedString(conf.ServerConfig.JwtSecret)
 
 	return token, err
 }
 
 func Parse(token string) (*Claims, error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		return conf.ServerConfig.JwtSecret, nil
 	})
 
 	if tokenClaims != nil {

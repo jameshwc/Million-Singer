@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/jameshwc/Million-Singer/model"
 )
 
 const (
@@ -20,9 +18,9 @@ func parseSrtDuration(s string) (time.Duration, error) {
 	return parseDuration(s, ",", 3)
 }
 
-func ReadSrtFromFile(i io.Reader) ([]model.Lyric, error) {
+func ReadSrtFromFile(i io.Reader) ([]Line, error) {
 	scanner := bufio.NewScanner(i)
-	var lyrics []model.Lyric
+	var lines []Line
 	var prev string
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -31,34 +29,34 @@ func ReadSrtFromFile(i io.Reader) ([]model.Lyric, error) {
 		}
 		if strings.Contains(line, srtTimeSep) {
 			scanner.Scan()
-			var lyric model.Lyric
+			var line Line
 			var err error
-			lyric.Line = scanner.Text()
-			lyric.Index, err = strconv.Atoi(prev)
+			line.Text = scanner.Text()
+			line.Index, err = strconv.Atoi(prev)
 			if err != nil {
 				return nil, err
 			}
-			boundaries := strings.Split(line, srtTimeSep)
-			if lyric.StartAt, err = parseSrtDuration(boundaries[0]); err != nil {
+			boundaries := strings.Split(line.Text, srtTimeSep)
+			if line.StartAt, err = parseSrtDuration(boundaries[0]); err != nil {
 				return nil, fmt.Errorf("subtitle: parsing srt duration %s failed: %w", boundaries[0], err)
 			}
-			if lyric.EndAt, err = parseSrtDuration(boundaries[1]); err != nil {
+			if line.EndAt, err = parseSrtDuration(boundaries[1]); err != nil {
 				return nil, fmt.Errorf("subtitle: parsing srt duration %s failed: %w", boundaries[1], err)
 			}
-			if lyric.StartAt > lyric.EndAt {
+			if line.StartAt > line.EndAt {
 				return nil, fmt.Errorf("subtitle: start_at is greater than end_at")
 			}
-			lyrics = append(lyrics, lyric)
+			lines = append(lines, line)
 		} else {
 			prev = line
 		}
 	}
-	if len(lyrics) == 0 {
+	if len(lines) == 0 {
 		return nil, fmt.Errorf("subtitle: file not parse correctly")
 	}
-	return lyrics, nil
+	return lines, nil
 }
 
-func ReadSrtFromBytes(file []byte) ([]model.Lyric, error) {
+func ReadSrtFromBytes(file []byte) ([]Line, error) {
 	return ReadSrtFromFile(bytes.NewReader(file))
 }

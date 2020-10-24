@@ -2,8 +2,6 @@ package repo
 
 import (
 	"github.com/jameshwc/Million-Singer/model"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type TourRepo interface {

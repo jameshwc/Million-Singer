@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
-	"github.com/jameshwc/Million-Singer/model"
 )
 
 type youtubeDownloader struct {
@@ -102,15 +101,15 @@ func (y *youtubeDownloader) getAvailableLanguages() error {
 	return nil
 }
 
-func (y *youtubeDownloader) getLyrics() ([]model.Lyric, error) {
+func (y *youtubeDownloader) getLyrics() ([]Line, error) {
 	doc, err := y.download()
 	if err != nil {
 		return nil, err
 	}
-	var lyrics []model.Lyric
+	var lyrics []Line
 	idx := 1
 	for _, s := range doc.SelectElements("text") {
-		var l model.Lyric
+		var l Line
 		start, err := strconv.ParseFloat(s.SelectAttr("start").Value, 64)
 		if err != nil {
 			return nil, err
@@ -121,7 +120,7 @@ func (y *youtubeDownloader) getLyrics() ([]model.Lyric, error) {
 		}
 		l.StartAt = time.Duration(start * float64(time.Second))
 		l.EndAt = time.Duration((start + dur) * float64(time.Second))
-		l.Line = strings.ReplaceAll(s.Text(), "&#39;", "'")
+		l.Text = strings.ReplaceAll(s.Text(), "&#39;", "'")
 		l.Index = idx
 		idx++
 		lyrics = append(lyrics, l)
@@ -144,13 +143,4 @@ func (y *youtubeDownloader) download() (*etree.Element, error) {
 	}
 	return doc.SelectElement("transcript"), nil
 
-}
-
-func GetLyricsFromYoutubeSubtitle(url string) ([]model.Lyric, error) {
-	y, err := newYoutubeDownloader(url)
-	if err != nil {
-		return nil, err
-	}
-
-	return y.getLyrics()
 }

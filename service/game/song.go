@@ -66,14 +66,14 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 		return 0, C.ErrDatabase
 	}
 
-	var lyrics []model.Lyric
+	var lines []subtitle.Line
 	switch s.FileType {
 	case "srt":
-		lyrics, err = subtitle.ReadSrtFromBytes(s.File)
+		lines, err = subtitle.ReadSrtFromBytes(s.File)
 	case "lrc":
-		lyrics, err = subtitle.ReadLrcFromBytes(s.File)
+		lines, err = subtitle.ReadLrcFromBytes(s.File)
 	case "youtube":
-		lyrics, err = subtitle.GetLyricsFromYoutubeSubtitle(s.URL)
+		lines, err = subtitle.GetLyricsFromYoutubeSubtitle(s.URL)
 	default:
 		log.Debug("Add Song: file type not supported: ", s.FileType)
 		return 0, C.ErrSongAddLyricsFileTypeNotSupported
@@ -83,6 +83,8 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 		log.WarnWithSource("Add Song: parse lyrics error: ", err)
 		return 0, C.ErrSongAddParseLyrics
 	}
+
+	lyrics := model.ParseLyrics(lines)
 
 	maxIdx := findMax(s.MissLyrics)
 	if maxIdx < 0 || maxIdx > len(lyrics) {

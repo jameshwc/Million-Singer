@@ -14,11 +14,13 @@ const (
 	srtTimeSep = " --> "
 )
 
+type srt struct{}
+
 func parseSrtDuration(s string) (time.Duration, error) {
 	return parseDuration(s, ",", 3)
 }
 
-func ReadSrtFromFile(i io.Reader) ([]Line, error) {
+func (s *srt) ReadFromFile(i io.Reader) ([]Line, error) {
 	scanner := bufio.NewScanner(i)
 	var lines []Line
 	var prev string
@@ -57,6 +59,10 @@ func ReadSrtFromFile(i io.Reader) ([]Line, error) {
 	return lines, nil
 }
 
-func ReadSrtFromBytes(file []byte) ([]Line, error) {
-	return ReadSrtFromFile(bytes.NewReader(file))
+func (s *srt) ReadFromBytes(file []byte) ([]Line, error) {
+	return s.ReadFromFile(bytes.NewReader(file))
+}
+
+func newSrt() Subtitler {
+	return &srt{}
 }

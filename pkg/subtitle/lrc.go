@@ -11,11 +11,13 @@ import (
 	"github.com/jameshwc/Million-Singer/pkg/log"
 )
 
+type lrc struct{}
+
 func parseLrcDuration(s string) (time.Duration, error) {
 	return parseDuration("00:"+s, ".", 2)
 }
 
-func ReadLrcFromFile(i io.Reader) ([]Line, error) {
+func (l *lrc) ReadFromFile(i io.Reader) ([]Line, error) {
 	scanner := bufio.NewScanner(i)
 	var lines []Line
 	var prev *Line = nil
@@ -53,6 +55,10 @@ func ReadLrcFromFile(i io.Reader) ([]Line, error) {
 	return lines, nil
 }
 
-func ReadLrcFromBytes(file []byte) ([]Line, error) {
-	return ReadLrcFromFile(bytes.NewReader(file))
+func (l *lrc) ReadFromBytes(file []byte) ([]Line, error) {
+	return l.ReadFromFile(bytes.NewReader(file))
+}
+
+func newLrc() Subtitler {
+	return &lrc{}
 }

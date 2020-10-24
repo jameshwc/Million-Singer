@@ -11,10 +11,25 @@ import (
 	"github.com/beevik/etree"
 )
 
+type youtube struct{}
+
 type youtubeDownloader struct {
 	URL       string
 	VideoID   string
 	Languages map[string]string
+}
+
+func newYoutube() Weber {
+	return &youtube{}
+}
+
+func (y *youtube) GetLines(url string) ([]Line, error) {
+	youtube, err := newYoutubeDownloader(url)
+	if err != nil {
+		return nil, err
+	}
+
+	return youtube.getLyrics()
 }
 
 func newYoutubeDownloader(URL string) (*youtubeDownloader, error) {

@@ -37,10 +37,12 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 
 	ok, err := valid.Valid(s)
 	if !ok || (s.FileType != "youtube" && len(s.File) == 0) {
-		if !ok {
-			log.Debug("Add Song: valid.Valid not ok, ", err.Error())
+		if !ok && err != nil {
+			log.Error("Add Song: valid.Valid not ok, error: ", err.Error())
+		} else if !ok {
+			log.Info("Add Song: valid.Valid not ok")
 		} else {
-			log.Debug("Add Song: file column not offer and file type not youtube")
+			log.Info("Add Song: file column not offer and file type not youtube")
 		}
 		return 0, C.ErrSongFormatIncorrect
 	}

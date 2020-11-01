@@ -1,11 +1,14 @@
 package game
 
 import (
+	"bytes"
 	"database/sql"
+	"io"
 	"strconv"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/jameshwc/Million-Singer/model"
+	"github.com/jameshwc/Million-Singer/pkg/subtitle"
 )
 
 type repoMockCacheBase struct {
@@ -41,6 +44,12 @@ type repoMockCollectServerError struct {
 
 type repoMockSongServerError struct {
 	repoMockSongBase
+}
+
+type mockSubtitler struct {
+}
+
+type mockWeber struct {
 }
 
 func newRepoMockCacheBase() *repoMockCacheBase {
@@ -215,4 +224,24 @@ func (r *repoMockSongServerError) QueryByVideoID(videoID string) (id int64, err 
 
 func (r *repoMockSongServerError) CheckManyExist(songsID []int) (int64, error) {
 	return int64(0), sql.ErrConnDone
+}
+
+func (s *mockSubtitler) ReadFromBytes(file []byte) ([]subtitle.Line, error) {
+	return s.ReadFromFile(bytes.NewReader(file))
+}
+
+func (s *mockSubtitler) ReadFromFile(i io.Reader) ([]subtitle.Line, error) {
+	return nil, nil
+}
+
+func NewMockSubtitler() subtitle.Subtitler {
+	return &mockSubtitler{}
+}
+
+func (w *mockWeber) GetLines(url string) ([]subtitle.Line, error) {
+	return nil, nil
+}
+
+func NewMockWeber() subtitle.Weber {
+	return &mockWeber{}
 }

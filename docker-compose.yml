@@ -1,24 +1,9 @@
 version: '3.2'
 services:
   web:
-    environment:
-      db_user: ${db_user}
-      db_passwd: ${db_passwd}
-      db_host: ${db_host}
-      db_name: ${db_name}
-      db_table_prefix: ${db_table_prefix}
-      server_runmode: ${server_runmode}
-      server_port: ${server_port}
-      server_jwt_secret: ${server_jwt_secret}
-      server_git_commit_sha: ${CI_COMMIT_SHORT_SHA}
-      redis_host: ${redis_host}
-      redis_port: ${redis_port}
-      redis_password: ${redis_password}
-      redis_min_idle_conn: ${redis_min_idle_conn}
-      redis_idle_timeout: ${redis_idle_timeout}
-      logstash_addr: ${logstash_addr}
-    
-    image: registry.gitlab.com/jameshwc/million-singer:latest
+    env_file: env/.env-docker-compose
+    # image: registry.gitlab.com/jameshwc/million-singer:latest
+    build: .
     ports:
       - 80:80
     links:
@@ -42,11 +27,7 @@ services:
              --explicit_defaults_for_timestamp=true
              --lower_case_table_names=1
              --max_allowed_packet=128M;
-    environment:
-      MYSQL_USER: ${db_user}
-      MYSQL_PASSWORD: ${db_passwd}
-      MYSQL_ROOT_PASSWORD: ${db_passwd}
-      MYSQL_DATABASE: ${db_name}
+    env_file: env/.env-docker-compose
     volumes:
       - ./sql/init.sql:/init.sql
       - data:/var/lib/mysql

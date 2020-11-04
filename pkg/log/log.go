@@ -33,7 +33,7 @@ func Setup() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "myappName"}))
+	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "cn_project"}))
 	Logger.Hooks.Add(hook)
 }
 

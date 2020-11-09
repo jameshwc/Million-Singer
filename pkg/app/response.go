@@ -10,8 +10,8 @@ type Gin struct {
 
 type Response struct {
 	Code int         `json:"code" example:"200"`
-	Msg  string      `json:"msg;omitempty" example:"success"`
-	Data interface{} `json:"data;omitempty"`
+	Msg  string      `json:"msg,omitempty" example:"success"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // Response setting gin.JSON

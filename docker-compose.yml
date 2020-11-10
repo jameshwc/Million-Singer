@@ -27,7 +27,11 @@ services:
              --explicit_defaults_for_timestamp=true
              --lower_case_table_names=1
              --max_allowed_packet=128M;
-    env_file: env/.env-docker-compose
+    environment:
+      MYSQL_USER: ${db_user}
+      MYSQL_PASSWORD: ${db_passwd}
+      MYSQL_ROOT_PASSWORD: ${db_passwd}
+      MYSQL_DATABASE: ${db_name}
     volumes:
       - ./sql/init.sql:/init.sql
       - data:/var/lib/mysql

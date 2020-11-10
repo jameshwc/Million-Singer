@@ -27,7 +27,7 @@ type Song struct {
 }
 
 type SongInstance struct {
-	Song        *model.Song
+	*model.Song
 	MissLyricID int `json:"miss_lyric_id"`
 }
 

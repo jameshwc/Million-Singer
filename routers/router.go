@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/jameshwc/Million-Singer/middleware/iplog"
 	"github.com/jameshwc/Million-Singer/middleware/prom"
 	"github.com/jameshwc/Million-Singer/middleware/version"
 	"github.com/jameshwc/Million-Singer/routers/api/game"
 	"github.com/jameshwc/Million-Singer/routers/api/user"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func methodNotAllowed(c *gin.Context) {
@@ -30,8 +30,8 @@ func InitRouters() *gin.Engine {
 	r.Use(prom.PromMiddleware())
 
 	r.Use(iplog.TraceIP())
+	r.Use(static.Serve("/", static.LocalFile("dist", true)))
 
-	r.Static("/", "dist")
 	r.GET("/metrics", prom.PromHandler(promhttp.Handler()))
 
 	r.HandleMethodNotAllowed = true

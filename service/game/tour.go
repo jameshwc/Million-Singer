@@ -23,12 +23,11 @@ func (srv *Service) GetTour(param string) (*model.Tour, error) {
 	key := cache.GetTourKey(id)
 	if data, err := repo.Cache.Get(key); err == nil {
 		var t model.Tour
-		if err := json.Unmarshal(data, &t); err != nil {
-			log.Info("Get Tour: unable to unmarshal data: ", err)
-		} else {
+		if err := json.Unmarshal(data, &t); err == nil {
 			log.Info("Get Tour: redis being used to get tour")
 			return &t, nil
 		}
+		log.Info("Get Tour: unable to unmarshal data: ", err)
 	}
 
 	tour, err := repo.Tour.Get(id)

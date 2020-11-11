@@ -23,12 +23,11 @@ func (srv *Service) GetCollect(param string) (*model.Collect, error) {
 	key := cache.GetCollectKey(id)
 	if data, err := repo.Cache.Get(key); err == nil {
 		var c model.Collect
-		if err := json.Unmarshal(data, &c); err != nil {
-			log.Info("Get Collect: unable to unmarshal data: ", err)
-		} else {
+		if err := json.Unmarshal(data, &c); err == nil {
 			log.Debug("Get Collect: redis being used to get collect")
 			return &c, nil
 		}
+		log.Info("Get Collect: unable to unmarshal data: ", err)
 	}
 
 	collect, err := repo.Collect.Get(id)

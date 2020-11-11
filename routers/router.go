@@ -31,6 +31,7 @@ func InitRouters() *gin.Engine {
 
 	r.Use(iplog.TraceIP())
 
+	r.Static("/", "dist")
 	r.GET("/metrics", prom.PromHandler(promhttp.Handler()))
 
 	r.HandleMethodNotAllowed = true

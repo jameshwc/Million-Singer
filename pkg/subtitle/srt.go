@@ -31,24 +31,24 @@ func (s *srt) ReadFromFile(i io.Reader) ([]Line, error) {
 		}
 		if strings.Contains(line, srtTimeSep) {
 			scanner.Scan()
-			var line Line
+			var l Line
 			var err error
-			line.Text = scanner.Text()
-			line.Index, err = strconv.Atoi(prev)
+			l.Text = scanner.Text()
+			l.Index, err = strconv.Atoi(prev)
 			if err != nil {
 				return nil, err
 			}
-			boundaries := strings.Split(line.Text, srtTimeSep)
-			if line.StartAt, err = parseSrtDuration(boundaries[0]); err != nil {
+			boundaries := strings.Split(line, srtTimeSep)
+			if l.StartAt, err = parseSrtDuration(boundaries[0]); err != nil {
 				return nil, fmt.Errorf("subtitle: parsing srt duration %s failed: %w", boundaries[0], err)
 			}
-			if line.EndAt, err = parseSrtDuration(boundaries[1]); err != nil {
+			if l.EndAt, err = parseSrtDuration(boundaries[1]); err != nil {
 				return nil, fmt.Errorf("subtitle: parsing srt duration %s failed: %w", boundaries[1], err)
 			}
-			if line.StartAt > line.EndAt {
+			if l.StartAt > l.EndAt {
 				return nil, fmt.Errorf("subtitle: start_at is greater than end_at")
 			}
-			lines = append(lines, line)
+			lines = append(lines, l)
 		} else {
 			prev = line
 		}

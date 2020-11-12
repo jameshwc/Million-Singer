@@ -114,3 +114,19 @@ func (m *mysqlSongRepository) Get(songID int, hasLyrics bool) (*model.Song, erro
 	}
 	return &song, nil
 }
+
+func (m *mysqlSongRepository) Gets() (songs []*model.Song, err error) {
+	rows, err := m.db.Query("SELECT id, video_id, name, singer, genre, language FROM songs WHERE deleted_at IS NULL")
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var s model.Song
+		if err = rows.Scan(&s.ID, &s.VideoID, &s.Name, &s.Singer, &s.Genre, &s.Language); err != nil {
+			return
+		}
+		songs = append(songs, &s)
+	}
+	return
+}

@@ -149,3 +149,12 @@ func (srv *Service) DeleteSong(param string) error {
 	}
 	return nil
 }
+
+func (srv *Service) GetSongs() ([]*model.Song, error) {
+	// TODO: Cache?
+	songs, err := repo.Song.Gets()
+	if err != nil {
+		return nil, C.ErrDatabase
+	}
+	return songs, nil
+}

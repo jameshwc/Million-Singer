@@ -119,3 +119,13 @@ func DeleteSong(c *gin.Context) {
 
 	}
 }
+
+func GetSongs(c *gin.Context) {
+	appG := app.Gin{C: c}
+	switch songs, err := service.Game.GetSongs(); err {
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.ERROR_GET_SONG_SERVER_ERROR, err.Error(), nil)
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, songs)
+	}
+}

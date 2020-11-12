@@ -54,6 +54,8 @@ func InitRouters() *gin.Engine {
 
 	gamesAPI.GET("/songs/:id", game.GetSongInstance)
 
+	gamesAPI.GET("/songs", game.GetSongs)
+
 	gamesAPI.GET("/lyrics/:id", game.GetLyricsWithSongID)
 
 	// gamesAPI.Use(jwt.JWT())

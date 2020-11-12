@@ -22,7 +22,6 @@ WORKDIR /api
 COPY --from=builder /api/app .
 COPY wait-for-it.sh .
 COPY dist /api/dist
-RUN ls 
 RUN apk add --no-cache bash
 RUN chmod +x wait-for-it.sh
 EXPOSE 8000

@@ -7,15 +7,15 @@ import (
 )
 
 type Song struct {
-	ID         int      `json:"id"`
+	ID         int      `json:"id,omitempty"`
 	Lyrics     []*Lyric `json:"lyrics,omitempty"`
-	VideoID    string   `json:"video_id"`
+	VideoID    string   `json:"video_id,omitempty"`
 	StartTime  string   `json:"start_time,omitempty"`
 	EndTime    string   `json:"end_time,omitempty"`
-	Language   string   `json:"language"`
+	Language   string   `json:"language,omitempty"`
 	Name       string   `json:"name"`
 	Singer     string   `json:"singer"`
-	Genre      string   `json:"genre"`
+	Genre      string   `json:"genre,omitempty"`
 	MissLyrics string   `json:"miss_lyrics,omitempty"` // IDs (integers) with comma seperated
 }
 

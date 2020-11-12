@@ -18,6 +18,7 @@ type CollectRepo interface {
 type SongRepo interface {
 	Add(videoID, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []model.Lyric) (int, error)
 	Get(songID int, hasLyrics bool) (*model.Song, error)
+	Gets() ([]*model.Song, error)
 	Delete(id int) error
 	QueryByVideoID(videoID string) (id int64, err error)
 	CheckManyExist(songsID []int) (int64, error)

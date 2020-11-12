@@ -170,6 +170,10 @@ func (r *repoMockSongBase) CheckManyExist(songsID []int) (int64, error) {
 	return cnt, nil
 }
 
+func (r *repoMockSongBase) Gets() ([]*model.Song, error) {
+	return nil, nil
+}
+
 func (r *repoMockCacheServerError) Set(key string, data interface{}, timeout int) error {
 	return redis.ErrPoolExhausted
 }

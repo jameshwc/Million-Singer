@@ -1,8 +1,10 @@
 package game
 
 import (
+	"reflect"
 	"testing"
 
+	"github.com/jameshwc/Million-Singer/model"
 	C "github.com/jameshwc/Million-Singer/pkg/constant"
 	"github.com/jameshwc/Million-Singer/pkg/log"
 	"github.com/jameshwc/Million-Singer/pkg/subtitle"
@@ -47,6 +49,30 @@ func TestService_AddSong(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("Service.AddSong() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestService_GetSongs(t *testing.T) {
+	tests := []struct {
+		name    string
+		srv     *Service
+		want    []*model.Song
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			srv := &Service{}
+			got, err := srv.GetSongs()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.GetSongs() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Service.GetSongs() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -10,6 +10,7 @@ type GameService interface {
 	GetCollect(param string) (*model.Collect, error)
 	AddCollect(songs []int, title string) (int, error)
 	GetLyricsWithSongID(param string) ([]*model.Lyric, error)
+	GetSupportedLanguages() []string
 	AddSong(s *game.Song) (int, error)
 	GetSongInstance(param string, hasLyrics bool) (*game.SongInstance, error)
 	GetSongs() ([]*model.Song, error)

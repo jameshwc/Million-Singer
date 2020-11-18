@@ -37,3 +37,11 @@ func GetLyricsWithSongID(c *gin.Context) {
 
 	}
 }
+
+func GetSupportedLanguages(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	languages := service.Game.GetSupportedLanguages()
+
+	appG.Response(http.StatusOK, constant.SUCCESS, constant.SuccessMsg, languages)
+}

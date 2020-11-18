@@ -58,6 +58,7 @@ func InitRouters() *gin.Engine {
 
 	gamesAPI.GET("/lyrics/:id", game.GetLyricsWithSongID)
 
+	gamesAPI.GET("/languages", game.GetSupportedLanguages)
 	// gamesAPI.Use(jwt.JWT())
 	// {
 	gamesAPI.POST("/tours/new", game.AddTour)

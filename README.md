@@ -15,3 +15,7 @@ $ docker-compose up -d --build
 ## API Documents
 
 See ```docs/api.md```
+
+## TODO
+
+- Songs filter/search [ref](https://www.moesif.com/blog/technical/api-design/REST-API-Design-Filtering-Sorting-and-Pagination/)

@@ -33,6 +33,7 @@ type Redis struct {
 
 type Log struct {
 	LogStashAddr string
+	IsEnabled    bool
 }
 
 var DBconfig = &Database{}
@@ -78,7 +79,12 @@ func Setup() {
 		MinIdleConn: minIdleConn,
 		IdleTimeout: time.Duration(idleTimeout) * time.Second,
 	}
+	isEnabled := false
+	if os.Getenv("log_is_enabled") == "1" {
+		isEnabled = true
+	}
 	LogConfig = &Log{
 		LogStashAddr: os.Getenv("logstash_addr"),
+		IsEnabled:    isEnabled,
 	}
 }

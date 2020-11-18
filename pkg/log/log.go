@@ -29,12 +29,14 @@ func Setup() {
 			FullTimestamp:   true,
 		},
 	}
-	conn, err := net.Dial("tcp", conf.LogConfig.LogStashAddr)
-	if err != nil {
-		logrus.Fatal(err)
+	if conf.LogConfig.IsEnabled {
+		conn, err := net.Dial("tcp", conf.LogConfig.LogStashAddr)
+		if err != nil {
+			logrus.Fatal(err)
+		}
+		hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "cn_project"}))
+		Logger.Hooks.Add(hook)
 	}
-	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "cn_project"}))
-	Logger.Hooks.Add(hook)
 }
 
 // Debug output logs at debug level
@@ -87,12 +89,10 @@ func TraceIP(ipaddr, endpoint string) {
 }
 
 // get source of the log output
-func getSource() (source string) {
+func getSource() string {
 	_, file, line, ok := runtime.Caller(DefaultCallerDepth)
-	if ok {
-		source = fmt.Sprintf("%s:%d", file, line)
-	} else {
-		source = "not available"
+	if !ok {
+		return "not available"
 	}
-	return
+	return fmt.Sprintf("%s:%d", file, line)
 }

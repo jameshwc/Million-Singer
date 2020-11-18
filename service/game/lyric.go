@@ -20,15 +20,3 @@ func (srv *Service) GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
 	}
 	return s.Lyrics, nil
 }
-
-func (srv *Service) GetSupportedLanguages() []string {
-	return []string{
-		"en",
-		"zh-tw",
-		"zh-cn",
-		"fr",
-		"ja",
-		"ko",
-		"es",
-	}
-}

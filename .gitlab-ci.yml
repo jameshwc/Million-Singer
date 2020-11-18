@@ -4,18 +4,18 @@ stages:
   - deploy
 
 
-build:
-  stage: build
-  services:
-    - docker:dind
-  image: docker:latest
-  before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - docker push $CI_REGISTRY_IMAGE:latest
+# build:
+#   stage: build
+#   services:
+#     - docker:dind
+#   image: docker:latest
+#   before_script:
+#   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   script:
+#     - docker pull $CI_REGISTRY_IMAGE:latest || true
+#     - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+#     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+#     - docker push $CI_REGISTRY_IMAGE:latest
 
 # test:
 #   stage: test
@@ -35,8 +35,6 @@ deploy:
       ssh -o StrictHostKeyChecking=no -i .ssh/rsa $HOST -tt "
       cd million-singer
       git pull origin master
-      docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-      cp env/.env-docker-compose .env
-      sed -i 's/server_git_commit_sha=/server_git_commit_sha=$CI_COMMIT_SHORT_SHA/' .env
-      docker-compose pull web && docker-compose rm -s -f web && docker-compose up -d
+      sed -i 's/server_git_commit_sha=/server_git_commit_sha=$CI_COMMIT_SHORT_SHA/' env/.env-docker-compose
+      docker-compose up -d --build
       "

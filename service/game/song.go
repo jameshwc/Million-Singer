@@ -73,7 +73,7 @@ func (srv *Service) AddSong(s *Song) (int, error) {
 	case "srt", "lrc":
 		lines, err = subtitle.NewSubtitleFactory(s.FileType).ReadFromBytes(s.File)
 	case "youtube":
-		lines, err = subtitle.NewWebSubtitleFactory(s.FileType).GetLines(s.URL)
+		lines, err = subtitle.NewWebSubtitleFactory(s.FileType).GetLines(s.URL, s.Language)
 	default:
 		log.Debug("Add Song: file type not supported: ", s.FileType)
 		return 0, C.ErrSongAddLyricsFileTypeNotSupported

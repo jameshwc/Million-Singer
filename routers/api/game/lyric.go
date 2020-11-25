@@ -37,3 +37,15 @@ func GetLyricsWithSongID(c *gin.Context) {
 
 	}
 }
+
+func ListYoutubeCaptionLanguages(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	switch languages, err := service.Game.ListYoutubeCaptionLanguages(c.Query("url")); err {
+	case constant.ErrCaptionError:
+		appG.Response(http.StatusBadRequest, constant.ERROR_GET_CAPTION, err.Error(), nil)
+
+	case nil:
+		appG.Response(http.StatusOK, constant.SUCCESS, constant.SuccessMsg, languages)
+	}
+}

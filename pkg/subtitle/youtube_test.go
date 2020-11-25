@@ -97,34 +97,3 @@ func TestNewYoutubeDownloader(t *testing.T) {
 		})
 	}
 }
-
-func TestyoutubeDownloader_getAvailableLanguages(t *testing.T) {
-	sampleAndDefault["default"] = "en"
-	type fields struct {
-		URL       string
-		VideoID   string
-		Languages map[string]string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		{"http short url", fields{"http://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleAndDefault}, false},
-		{"https short url", fields{"https://youtu.be/5MgBikgcWnY", "5MgBikgcWnY", sampleAndDefault}, false},
-		{"http long url", fields{"http://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleAndDefault}, false},
-		{"https long url", fields{"https://www.youtube.com/watch?v=5MgBikgcWnY&feature=feed", "5MgBikgcWnY", sampleAndDefault}, false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			y := &youtubeDownloader{
-				URL:       tt.fields.URL,
-				VideoID:   tt.fields.VideoID,
-				Languages: tt.fields.Languages,
-			}
-			if err := y.getAvailableLanguages(); (err != nil) != tt.wantErr {
-				t.Errorf("youtubeDownloader.getAvailableLanguages() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}

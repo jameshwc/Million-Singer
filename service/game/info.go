@@ -3,8 +3,8 @@ package game
 func (srv *Service) GetSupportedLanguages() []string {
 	return []string{
 		"en",
-		"zh-tw",
-		"zh-cn",
+		"zh-TW", // TODO: include zh-Hant & zh-TW
+		"zh-CN", // TODO: include zh-Hans & zh-CN
 		"fr",
 		"ja",
 		"ko",
@@ -17,6 +17,7 @@ func (srv *Service) GetGenres() []string {
 		"Hip-hop",
 		"Pop",
 		"Blues",
+		"Cover",
 		"Jazz",
 		"Country",
 		"Edm",

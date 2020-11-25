@@ -44,4 +44,6 @@ var (
 	ErrSongAddParseLyrics                = errors.New("parse lyrics file error")
 	ErrSongAddLyricsFileTypeNotSupported = errors.New("lyrics file type not supported")
 	ErrSongAddLyricsIndexDuplicate       = errors.New("lyrics index duplicate")
+
+	ErrCaptionError = errors.New("caption error")
 )

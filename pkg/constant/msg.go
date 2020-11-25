@@ -50,6 +50,8 @@ var MsgFlags = map[int]string{
 	ERROR_CHECK_EMAIL_CONFLICT:            "email conflict",
 	ERROR_AUTH_TOKEN_TIMEOUT:              "auth token timeout",
 	ERROR_AUTH_TOKEN_FAIL:                 "auth token incorrect",
+
+	ERROR_GET_CAPTION: "caption unknown error",
 }
 
 var SuccessMsg = "Success"

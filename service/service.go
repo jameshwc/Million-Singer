@@ -19,6 +19,7 @@ type GameService interface {
 	AddTour(collectsID []int) (int, error)
 	GetTotalTours() (int, error)
 	GetTour(param string) (*model.Tour, error)
+	ListYoutubeCaptionLanguages(param string) ([]string, error)
 }
 
 type UserService interface {

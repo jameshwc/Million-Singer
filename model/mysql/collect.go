@@ -93,3 +93,31 @@ func (m *mysqlCollectRepository) CheckManyExist(collectsID []int) (int64, error)
 	}
 	return count, nil
 }
+
+func (m *mysqlCollectRepository) Gets() (collects []*model.Collect, err error) {
+	rows, err := m.db.Query(`SELECT collects.title, collect_songs.collect_id, songs.id as song_id, songs.video_id, songs.name, songs.singer, songs.language, songs.genre 
+							FROM collect_songs LEFT JOIN songs ON 
+							collect_songs.song_id = songs.id LEFT JOIN collects ON collect_songs.collect_id = collects.id`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	prevCid := -1
+	for rows.Next() {
+		var cid int
+		var ctitle string
+		var s model.Song
+		if err := rows.Scan(&ctitle, &cid, &s.ID, &s.VideoID, &s.Name, &s.Singer, &s.Language, &s.Genre); err != nil {
+			return nil, err
+		}
+		if cid != prevCid {
+			var songs []*model.Song
+			songs = append(songs, &s)
+			collects = append(collects, &model.Collect{cid, ctitle, songs})
+		} else {
+			c := collects[len(collects)-1]
+			c.Songs = append(c.Songs, &s)
+		}
+	}
+	return
+}

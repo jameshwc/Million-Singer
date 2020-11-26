@@ -65,5 +65,13 @@ func (srv *Service) AddCollect(songs []int, title string) (int, error) {
 		return 0, C.ErrDatabase
 	}
 	return id, nil
+}
 
+func (srv *Service) GetCollects() ([]*model.Collect, error) {
+	// TODO: Cache?
+	cs, err := repo.Collect.Gets()
+	if err != nil {
+		return nil, C.ErrDatabase
+	}
+	return cs, nil
 }

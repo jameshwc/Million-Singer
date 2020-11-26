@@ -8,6 +8,7 @@ import (
 
 type GameService interface {
 	GetCollect(param string) (*model.Collect, error)
+	GetCollects() ([]*model.Collect, error)
 	AddCollect(songs []int, title string) (int, error)
 	GetLyricsWithSongID(param string) ([]*model.Lyric, error)
 	GetSupportedLanguages() []string

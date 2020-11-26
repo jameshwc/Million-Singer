@@ -13,6 +13,7 @@ type TourRepo interface {
 type CollectRepo interface {
 	Add(title string, songsID []int) (int, error)
 	Get(id int) (*model.Collect, error)
+	Gets() ([]*model.Collect, error)
 	CheckManyExist(collectsID []int) (int64, error)
 }
 type SongRepo interface {

@@ -114,6 +114,7 @@ func (m *mysqlCollectRepository) Gets() (collects []*model.Collect, err error) {
 			var songs []*model.Song
 			songs = append(songs, &s)
 			collects = append(collects, &model.Collect{cid, ctitle, songs})
+			prevCid = cid
 		} else {
 			c := collects[len(collects)-1]
 			c.Songs = append(c.Songs, &s)

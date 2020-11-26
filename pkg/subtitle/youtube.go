@@ -140,8 +140,9 @@ var languageCodeMap = map[string]string{
 type youtube struct{}
 
 var (
-	ErrTranscriptDisabled = errors.New("Subtitles are disabled in this video")
-	ErrVideoUnavailable   = errors.New("The video is no longer available")
+	ErrTranscriptDisabled          = errors.New("Subtitles are disabled in this video")
+	ErrVideoUnavailable            = errors.New("The video is no longer available")
+	ErrLanguageDownloadURLNotFound = errors.New("Caption download url not found; perhaps language code is incorrect")
 )
 
 type youtubeDownloader struct {
@@ -312,8 +313,17 @@ func (y *youtubeDownloader) getLyrics(language string) ([]Line, error) {
 	return lyrics, nil
 }
 
-func (y *youtubeDownloader) download(language string) (*etree.Element, error) {
-	downloadURL := fmt.Sprintf("http://www.youtube.com/api/timedtext?v=%s&lang=%s", y.VideoID, language)
+func (y *youtubeDownloader) download(languageCode string) (*etree.Element, error) {
+	downloadURL := ""
+	for _, language := range y.Caption.PlayerCaptionsTracklistRenderer.CaptionTracks {
+		if languageCode == language.LanguageCode {
+			downloadURL = language.BaseURL
+			break
+		}
+	}
+	if downloadURL == "" {
+		return nil, ErrLanguageDownloadURLNotFound
+	}
 
 	resp, err := http.Get(downloadURL)
 	if err != nil {

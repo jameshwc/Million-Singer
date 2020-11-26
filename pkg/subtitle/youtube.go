@@ -202,7 +202,7 @@ func newYoutubeDownloader(URL string) (*youtubeDownloader, error) {
 	return y, nil
 }
 
-func (y *youtube) ListLanguages(url string) ([]string, error) {
+func (y *youtube) ListLanguages(url string) (map[string]string, error) {
 	yd, err := newYoutubeDownloader(url)
 	if err != nil {
 		return nil, err
@@ -242,10 +242,10 @@ func (y *youtubeDownloader) Fetch() error {
 	return nil
 }
 
-func (y *youtubeDownloader) ListLanguages() []string {
-	languages := make([]string, 0)
+func (y *youtubeDownloader) ListLanguages() map[string]string {
+	languages := make(map[string]string)
 	for _, language := range y.Caption.PlayerCaptionsTracklistRenderer.CaptionTracks {
-		languages = append(languages, language.LanguageCode)
+		languages[language.LanguageCode] = language.BaseURL
 	}
 	return languages
 }

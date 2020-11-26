@@ -22,7 +22,7 @@ func (srv *Service) GetLyricsWithSongID(param string) ([]*model.Lyric, error) {
 	return s.Lyrics, nil
 }
 
-func (srv *Service) ListYoutubeCaptionLanguages(param string) ([]string, error) {
+func (srv *Service) ListYoutubeCaptionLanguages(param string) (map[string]string, error) {
 	youtube := subtitle.NewWebSubtitleFactory("youtube")
 
 	languages, err := youtube.ListLanguages(param)

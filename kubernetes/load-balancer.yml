@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: million-singer-load-balancer
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: K8S
+spec:
+  loadBalancerIP: 52.148.25.145
+  type: LoadBalancer
+  selector:
+    app: million-singer
+  ports:
+  - protocol: TCP
+    port: 80
+    nodePort: 30903

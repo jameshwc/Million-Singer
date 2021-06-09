@@ -77,7 +77,14 @@ func (srv *Service) AddTour(collectsID []int, title string) (int, error) {
 	return id, nil
 }
 
-func (srv *Service) DelTour(id int) error {
+func (srv *Service) DelTour(param string) error {
+
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		log.Debugf("Del Tour: param id %s is not a number", param)
+		return C.ErrTourIDNotNumber
+	}
+
 	num, err := repo.Tour.GetTotal()
 	if err != nil {
 		return C.ErrDatabase

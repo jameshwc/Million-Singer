@@ -114,13 +114,7 @@ func AddTour(c *gin.Context) {
 func DelTour(c *gin.Context) {
 	appG := app.Gin{C: c}
 
-	var t tour
-	if err := c.BindJSON(&t); err != nil {
-		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, err.Error(), nil)
-		return
-	}
-
-	switch err := service.Game.DelTour(t.ID); err {
+	switch err := service.Game.DelTour(c.Param("id")); err {
 
 	case C.ErrTourDelIDIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_DEL_TOUR_ID_INCORRECT, err.Error(), nil)

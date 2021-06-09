@@ -85,13 +85,14 @@ func (srv *Service) DelTour(param string) error {
 		return C.ErrTourIDNotNumber
 	}
 
-	num, err := repo.Tour.GetTotal()
-	if err != nil {
-		return C.ErrDatabase
-	}
-	if id < 0 || id >= num {
+	if id < 0 {
 		return C.ErrTourDelIDIncorrect
 	}
+
+	if tour, _ := repo.Tour.Get(id); tour == nil {
+		return C.ErrTourDelDeleted
+	}
+
 	if err := repo.Tour.Del(id); err != nil {
 		log.Error("Del Tour: ", err)
 		return C.ErrDatabase

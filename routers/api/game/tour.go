@@ -119,6 +119,9 @@ func DelTour(c *gin.Context) {
 	case C.ErrTourDelIDIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_DEL_TOUR_ID_INCORRECT, err.Error(), nil)
 
+	case C.ErrTourDelDeleted:
+		appG.Response(http.StatusGone, C.ERROR_DEL_TOUR_DELETED, err.Error(), nil)
+
 	case C.ErrDatabase:
 		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err.Error(), nil)
 

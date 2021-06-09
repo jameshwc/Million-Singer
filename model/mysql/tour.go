@@ -87,9 +87,9 @@ func (m *mysqlTourRepository) Add(collectsID []int, title string) (int, error) {
 }
 
 func (m *mysqlTourRepository) Del(id int) error {
-	if tour, err := m.Get(id); tour == nil {
-		return errors.New("tour has been deleted or tour id not found in database or database error" + err.Error())
-	}
+	// if tour, err := m.Get(id); tour == nil {
+	// return errors.New("tour has been deleted or tour id not found in database or database error" + err.Error())
+	// }
 
 	tx, err := m.db.Begin()
 	if err != nil {

@@ -52,14 +52,14 @@ func (m *mysqlTourRepository) GetTotal() (int, error) {
 	return count, err
 }
 
-func (m *mysqlTourRepository) Add(collectsID []int) (int, error) {
+func (m *mysqlTourRepository) Add(collectsID []int, title string) (int, error) {
 	cur := time.Now()
 	tx, err := m.db.Begin()
 	if err != nil {
 		return 0, err
 	}
 
-	result, err := tx.Exec("INSERT INTO tours (created_at, updated_at, deleted_at) VALUES (?, ?, ?)", cur, cur, sql.NullTime{})
+	result, err := tx.Exec("INSERT INTO tours (created_at, updated_at, deleted_at, title) VALUES (?, ?, ?, ?)", cur, cur, sql.NullTime{}, title)
 	if err != nil {
 		return 0, err
 	}
@@ -84,4 +84,23 @@ func (m *mysqlTourRepository) Add(collectsID []int) (int, error) {
 	}
 
 	return int(id), tx.Commit()
+}
+
+func (m *mysqlTourRepository) Del(id int) error {
+	tx, err := m.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM tour_collects WHERE tour_id = ?", id)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM tours WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

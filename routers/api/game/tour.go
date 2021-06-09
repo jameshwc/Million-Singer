@@ -10,7 +10,9 @@ import (
 )
 
 type tour struct {
-	Collects []int `json:"collects"`
+	Collects []int  `json:"collects"`
+	Title    string `json:"title"`
+	ID       int    `json:"id"`
 }
 
 // GetTour godoc
@@ -92,7 +94,7 @@ func AddTour(c *gin.Context) {
 		return
 	}
 
-	switch tourID, err := service.Game.AddTour(t.Collects); err {
+	switch tourID, err := service.Game.AddTour(t.Collects, t.Title); err {
 
 	case C.ErrTourAddFormatIncorrect:
 		appG.Response(http.StatusBadRequest, C.ERROR_ADD_TOUR_FORMAT_INCORRECT, err.Error(), nil)
@@ -105,6 +107,29 @@ func AddTour(c *gin.Context) {
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, tourID)
+
+	}
+}
+
+func DelTour(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	var t tour
+	if err := c.BindJSON(&t); err != nil {
+		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, err.Error(), nil)
+		return
+	}
+
+	switch err := service.Game.DelTour(t.ID); err {
+
+	case C.ErrTourDelIDIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_DEL_TOUR_ID_INCORRECT, err.Error(), nil)
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err.Error(), nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, nil)
 
 	}
 }

@@ -53,6 +53,9 @@ func (r *redisRepository) Del(key string) error {
 	return r.rdb.Del(key).Err()
 }
 
+func (r *redisRepository) add(key string) error {
+	return nil
+}
 func setWithLua(rdb *redis.Client, key string, data interface{}, timeout int) error {
 	value, err := json.Marshal(data)
 	if err != nil {

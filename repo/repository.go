@@ -5,9 +5,10 @@ import (
 )
 
 type TourRepo interface {
-	Add(collectsID []int) (int, error)
+	Add(collectsID []int, title string) (int, error)
 	Get(id int) (*model.Tour, error)
 	GetTotal() (int, error)
+	Del(id int) error
 }
 
 type CollectRepo interface {

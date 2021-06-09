@@ -27,6 +27,7 @@ var (
 	ErrTourAddFormatIncorrect        = errors.New("collects id null")
 	ErrTourAddCollectsDuplicate      = errors.New("collects id duplicate")
 	ErrTourAddCollectsRecordNotFound = errors.New("collects record not found")
+	ErrTourDelIDIncorrect            = errors.New("tour id negative or not found")
 
 	ErrCollectIDNotNumber        = errors.New("param id is not a number")
 	ErrCollectNotFound           = errors.New("collect record not found")

@@ -51,9 +51,9 @@ func (srv *Service) GetTotalTours() (int, error) {
 	return total, nil
 }
 
-func (srv *Service) AddTour(collectsID []int) (int, error) {
+func (srv *Service) AddTour(collectsID []int, title string) (int, error) {
 
-	if len(collectsID) == 0 {
+	if len(collectsID) == 0 || title == "" {
 		return 0, C.ErrTourAddFormatIncorrect
 	}
 
@@ -68,11 +68,26 @@ func (srv *Service) AddTour(collectsID []int) (int, error) {
 	} else if len(collectsID) != int(collectNum) {
 		return 0, C.ErrTourAddCollectsRecordNotFound
 	}
-	id, err := repo.Tour.Add(collectsID)
+	id, err := repo.Tour.Add(collectsID, title)
 	if err != nil {
 		log.Error("Add Tour: ", err)
 		return 0, C.ErrDatabase
 	}
 
 	return id, nil
+}
+
+func (srv *Service) DelTour(id int) error {
+	num, err := repo.Tour.GetTotal()
+	if err != nil {
+		return C.ErrDatabase
+	}
+	if id < 0 || id >= num {
+		return C.ErrTourDelIDIncorrect
+	}
+	if err := repo.Tour.Del(id); err != nil {
+		log.Error("Del Tour: ", err)
+		return C.ErrDatabase
+	}
+	return nil
 }

@@ -98,13 +98,15 @@ func (m *mysqlTourRepository) Del(id int) error {
 
 	_, err = tx.Exec("DELETE FROM tour_collects WHERE tour_id = ?", id)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	_, err = tx.Exec("DELETE FROM tours WHERE id = ?", id)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return nil
+	return tx.Commit()
 }

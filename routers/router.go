@@ -48,6 +48,8 @@ func InitRouters() *gin.Engine {
 
 	gamesAPI.GET("/tours/:id", game.GetTour)
 
+	gamesAPI.DELETE("/tours/:id", game.DelTour)
+
 	gamesAPI.GET("/tours", game.GetTotalTours)
 
 	gamesAPI.GET("/collects/:id", game.GetCollect)

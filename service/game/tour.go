@@ -101,5 +101,11 @@ func (srv *Service) DelTour(param string) error {
 		log.Error("Del Tour: ", err)
 		return C.ErrDatabase
 	}
+
+	key := cache.GetTourKey(id)
+	if err = repo.Cache.Del(key); err != nil {
+		log.WarnWithSource(err)
+	}
+
 	return nil
 }

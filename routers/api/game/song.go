@@ -35,7 +35,10 @@ func AddSong(c *gin.Context) {
 
 	var song *gameService.Song
 
-	c.BindJSON(&song)
+	if err := c.BindJSON(&song); err != nil {
+		appG.Response(http.StatusBadRequest, C.INVALID_PARAMS, err.Error(), nil)
+		return
+	}
 
 	switch songID, err := service.Game.AddSong(song); err {
 

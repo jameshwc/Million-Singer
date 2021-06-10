@@ -47,5 +47,7 @@ var (
 	ErrSongAddLyricsFileTypeNotSupported = errors.New("lyrics file type not supported")
 	ErrSongAddLyricsIndexDuplicate       = errors.New("lyrics index duplicate")
 
-	ErrCaptionError = errors.New("caption error")
+	ErrCaptionError                          = errors.New("caption error")
+	ErrConvertFileToSubtiteParse             = errors.New("convert file to subtitle parse error")
+	ErrConvertFileToSubtitleTypeNotSupported = errors.New("convert file to subtitle file type incorrect")
 )

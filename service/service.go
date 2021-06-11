@@ -18,7 +18,8 @@ type GameService interface {
 	GetSongs() ([]*model.Song, error)
 	DeleteSong(param string) error
 	AddTour(collectsID []int, title string) (int, error)
-	GetTotalTours() ([]*model.Tour, error)
+	GetTours() ([]*model.Tour, error)
+	GetTotalTours() (int, error)
 	GetTour(param string) (*model.Tour, error)
 	DelTour(param string) error
 	ListYoutubeCaptionLanguages(param string) (map[string]string, error)

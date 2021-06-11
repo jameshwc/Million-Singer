@@ -72,6 +72,20 @@ func GetTotalTours(c *gin.Context) {
 	}
 }
 
+func GetTours(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	switch total, err := service.Game.GetTours(); err {
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err.Error(), nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, total)
+
+	}
+}
+
 // AddTour godoc
 // @Summary Add a new tour
 // @Description Add a new tour

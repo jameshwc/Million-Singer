@@ -42,12 +42,22 @@ func (srv *Service) GetTour(param string) (*model.Tour, error) {
 	return tour, nil
 }
 
-func (srv *Service) GetTotalTours() ([]*model.Tour, error) {
+func (srv *Service) GetTours() ([]*model.Tour, error) {
 	// TODO: cache
 	total, err := repo.Tour.Gets()
 	if err != nil {
-		log.Error("Get Total Tours: unknown database error, ", err.Error())
+		log.Error("Get Tours: unknown database error, ", err.Error())
 		return nil, C.ErrDatabase
+	}
+	return total, nil
+}
+
+func (srv *Service) GetTotalTours() (int, error) {
+	// TODO: cache
+	total, err := repo.Tour.GetTotal()
+	if err != nil {
+		log.Error("Get Tours: unknown database error, ", err.Error())
+		return 0, C.ErrDatabase
 	}
 	return total, nil
 }

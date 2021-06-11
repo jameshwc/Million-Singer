@@ -100,7 +100,7 @@ func (srv *Service) DelTour(param string) error {
 		return C.ErrDatabase
 	}
 
-	if id < 0 || id >= total {
+	if id < 0 {
 		return C.ErrTourDelIDIncorrect
 	}
 

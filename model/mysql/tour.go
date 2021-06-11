@@ -52,6 +52,23 @@ func (m *mysqlTourRepository) GetTotal() (int, error) {
 	return count, err
 }
 
+func (m *mysqlTourRepository) Gets() (tours []*model.Tour, err error) {
+	rows, err := m.db.Query(`SELECT tours.title, tours.id FROM tours WHERE deleted_at IS NULL`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var tid int
+		var title string
+		if err := rows.Scan(&tid, &title); err != nil {
+			return nil, err
+		}
+		tours = append(tours, &model.Tour{ID: tid, Title: title, Collects: nil})
+	}
+	return
+}
+
 func (m *mysqlTourRepository) Add(collectsID []int, title string) (int, error) {
 	cur := time.Now()
 	tx, err := m.db.Begin()

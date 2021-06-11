@@ -8,6 +8,7 @@ type TourRepo interface {
 	Add(collectsID []int, title string) (int, error)
 	Get(id int) (*model.Tour, error)
 	GetTotal() (int, error)
+	Gets() ([]*model.Tour, error)
 	Del(id int) error
 }
 

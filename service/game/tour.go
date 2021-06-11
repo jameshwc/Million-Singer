@@ -95,10 +95,6 @@ func (srv *Service) DelTour(param string) error {
 		log.Debugf("Del Tour: param id %s is not a number", param)
 		return C.ErrTourIDNotNumber
 	}
-	total, err := repo.Tour.GetTotal()
-	if err != nil {
-		return C.ErrDatabase
-	}
 
 	if id < 0 {
 		return C.ErrTourDelIDIncorrect

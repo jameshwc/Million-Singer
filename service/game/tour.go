@@ -43,6 +43,7 @@ func (srv *Service) GetTour(param string) (*model.Tour, error) {
 }
 
 func (srv *Service) GetTotalTours() ([]*model.Tour, error) {
+	// TODO: cache
 	total, err := repo.Tour.Gets()
 	if err != nil {
 		log.Error("Get Total Tours: unknown database error, ", err.Error())

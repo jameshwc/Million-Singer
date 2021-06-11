@@ -53,7 +53,7 @@ func (m *mysqlTourRepository) GetTotal() (int, error) {
 }
 
 func (m *mysqlTourRepository) Gets() (tours []*model.Tour, err error) {
-	rows, err := m.db.Query(`SELECT tours.title, tours.id FROM tours WHERE deleted_at IS NULL`)
+	rows, err := m.db.Query(`SELECT tours.id, tours.title FROM tours WHERE deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}

@@ -55,8 +55,6 @@ func InitRouters() *gin.Engine {
 
 	v2gamesAPI.GET("/tours", game.GetTours)
 
-	gamesAPI.GET("/tours", game.GetTotalTours)
-
 	gamesAPI.GET("/collects/:id", game.GetCollect)
 
 	gamesAPI.GET("/collects", game.GetCollects)

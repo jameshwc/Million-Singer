@@ -22,7 +22,8 @@ func NewTourRepository(db *sql.DB) repo.TourRepo {
 func (m *mysqlTourRepository) Get(id int) (*model.Tour, error) {
 
 	scanID := 0
-	if err := m.db.QueryRow("SELECT id FROM tours WHERE id = ? AND deleted_at IS NULL", id).Scan(&scanID); err != nil {
+	scanTitle := ""
+	if err := m.db.QueryRow("SELECT id, title FROM tours WHERE id = ? AND deleted_at IS NULL", id).Scan(&scanID, &scanTitle); err != nil {
 		return nil, err
 	} else if scanID != id {
 		return nil, errors.New("scan id and param id are not matched")
@@ -38,6 +39,7 @@ func (m *mysqlTourRepository) Get(id int) (*model.Tour, error) {
 
 	var tour model.Tour
 	tour.ID = id
+	tour.Title = scanTitle
 	for rows.Next() {
 		title, id := "", 0
 		rows.Scan(&title, &id)

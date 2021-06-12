@@ -62,6 +62,11 @@ func (m *mysqlSongRepository) Del(id int) (collectsID []int, err error) {
 		tx.Rollback()
 		return
 	}
+	_, err = tx.Exec("DELETE FROM lyrics WHERE song_id = ?", id)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
 
 	_, err = tx.Exec("DELETE FROM songs WHERE id = ?", id)
 	if err != nil {

@@ -133,7 +133,7 @@ func (srv *Service) GetSongInstance(param string, hasLyrics bool) (*SongInstance
 func (srv *Service) DelSong(param string) ([]int, error) {
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		log.Debugf("Del Collect: param id %s is not a number", param)
+		log.Debugf("Del Song: param id %s is not a number", param)
 		return nil, C.ErrSongIDNotNumber
 	}
 
@@ -147,7 +147,7 @@ func (srv *Service) DelSong(param string) ([]int, error) {
 
 	collectsID, err := repo.Song.Del(id)
 	if len(collectsID) == 0 && err != nil {
-		log.Error("Del Collect: ", err)
+		log.Error("Del Song: ", err)
 		return nil, C.ErrDatabase
 	}
 	if len(collectsID) > 0 {

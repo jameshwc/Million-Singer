@@ -122,3 +122,42 @@ func (m *mysqlCollectRepository) Gets() (collects []*model.Collect, err error) {
 	}
 	return
 }
+
+func (m *mysqlCollectRepository) Del(id int) (toursID []int, err error) {
+
+	tx, err := m.db.Begin()
+	if err != nil {
+		return
+	}
+	rows, err := m.db.Query("SELECT tour_id FROM tour_collects WHERE collect_id = ?", id)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		tourID := 0
+		rows.Scan(&tourID)
+		toursID = append(toursID, tourID)
+	}
+	if len(toursID) > 0 {
+		tx.Rollback()
+		return
+	}
+
+	_, err = tx.Exec("DELETE FROM collect_songs WHERE collect_id = ?", id)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	_, err = tx.Exec("DELETE FROM collects WHERE id = ?", id)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit()
+	return
+}

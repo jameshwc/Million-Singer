@@ -34,6 +34,9 @@ var (
 	ErrCollectNotFound           = errors.New("collect record not found")
 	ErrCollectAddFormatIncorrect = errors.New("songs not provided or title is empty string")
 	ErrCollectAddSongsDuplicate  = errors.New("songs id duplicate")
+	ErrCollectDelIDIncorrect     = errors.New("collect id negative or not found")
+	ErrCollectDelDeleted         = errors.New("collect has been deleted (or database error)")
+	ErrCollectDelForeignKey      = errors.New("foreign key constraint: some tours are using this collect")
 
 	ErrCollectAddSongsRecordNotFound = errors.New("songs record not found")
 
@@ -46,6 +49,9 @@ var (
 	ErrSongAddParseLyrics                = errors.New("parse lyrics file error")
 	ErrSongAddLyricsFileTypeNotSupported = errors.New("lyrics file type not supported")
 	ErrSongAddLyricsIndexDuplicate       = errors.New("lyrics index duplicate")
+	ErrSongDelIDIncorrect                = errors.New("song id negative or not found")
+	ErrSongDelDeleted                    = errors.New("song has been deleted (or database error)")
+	ErrSongDelForeignKey                 = errors.New("foreign key constraint: some collects are using this song")
 
 	ErrCaptionError                          = errors.New("caption error")
 	ErrConvertFileToSubtiteParse             = errors.New("convert file to subtitle parse error")

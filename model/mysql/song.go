@@ -40,18 +40,37 @@ func (m *mysqlSongRepository) QueryByVideoID(videoID string) (id int64, err erro
 }
 
 // TODO: Fix foreign key or abandon the idea of delete data
-func (m *mysqlSongRepository) Delete(id int) error {
-	if res, err := m.db.Exec("DELETE FROM songs WHERE songs.id = ?", id); err != nil {
-		return err
-	} else {
-		if cnt, err := res.RowsAffected(); err != nil {
-			return err
-		} else if cnt == 0 {
-			err = errors.New("no song record deleted")
-			return err
-		}
+func (m *mysqlSongRepository) Del(id int) (collectsID []int, err error) {
+
+	tx, err := m.db.Begin()
+	if err != nil {
+		return
 	}
-	return nil
+	rows, err := m.db.Query("SELECT collect_id FROM collect_songs WHERE song_id = ?", id)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		collectID := 0
+		rows.Scan(&collectID)
+		collectsID = append(collectsID, collectID)
+	}
+	if len(collectsID) > 0 {
+		tx.Rollback()
+		return
+	}
+
+	_, err = tx.Exec("DELETE FROM songs WHERE id = ?", id)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit()
+	return
 }
 
 func (m *mysqlSongRepository) Add(videoID, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []model.Lyric) (int, error) {

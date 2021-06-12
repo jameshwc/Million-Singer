@@ -17,12 +17,14 @@ type CollectRepo interface {
 	Get(id int) (*model.Collect, error)
 	Gets() ([]*model.Collect, error)
 	CheckManyExist(collectsID []int) (int64, error)
+	Del(id int) ([]int, error)
 }
+
 type SongRepo interface {
 	Add(videoID, name, singer, genre, language, missLyrics, startTime, endTime string, lyrics []model.Lyric) (int, error)
 	Get(songID int, hasLyrics bool) (*model.Song, error)
 	Gets() ([]*model.Song, error)
-	Delete(id int) error
+	Del(id int) ([]int, error)
 	QueryByVideoID(videoID string) (id int64, err error)
 	CheckManyExist(songsID []int) (int64, error)
 }

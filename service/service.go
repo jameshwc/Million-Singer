@@ -10,13 +10,14 @@ type GameService interface {
 	GetCollect(param string) (*model.Collect, error)
 	GetCollects() ([]*model.Collect, error)
 	AddCollect(songs []int, title string) (int, error)
+	DelCollect(param string) ([]int, error)
 	GetLyricsWithSongID(param string) ([]*model.Lyric, error)
 	GetSupportedLanguages() []string
 	GetGenres() []string
 	AddSong(s *game.Song) (int, error)
 	GetSongInstance(param string, hasLyrics bool) (*game.SongInstance, error)
 	GetSongs() ([]*model.Song, error)
-	DeleteSong(param string) error
+	DelSong(param string) ([]int, error)
 	AddTour(collectsID []int, title string) (int, error)
 	GetTours() ([]*model.Tour, error)
 	GetTotalTours() (int, error)

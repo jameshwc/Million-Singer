@@ -107,15 +107,22 @@ func GetSongInstance(c *gin.Context) {
 	}
 }
 
-func DeleteSong(c *gin.Context) {
+func DelSong(c *gin.Context) {
 	appG := app.Gin{C: c}
-	switch err := service.Game.DeleteSong(c.Param("id")); err {
 
-	case C.ErrSongIDNotNumber:
-		appG.Response(http.StatusBadRequest, C.ERROR_GET_SONG_ID_NAN, err.Error(), nil)
+	switch collectsID, err := service.Game.DelSong(c.Param("id")); err {
+
+	case C.ErrSongDelIDIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_DEL_SONG_ID_INCORRECT, err.Error(), nil)
+
+	case C.ErrSongDelDeleted:
+		appG.Response(http.StatusGone, C.ERROR_DEL_SONG_DELETED, err.Error(), nil)
+
+	case C.ErrSongDelForeignKey:
+		appG.Response(http.StatusUnprocessableEntity, C.ERROR_DEL_SONG_FOREIGN_KEY, err.Error(), collectsID)
 
 	case C.ErrDatabase:
-		appG.Response(http.StatusInternalServerError, C.ERROR_GET_SONG_SERVER_ERROR, err.Error(), nil)
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err.Error(), nil)
 
 	case nil:
 		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, nil)

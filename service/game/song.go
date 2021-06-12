@@ -130,24 +130,40 @@ func (srv *Service) GetSongInstance(param string, hasLyrics bool) (*SongInstance
 	return &SongInstance{Song: s, MissLyricID: s.RandomGetMissLyricID()}, nil
 }
 
-func (srv *Service) DeleteSong(param string) error {
+func (srv *Service) DelSong(param string) ([]int, error) {
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		return C.ErrSongIDNotNumber
+		log.Debugf("Del Collect: param id %s is not a number", param)
+		return nil, C.ErrSongIDNotNumber
 	}
-	if err = repo.Song.Delete(id); err != nil {
-		log.Error(err)
-		return C.ErrDatabase
+
+	if id < 0 {
+		return nil, C.ErrSongDelIDIncorrect
 	}
-	key := cache.GetSongKey(id, true)
+
+	if song, _ := repo.Song.Get(id, false); song == nil {
+		return nil, C.ErrSongDelDeleted
+	}
+
+	collectsID, err := repo.Song.Del(id)
+	if len(collectsID) == 0 && err != nil {
+		log.Error("Del Collect: ", err)
+		return nil, C.ErrDatabase
+	}
+	if len(collectsID) > 0 {
+		return collectsID, C.ErrSongDelForeignKey
+	}
+
+	key := cache.GetSongKey(id, false)
 	if err = repo.Cache.Del(key); err != nil {
 		log.WarnWithSource(err)
 	}
-	key = cache.GetSongKey(id, false)
+	key = cache.GetSongKey(id, true)
 	if err = repo.Cache.Del(key); err != nil {
 		log.WarnWithSource(err)
 	}
-	return nil
+
+	return nil, nil
 }
 
 func (srv *Service) GetSongs() ([]*model.Song, error) {

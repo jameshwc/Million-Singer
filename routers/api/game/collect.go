@@ -95,3 +95,26 @@ func GetCollects(c *gin.Context) {
 		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, collects)
 	}
 }
+
+func DelCollect(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	switch toursID, err := service.Game.DelCollect(c.Param("id")); err {
+
+	case C.ErrCollectDelIDIncorrect:
+		appG.Response(http.StatusBadRequest, C.ERROR_DEL_COLLECT_ID_INCORRECT, err.Error(), nil)
+
+	case C.ErrCollectDelDeleted:
+		appG.Response(http.StatusGone, C.ERROR_DEL_COLLECT_DELETED, err.Error(), nil)
+
+	case C.ErrCollectDelForeignKey:
+		appG.Response(http.StatusUnprocessableEntity, C.ERROR_DEL_COLLECT_FOREIGN_KEY, err.Error(), toursID)
+
+	case C.ErrDatabase:
+		appG.Response(http.StatusInternalServerError, C.SERVER_ERROR, err.Error(), nil)
+
+	case nil:
+		appG.Response(http.StatusOK, C.SUCCESS, C.SuccessMsg, nil)
+
+	}
+}

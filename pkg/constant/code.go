@@ -23,6 +23,9 @@ const (
 	ERROR_GET_COLLECT_FAIL_UNKNOWN       = 20010
 	ERROR_GET_COLLECT_ID_NAN             = 20011
 	ERROR_GET_COLLECT_NO_RECORD          = 20012
+	ERROR_DEL_COLLECT_ID_INCORRECT       = 20020
+	ERROR_DEL_COLLECT_DELETED            = 20021
+	ERROR_DEL_COLLECT_FOREIGN_KEY        = 20022
 
 	// 300xx song
 	ERROR_ADD_SONG_FAIL_UNKNOWN                   = 30001
@@ -36,6 +39,10 @@ const (
 	ERROR_GET_SONG_ID_NAN                         = 30011
 	ERROR_GET_SONG_NO_RECORD                      = 30012
 	ERROR_GET_SONG_SERVER_ERROR                   = 30013
+	ERROR_DEL_SONG_ID_INCORRECT                   = 30020
+	ERROR_DEL_SONG_DELETED                        = 30021
+	ERROR_DEL_SONG_FOREIGN_KEY                    = 30022
+
 	// 500xx user
 	ERROR_REGISTER_FAIL                   = 50000
 	ERROR_REGISTER_USERNAME_CONFLICT      = 50001

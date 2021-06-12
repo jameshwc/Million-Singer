@@ -55,6 +55,8 @@ func InitRouters() *gin.Engine {
 
 	v2gamesAPI.GET("/tours", game.GetTours)
 
+	gamesAPI.DELETE("/collects/:id", game.DelCollect)
+
 	gamesAPI.GET("/collects/:id", game.GetCollect)
 
 	gamesAPI.GET("/collects", game.GetCollects)
@@ -81,7 +83,8 @@ func InitRouters() *gin.Engine {
 
 	gamesAPI.POST("/songs/new", game.AddSong)
 
-	gamesAPI.DELETE("/songs/:id", game.DeleteSong)
+	gamesAPI.DELETE("/songs/:id", game.DelSong)
+
 	// }
 	return r
 }

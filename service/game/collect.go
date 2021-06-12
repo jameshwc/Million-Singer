@@ -75,3 +75,35 @@ func (srv *Service) GetCollects() ([]*model.Collect, error) {
 	}
 	return cs, nil
 }
+
+func (srv *Service) DelCollect(param string) ([]int, error) {
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		log.Debugf("Del Collect: param id %s is not a number", param)
+		return nil, C.ErrCollectIDNotNumber
+	}
+
+	if id < 0 {
+		return nil, C.ErrCollectDelIDIncorrect
+	}
+
+	if collect, _ := repo.Collect.Get(id); collect == nil {
+		return nil, C.ErrCollectDelDeleted
+	}
+
+	toursID, err := repo.Collect.Del(id)
+	if len(toursID) == 0 && err != nil {
+		log.Error("Del Collect: ", err)
+		return nil, C.ErrDatabase
+	}
+	if len(toursID) > 0 {
+		return toursID, C.ErrCollectDelForeignKey
+	}
+
+	key := cache.GetCollectKey(id)
+	if err = repo.Cache.Del(key); err != nil {
+		log.WarnWithSource(err)
+	}
+
+	return nil, nil
+}

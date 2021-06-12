@@ -8,7 +8,7 @@ import (
 )
 
 func (srv *Service) ConvertFileToSubtitle(filetype string, file []byte) ([]model.Lyric, error) {
-	if filetype != "src" && filetype != "lrc" {
+	if filetype != "srt" && filetype != "lrc" {
 		return nil, C.ErrConvertFileToSubtitleTypeNotSupported
 	}
 	if len(file) == 0 {

@@ -35,6 +35,9 @@ func (l *lrc) ReadFromFile(i io.Reader) ([]Line, error) {
 		}
 		var line Line
 		splits := strings.Split(text, "]")
+		if len(splits) < 2 || (len(splits) > 0 && len(splits[0]) == 0) {
+			continue
+		}
 		duration, err := parseLrcDuration(splits[0][1:])
 		if err != nil {
 			log.Error(err)

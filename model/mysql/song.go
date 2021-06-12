@@ -102,7 +102,7 @@ func (m *mysqlSongRepository) Add(videoID, name, singer, genre, language, missLy
 	songID := strconv.Itoa(int(id))
 	curString := cur.Format("2006-01-02 15:04:05")
 	for i := range lyrics {
-		stmt += "('" + curString + "','" + curString + "',NULL," + strconv.Itoa(lyrics[i].Index) + ",'" + escape(lyrics[i].Line) + "'," + strconv.FormatInt(lyrics[i].StartAt.Milliseconds(), 10) + "," + strconv.FormatInt(lyrics[i].EndAt.Milliseconds(), 10) + "," + songID + "),"
+		stmt += "('" + curString + "','" + curString + "',NULL," + strconv.Itoa(lyrics[i].Index) + ",'" + escape(lyrics[i].Line) + "'," + strconv.FormatInt(lyrics[i].StartAt.Nanoseconds(), 10) + "," + strconv.FormatInt(lyrics[i].EndAt.Nanoseconds(), 10) + "," + songID + "),"
 	}
 	stmt = stmt[:len(stmt)-1]
 	result, err = tx.Exec(stmt)

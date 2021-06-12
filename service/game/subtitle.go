@@ -11,6 +11,9 @@ func (srv *Service) ConvertFileToSubtitle(filetype string, file []byte) ([]model
 	if filetype != "src" && filetype != "lrc" {
 		return nil, C.ErrConvertFileToSubtitleTypeNotSupported
 	}
+	if len(file) == 0 {
+		return nil, C.ErrConvertFileToSubtiteParse
+	}
 	lines, err := subtitle.NewSubtitleFactory(filetype).ReadFromBytes(file)
 	if err != nil {
 		log.WarnWithSource("ConvertFileToSubtitle: parse lyrics error: ", err)

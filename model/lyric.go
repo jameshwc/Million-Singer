@@ -15,7 +15,7 @@ type Lyric struct {
 
 func ParseLyrics(lines []subtitle.Line) (lyrics []Lyric) {
 	for _, line := range lines {
-		lyrics = append(lyrics, Lyric{line.Index, line.Text, line.StartAt, line.EndAt})
+		lyrics = append(lyrics, Lyric{line.Index, line.Text, time.Duration(line.StartAt.Milliseconds()), time.Duration(line.EndAt.Milliseconds())})
 	}
 	return
 }

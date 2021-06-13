@@ -86,5 +86,8 @@ func InitRouters() *gin.Engine {
 	gamesAPI.DELETE("/songs/:id", game.DelSong)
 
 	// }
+
+	r.NoRoute(static.Serve("/", static.LocalFile("dist", true)))
+
 	return r
 }

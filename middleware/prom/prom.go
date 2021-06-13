@@ -25,6 +25,10 @@ var EndpointList = []string{
 	"/api/game/collects",
 	"/api/game/songs",
 	"/api/game/lyrics",
+	"/api/game/captions/youtube",
+	"/api/game/subtitles/convert",
+	"/api/game/genres",
+	"/api/game/languages",
 	"/swagger/",
 }
 var (

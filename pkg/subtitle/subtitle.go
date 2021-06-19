@@ -15,6 +15,7 @@ type Subtitler interface {
 type Weber interface {
 	GetLines(url, languageCode string) ([]Line, error)
 	ListLanguages(url string) (map[string]string, error)
+	GetTitle(url string) (string, error)
 }
 
 type Line struct {

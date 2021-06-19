@@ -34,7 +34,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7 // indirect
 	golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449 // indirect
-	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0 // indirect
+	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0
 	golang.org/x/sys v0.0.0-20201018230417-eeed37f84f13 // indirect
 	golang.org/x/tools v0.0.0-20200911193555-6422fca01df9 // indirect
 	gorm.io/driver/mysql v1.0.1

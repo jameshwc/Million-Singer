@@ -50,3 +50,18 @@ func DownloadYoutubeSubtitle(c *gin.Context) {
 
 	}
 }
+
+func GetYoutubeTitle(c *gin.Context) {
+
+	appG := app.Gin{C: c}
+
+	switch title, err := service.Game.GetYoutubeTitle(c.Query("url")); err {
+
+	case C.ErrGetYoutubeTitle:
+		appG.Response(http.StatusBadRequest, C.ERROR_DOWNLOAD_YOUTUBE_SUBTITLE, err.Error(), nil)
+
+	case nil:
+		appG.Response(http.StatusAccepted, C.SUCCESS, C.SuccessMsg, title)
+
+	}
+}

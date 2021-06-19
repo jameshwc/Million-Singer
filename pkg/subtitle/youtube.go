@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
+	"golang.org/x/net/html"
 )
 
 const watchURL = "https://youtube.com/watch?v=%s"
@@ -148,6 +150,7 @@ var (
 type youtubeDownloader struct {
 	URL       string
 	VideoID   string
+	Title     string
 	Languages map[string]string
 	Caption   captionRenderer
 }
@@ -219,6 +222,14 @@ func (y *youtube) GetLines(url, languageCode string) ([]Line, error) {
 	return yd.getLyrics(languageCode)
 }
 
+func (y *youtube) GetTitle(url string) (string, error) {
+	yd, err := newYoutubeDownloader(url)
+	if err != nil {
+		return "", err
+	}
+	return yd.Title, nil
+}
+
 func (y *youtubeDownloader) Fetch() error {
 	resp, err := http.Get(fmt.Sprintf(watchURL, y.VideoID))
 	if err != nil {
@@ -228,6 +239,12 @@ func (y *youtubeDownloader) Fetch() error {
 	if err != nil {
 		return err
 	}
+
+	y.Title, err = parseTitle(resp.Body) // TODO: maybe we can utilize dat instead of resp.body
+	if err != nil {
+		return err
+	}
+
 	dat = bytes.ReplaceAll(dat, []byte("\\u0026"), []byte{'&'})
 	dat = bytes.Trim(dat, "\\")
 	sp := bytes.Split(dat, []byte("\"captions\":"))
@@ -251,6 +268,31 @@ func (y *youtubeDownloader) ListLanguages() map[string]string {
 	return languages
 }
 
+func parseTitle(r io.Reader) (string, error) {
+
+	var traverse func(n *html.Node) string
+	traverse = func(n *html.Node) string {
+		if n.Type == html.ElementNode && n.Data == "Title" {
+			return n.FirstChild.Data
+		}
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			result := traverse(c)
+			if len(result) > 0 {
+				return result
+			}
+		}
+
+		return ""
+	}
+
+	doc, err := html.Parse(r)
+	if err != nil {
+		return "", err
+	}
+
+	return traverse(doc), nil
+}
 func ParseVideoID(URL string) (string, error) {
 	u, err := url.Parse(URL)
 	if err != nil {

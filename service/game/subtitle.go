@@ -50,7 +50,7 @@ func (srv *Service) ConvertFileToSubtitle(filetype string, file []byte) ([]model
 }
 
 func (srv *Service) DownloadYoutubeSubtitle(url string, languageCode string) ([]model.Lyric, error) {
-	log.Info("url: ", url, languageCode)
+
 	lines, err := subtitle.NewWebSubtitleFactory("youtube").GetLines(url, languageCode)
 	if err != nil {
 		return nil, C.ErrDownloadYoutubeSubtitle // TODO: error described more detailed
@@ -58,4 +58,14 @@ func (srv *Service) DownloadYoutubeSubtitle(url string, languageCode string) ([]
 
 	lyrics := model.ParseLyrics(lines)
 	return lyrics, nil
+}
+
+func (srv *Service) GetYoutubeTitle(url string) (string, error) {
+
+	title, err := subtitle.NewWebSubtitleFactory("youtube").GetTitle(url)
+	if err != nil {
+		return "", constant.ErrGetYoutubeTitle
+	}
+
+	return title, nil
 }

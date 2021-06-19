@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jameshwc/Million-Singer/conf"
-	_ "github.com/jameshwc/Million-Singer/docs"
 	"github.com/jameshwc/Million-Singer/model/mysql"
 	"github.com/jameshwc/Million-Singer/pkg/gredis"
 	"github.com/jameshwc/Million-Singer/pkg/log"

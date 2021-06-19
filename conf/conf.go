@@ -29,6 +29,7 @@ type Redis struct {
 	Password    string
 	MinIdleConn int
 	IdleTimeout time.Duration
+	IsEnabled   bool
 }
 
 type Log struct {
@@ -79,15 +80,21 @@ func Setup() {
 		log.Fatal("read config: redis_port is not a number")
 	}
 
+	isEnabled := false
+	if os.Getenv("redis_is_enabled") == "1" {
+		isEnabled = true
+	}
 	RedisConfig = &Redis{
 		Host:        os.Getenv("redis_host"),
 		Port:        redisPort,
 		Password:    os.Getenv("redis_password"),
 		MinIdleConn: minIdleConn,
 		IdleTimeout: time.Duration(idleTimeout) * time.Second,
+		IsEnabled:   isEnabled,
 	}
 
-	isEnabled := false
+	isEnabled = false
+
 	if os.Getenv("log_is_enabled") == "1" {
 		isEnabled = true
 	}

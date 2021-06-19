@@ -61,7 +61,6 @@ func (srv *Service) DownloadYoutubeSubtitle(url string, languageCode string) ([]
 }
 
 func (srv *Service) GetYoutubeTitle(url string) (string, error) {
-
 	title, err := subtitle.NewWebSubtitleFactory("youtube").GetTitle(url)
 	if err != nil {
 		return "", constant.ErrGetYoutubeTitle

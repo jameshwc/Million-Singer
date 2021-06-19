@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
+	"github.com/jameshwc/Million-Singer/pkg/log"
 	"golang.org/x/net/html"
 )
 
@@ -235,16 +236,19 @@ func (y *youtubeDownloader) Fetch() error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+
 	dat, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	y.Title, err = parseTitle(resp.Body) // TODO: maybe we can utilize dat instead of resp.body
+	y.Title, err = parseTitle(bytes.NewReader(dat)) // TODO: maybe we can utilize dat instead of resp.body
 	if err != nil {
 		return err
 	}
 
+	log.Info("title: ", y.Title)
 	dat = bytes.ReplaceAll(dat, []byte("\\u0026"), []byte{'&'})
 	dat = bytes.Trim(dat, "\\")
 	sp := bytes.Split(dat, []byte("\"captions\":"))
@@ -272,7 +276,7 @@ func parseTitle(r io.Reader) (string, error) {
 
 	var traverse func(n *html.Node) string
 	traverse = func(n *html.Node) string {
-		if n.Type == html.ElementNode && n.Data == "Title" {
+		if n.Type == html.ElementNode && n.Data == "title" {
 			return n.FirstChild.Data
 		}
 
@@ -291,7 +295,7 @@ func parseTitle(r io.Reader) (string, error) {
 		return "", err
 	}
 
-	return traverse(doc), nil
+	return strings.Trim(traverse(doc), " - YouTube"), nil
 }
 func ParseVideoID(URL string) (string, error) {
 	u, err := url.Parse(URL)

@@ -56,4 +56,5 @@ var (
 	ErrCaptionError                          = errors.New("caption error")
 	ErrConvertFileToSubtiteParse             = errors.New("convert file to subtitle parse error")
 	ErrConvertFileToSubtitleTypeNotSupported = errors.New("convert file to subtitle file type incorrect")
+	ErrDownloadYoutubeSubtitle               = errors.New("fail to download youtube subtitle")
 )

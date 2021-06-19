@@ -25,6 +25,7 @@ type GameService interface {
 	DelTour(param string) error
 	ListYoutubeCaptionLanguages(param string) (map[string]string, error)
 	ConvertFileToSubtitle(filetype string, file []byte) ([]model.Lyric, error)
+	DownloadYoutubeSubtitle(url, code string) ([]model.Lyric, error)
 }
 
 type UserService interface {

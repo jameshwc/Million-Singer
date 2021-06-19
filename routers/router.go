@@ -73,6 +73,7 @@ func InitRouters() *gin.Engine {
 
 	gamesAPI.GET("/captions/youtube", game.ListYoutubeCaptionLanguages)
 
+	gamesAPI.GET("/subtitles/youtube", game.DownloadYoutubeSubtitle)
 	gamesAPI.POST("/subtitles/convert", game.ConvertFileToSubtitle)
 
 	// gamesAPI.Use(jwt.JWT())

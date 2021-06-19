@@ -36,3 +36,17 @@ func ConvertFileToSubtitle(c *gin.Context) {
 
 	}
 }
+
+func DownloadYoutubeSubtitle(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	switch sub, err := service.Game.DownloadYoutubeSubtitle(c.Param("url"), c.Param("code")); err {
+
+	case C.ErrDownloadYoutubeSubtitle:
+		appG.Response(http.StatusBadRequest, C.ERROR_DOWNLOAD_YOUTUBE_SUBTITLE, err.Error(), nil)
+
+	case nil:
+		appG.Response(http.StatusAccepted, C.SUCCESS, C.SuccessMsg, sub)
+
+	}
+}

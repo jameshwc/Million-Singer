@@ -34,10 +34,10 @@ func NewRedisRepository() repo.CacheRepo {
 		if err != nil {
 			log.Fatal("redis: error when sending request", err)
 		}
-		return &redisRepository{rdb: rdb}
+		return &redisRepository{rdb: rdb, isEnabled: true}
 	}
 
-	return &redisRepository{conf.RedisConfig.IsEnabled, nil}
+	return &redisRepository{rdb: nil, isEnabled: false}
 }
 
 var setKeyScript = redis.NewScript(`
@@ -50,21 +50,21 @@ var getKeyScript = redis.NewScript(`
 var isNotEnabled = errors.New("redis is not enabled")
 
 func (r *redisRepository) Set(key string, data interface{}, timeout int) error {
-	if r.isEnabled {
+	if !r.isEnabled {
 		return isNotEnabled
 	}
 	return set(r.rdb, key, data, timeout)
 }
 
 func (r *redisRepository) Get(key string) ([]byte, error) {
-	if r.isEnabled {
+	if !r.isEnabled {
 		return nil, isNotEnabled
 	}
 	return get(r.rdb, key)
 }
 
 func (r *redisRepository) Del(key string) error {
-	if r.isEnabled {
+	if !r.isEnabled {
 		return isNotEnabled
 	}
 	return r.rdb.Del(key).Err()

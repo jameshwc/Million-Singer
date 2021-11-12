@@ -21,6 +21,8 @@ type Server struct {
 	HttpPort  int
 	JwtSecret string
 	Revision  string
+	CertFile  string
+	KeyFile   string
 }
 
 type Redis struct {
@@ -63,6 +65,8 @@ func Setup() {
 		HttpPort:  port,
 		JwtSecret: os.Getenv("server_jwt_secret"),
 		Revision:  os.Getenv("server_git_commit_sha"),
+		CertFile:  os.Getenv("server_cert_file"),
+		KeyFile:   os.Getenv("server_key_file"),
 	}
 
 	minIdleConn, err := strconv.Atoi(os.Getenv("redis_min_idle_conn"))

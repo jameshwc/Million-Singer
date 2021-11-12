@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 
@@ -38,11 +39,13 @@ func main() {
 	routers := routers.InitRouters()
 	endPoint := fmt.Sprintf(":%d", conf.ServerConfig.HttpPort)
 	maxHeaderBytes := 1 << 20
+	c := &tls.Config{MinVersion: tls.VersionTLS12}
 
 	server := &http.Server{
 		Addr:           endPoint,
 		Handler:        routers,
 		MaxHeaderBytes: maxHeaderBytes,
+		TLSConfig:      c,
 	}
 
 	log.Infof("start http server listening %s", endPoint)
@@ -51,6 +54,6 @@ func main() {
 		routers.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFile.Handler, apiDocURL))
 	}
 
-	server.ListenAndServe()
+	server.ListenAndServeTLS(conf.ServerConfig.CertFile, conf.ServerConfig.KeyFile)
 
 }

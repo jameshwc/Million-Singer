@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: million-singer
+  labels:
+    app: million-singer
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: million-singer
+      type: web
+  template:
+    metadata:
+      labels:
+        app: million-singer
+        type: web
+    spec:
+      containers:
+      - name: web
+        image: jameshwc/million-singer:201111302
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 80
+            name: "web"
+        envFrom:
+          - secretRef:
+              name: million-singer-web-secret
+        command: ["./app"]

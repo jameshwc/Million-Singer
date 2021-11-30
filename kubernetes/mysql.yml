@@ -1,137 +1,71 @@
----
 apiVersion: v1
 kind: Service
 metadata:
-  name: db
+  name: million-singer-sql
+  labels:
+    app: million-singer
 spec:
   ports:
-  - port: 3306
+    - port: 3306
+      name: sql
   selector:
-    app: mysql
-  clusterIP: None
+    app: million-singer
+    type: sql 
 ---
-apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db
+  name: million-singer-sql
+  labels:
+    app: million-singer
+    type: sql
+
 spec:
+  # replicas: 3
   selector:
     matchLabels:
-      app: mysql
-  strategy:
-    type: Recreate
+      app: million-singer
+      type: sql
+  # serviceName: "million-singer-sql"
   template:
     metadata:
       labels:
-        app: mysql
+        app: million-singer
+        type: sql
     spec:
-      containers:
-      - image: mysql:8.0
-        name: mysql
-        env:
-          # Use secret in real usage
-        - name: MYSQL_ROOT_PASSWORD
-          value: database
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
-        - name: mysql-initdb
-          mountPath: /docker-entrypoint-initdb.d
       volumes:
-        - name: mysql-initdb
+        - name: million-singer-sql-data
+          persistentVolumeClaim:
+            claimName: million-singer-storage
+        - name: million-singer-init-sql
           configMap:
-            name: mysql-initdb-config
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mysql-initdb-config
-data:
-  initdb.sql: |
-    CREATE DATABASE IF NOT EXISTS million_singer;
-    USE million_singer;
-
-    CREATE TABLE IF NOT EXISTS `tours` (
-      `id` int unsigned NOT NULL AUTO_INCREMENT,
-      `created_at` datetime(3) DEFAULT NULL,
-      `updated_at` datetime(3) DEFAULT NULL,
-      `deleted_at` datetime(3) DEFAULT NULL,
-      PRIMARY KEY (`id`),
-      KEY `idx_tours_deleted_at` (`deleted_at`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE IF NOT EXISTS `collects` (
-      `id` int unsigned NOT NULL AUTO_INCREMENT,
-      `created_at` datetime(3) DEFAULT NULL,
-      `updated_at` datetime(3) DEFAULT NULL,
-      `deleted_at` datetime(3) DEFAULT NULL,
-      `title` varchar(200),
-      PRIMARY KEY (`id`),
-      KEY `idx_collects_deleted_at` (`deleted_at`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE IF NOT EXISTS `songs` (
-      `id` int unsigned NOT NULL AUTO_INCREMENT,
-      `created_at` datetime(3) DEFAULT NULL,
-      `updated_at` datetime(3) DEFAULT NULL,
-      `deleted_at` datetime(3) DEFAULT NULL,
-      `video_id` varchar(200),
-      `start_time` varchar(200),
-      `end_time` varchar(200),
-      `language` varchar(200),
-      `name` varchar(200),
-      `singer` varchar(200),
-      `genre` varchar(200),
-      `miss_lyrics` varchar(200),
-      PRIMARY KEY (`id`),
-      KEY `idx_songs_deleted_at` (`deleted_at`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE IF NOT EXISTS `lyrics` (
-      `id` int unsigned NOT NULL AUTO_INCREMENT,
-      `created_at` datetime(3) DEFAULT NULL,
-      `updated_at` datetime(3) DEFAULT NULL,
-      `deleted_at` datetime(3) DEFAULT NULL,
-      `index` int DEFAULT NULL,
-      `line` longtext,
-      `start_at` bigint DEFAULT NULL,
-      `end_at` bigint DEFAULT NULL,
-      `song_id` int unsigned DEFAULT NULL,
-      PRIMARY KEY (`id`),
-      KEY `idx_lyrics_deleted_at` (`deleted_at`),
-      KEY `fk_songs_lyrics` (`song_id`),
-      CONSTRAINT `fk_songs_lyrics` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE IF NOT EXISTS `users` (
-      `id` int unsigned NOT NULL AUTO_INCREMENT,
-      `created_at` datetime(3) DEFAULT NULL,
-      `updated_at` datetime(3) DEFAULT NULL,
-      `deleted_at` datetime(3) DEFAULT NULL,
-      `name` longtext,
-      `email` longtext,
-      `password` longtext,
-      `active` tinyint(1) DEFAULT NULL,
-      `last_login` datetime(3) DEFAULT NULL,
-      PRIMARY KEY (`id`),
-      KEY `idx_users_deleted_at` (`deleted_at`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE IF NOT EXISTS `collect_songs` (
-      `collect_id` int unsigned NOT NULL,
-      `song_id` int unsigned NOT NULL,
-      PRIMARY KEY (`song_id`,`collect_id`),
-      KEY `fk_collect_songs_collect` (`collect_id`),
-      CONSTRAINT `fk_collect_songs_collect` FOREIGN KEY (`collect_id`) REFERENCES `collects` (`id`),
-      CONSTRAINT `fk_collect_songs_song` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE IF NOT EXISTS `tour_collects` (
-      `tour_id` int unsigned NOT NULL,
-      `collect_id` int unsigned NOT NULL,
-      PRIMARY KEY (`tour_id`,`collect_id`),
-      KEY `fk_tour_collects_collect` (`collect_id`),
-      CONSTRAINT `fk_tour_collects_collect` FOREIGN KEY (`collect_id`) REFERENCES `collects` (`id`),
-      CONSTRAINT `fk_tour_collects_tour` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            name: million-singer-init-sql
+        - name: config
+          configMap:
+            name: million-singer-sql-config
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+          - containerPort: 3306
+            name: "mysql"
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: million-singer-sql-data
+          - mountPath: /docker-entrypoint-initdb.d
+            name: million-singer-init-sql
+          - mountPath: /etc/mysql/my.cnf
+            name: config
+            subPath: my.cnf
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: database # TODO: keep it secure
+        args: [
+            "--init-file=/docker-entrypoint-initdb.d/initdb.sql",
+            "--default-authentication-plugin=mysql_native_password",
+            "--character-set-server=utf8mb4",
+            "--collation-server=utf8mb4_general_ci",
+            "--explicit_defaults_for_timestamp=true",
+            "--lower_case_table_names=1",
+            "--max_allowed_packet=128M",
+        ]

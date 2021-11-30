@@ -85,7 +85,7 @@ func Setup() {
 	}
 
 	isEnabled := false
-	if os.Getenv("redis_is_enabled") == "1" {
+	if os.Getenv("is_redis_enabled") == "1" {
 		isEnabled = true
 	}
 	RedisConfig = &Redis{

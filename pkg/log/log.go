@@ -32,10 +32,15 @@ func Setup() {
 	if conf.LogConfig.IsEnabled {
 		conn, err := net.Dial("tcp", conf.LogConfig.LogStashAddr)
 		if err != nil {
-			logrus.Fatal(err)
+			Logger.Warn("Can't connect to LogStash: ", err.Error())
+			return
 		}
 		hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "cn_project"}))
 		Logger.Hooks.Add(hook)
+
+		Logger.Info("Successfully connected to LogStash.")
+	} else {
+		Logger.Info("LogStash is not enabled in config.")
 	}
 }
 

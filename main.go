@@ -54,6 +54,10 @@ func main() {
 		routers.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFile.Handler, apiDocURL))
 	}
 
-	server.ListenAndServeTLS(conf.ServerConfig.CertFile, conf.ServerConfig.KeyFile)
+	if len(conf.ServerConfig.CertFile) > 0 {
+		log.Error(server.ListenAndServeTLS(conf.ServerConfig.CertFile, conf.ServerConfig.KeyFile))
+	} else {
+		log.Error(server.ListenAndServe())
+	}
 
 }

@@ -31,12 +31,13 @@ func NewRedisRepository() repo.CacheRepo {
 			MinIdleConns: conf.RedisConfig.MinIdleConn,
 		})
 		_, err := rdb.Ping().Result()
-		if err != nil {
-			log.Fatal("redis: error when sending request", err)
+		if err == nil {
+			log.Info("Successfully connected to redis, as cache servers.")
+			return &redisRepository{rdb: rdb, isEnabled: true}
 		}
-		return &redisRepository{rdb: rdb, isEnabled: true}
+		log.Warn("Can't connect to redis: ", err)
 	}
-
+	log.Info("Redis is not enabled.")
 	return &redisRepository{rdb: nil, isEnabled: false}
 }
 

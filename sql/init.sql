@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `genre` varchar(200),
   `miss_lyrics` varchar(200),
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`video_id`)
-  KEY `idx_songs_deleted_at` (`deleted_at`),
+  UNIQUE KEY (`video_id`),
+  KEY `idx_songs_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `lyrics` (
